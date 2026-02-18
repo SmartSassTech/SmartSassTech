@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Learn about smartwatches and wearables. Get expert help with your Apple Watch, Fitbit, or other wearable devices from SmartSass Tech in Rochester, NY.">
+    <title>Watches & Wearables | SmartSass Tech</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth-init.js"></script>
+</head>
+
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="search-container">
+                    <input type="search" class="search-input" placeholder="Search" aria-label="Search">
+                </div>
+
+                <div class="logo-container">
+                    <a href="index.html" aria-label="SmartSass Tech Home">
+                        <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                            class="logo">
+                    </a>
+                </div>
+
+                <div class="header-actions">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="booking.html" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Main navigation" class="sticky-nav">
+        <div class="container">
+            <ul class="nav-tabs">
+                <li class="nav-tab"><a href="index.html">Home</a></li>
+                <li class="nav-tab"><a href="resources.html">Resources</a></li>
+                <li class="nav-tab"><a href="about.html">About</a></li>
+                <li class="nav-tab"><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Page Hero -->
+        <section class="hero section">
+            <div class="container">
+                <h1 class="hero-title">Watches & Wearables</h1>
+                <a href="quizes/smartwatch-quiz.html" class="btn btn-primary">Take Wearable Match Quiz</a>
+            </div>
+        </section>
+
+        <!-- Info Section -->
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">What is a Smartwatch Used For?</h2>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3 class="card-title">Smartwatch</h3>
+                        <p class="card-description">
+                            Wearable devices that track your health, show notifications from your phone, and help you
+                            stay connected without pulling out your phone. Great for fitness tracking, monitoring heart
+                            rate, and getting quick updates.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Other Wearables</h3>
+                        <p class="card-description">
+                            Includes fitness bands, smart rings, and specialized trackers. These devices focus on
+                            specific health metrics like sleep quality, activity levels, or continuous health
+                            monitoring.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <p class="cta-text">
+                        <strong>TIP:</strong> If you want something that does everything – notifications, apps, and
+                        health
+                        tracking – go with a smartwatch. If you just want to track fitness or specific health metrics,
+                        a simple fitness band might be perfect!
+                    </p>
+                    <h3>Perfect Wearable Match</h3>
+                    <p>Find the perfect wearable device for your needs and lifestyle.</p>
+                    <a href="quizes/smartwatch-quiz.html" class="btn btn-primary">Take Quiz</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- What We Help With -->
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">Specific Wearable Help We Provide</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-icon">⌚</div>
+                        <h3 class="card-title">Apple Watch & Fitbit Setup</h3>
+                        <p class="card-description">We'll help you pair your watch with your phone, set up health
+                            tracking, and customize your notifications.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💓</div>
+                        <h3 class="card-title">Health & Fitness Tracking</h3>
+                        <p class="card-description">Learn how to track your steps, monitor heart rate, and use your
+                            watch as a tool for a healthier lifestyle.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔔</div>
+                        <h3 class="card-title">Managing Notifications</h3>
+                        <p class="card-description">Stop your watch from buzzing all day! We'll show you how to choose
+                            which alerts are actually important.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🆘</div>
+                        <h3 class="card-title">Safety & Fall Detection</h3>
+                        <p class="card-description">We can set up life-saving features like fall detection and emergency
+                            SOS contacts for your peace of mind.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔋</div>
+                        <h3 class="card-title">Battery Life Optimization</h3>
+                        <p class="card-description">Is your watch dying too fast? We'll help you adjust settings to make
+                            your battery last as long as possible.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🎨</div>
+                        <h3 class="card-title">Customizing Your Look</h3>
+                        <p class="card-description">Learn how to change watch faces and personalize your wearable to
+                            match your style and needs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Official Resources -->
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">Official Support & Resources</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.apple.com/watch" target="_blank">Apple Watch
+                                Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.google.com/fitbit" target="_blank">Fitbit
+                                Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://www.samsung.com/us/support/mobile/wearables/"
+                                target="_blank">Samsung Galaxy Watch Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.garmin.com" target="_blank">Garmin Support</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.ouraring.com" target="_blank">Oura Ring
+                                Support</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section section">
+            <div class="container">
+                <h2 class="mb-xl">Need a Hand? We're Here For You!</h2>
+                <p class="cta-text">
+                    If you're stuck, don't worry -- you don't have to figure it out alone.
+                    We'll walk you through any issue with patience and clear instructions.
+                    Whether it's a simple setup or frustrating error, we've got your back.
+                </p>
+                <a href="booking.html" class="btn btn-primary btn-large">Book a Personal Session</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <!-- Footer Top: Brand & Business Info -->
+            <div class="footer-top-info">
+                <div class="footer-logo-container">
+                    <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                        class="footer-logo">
+                </div>
+                <div class="footer-business-details">
+                    <h3>SMARTSASS TECH</h3>
+                    <p>Serving the Rochester, NY area</p>
+                    <p><strong>(585) 210-9758</strong></p>
+                    <p><a href="mailto:smartsasstech@gmail.com" class="footer-email">smartsasstech@gmail.com</a></p>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <!-- Footer Bottom: Link Columns -->
+            <div class="footer-content">
+                <!-- Account Links -->
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Account Settings</a></li>
+                        <li><a href="#">My Bookings</a></li>
+                        <li><a href="#">My Subscriptions</a></li>
+                        <li><a href="#">My Rewards</a></li>
+                        <li><a href="#">Plans & Pricing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quizzes -->
+                <div class="footer-section">
+                    <h3>Quizzes</h3>
+                    <ul class="footer-links">
+                        <li><a href="quizes/computer-quiz.html">Computer Quiz</a></li>
+                        <li><a href="quizes/smartwatch-quiz.html">Wearable Quiz</a></li>
+                        <li><a href="quizes/phone-quiz.html">Phone Quiz</a></li>
+                        <li><a href="quizes/streaming-quiz.html">Streaming Quiz</a></li>
+                        <li><a href="quizes/security-camera-quiz.html">Security Cam Quiz</a></li>
+                        <li><a href="quizes/printer-quiz.html">Printer Quiz</a></li>
+                        <li><a href="quizes/internet-provider-quiz.html">Internet Quiz</a></li>
+                        <li><a href="quizes/keyboard-mouse-quiz.html">Keyboard Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="resources.html">Resources</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="booking.html">Services</a></li>
+                        <li><a href="booking.html">Booking Calendar</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartSass Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Keyboard & Mouse - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Keyboard & Mouse</h1>
+            <p>Let us help you choose the right keyboard and mouse for comfortable computing</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions to help find the perfect keyboard and mouse setup for you. This
+                    will only take a minute!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Computer Type -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What type of computer do you use?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'laptop-only')">Laptop - and the built-in
+                        keyboard/trackpad are fine</div>
+                    <div class="option" onclick="selectOption(1, 'laptop-upgrade')">Laptop - but I want better
+                        keyboard/mouse for my desk</div>
+                    <div class="option" onclick="selectOption(1, 'desktop')">Desktop computer (needs external keyboard &
+                        mouse)</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Typing Volume -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">How much do you type in a typical day?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'light')">Just a little - some emails and browsing
+                    </div>
+                    <div class="option" onclick="selectOption(2, 'moderate')">A moderate amount - a few hours</div>
+                    <div class="option" onclick="selectOption(2, 'heavy')">A lot - I work at my computer all day</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Comfort Issues -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">Do you experience any discomfort when typing?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'wrist')">Yes - wrist pain or strain</div>
+                    <div class="option" onclick="selectOption(3, 'hand')">Yes - hand or finger discomfort</div>
+                    <div class="option" onclick="selectOption(3, 'shoulder')">Yes - shoulder or arm fatigue</div>
+                    <div class="option" onclick="selectOption(3, 'none')">No - I feel comfortable</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Mouse Preference -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">What's your preference for controlling the cursor?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'mouse')">Regular mouse - I'm used to it</div>
+                    <div class="option" onclick="selectOption(4, 'trackpad')">Trackpad - I prefer touch gestures</div>
+                    <div class="option" onclick="selectOption(4, 'ergonomic')">Ergonomic mouse - hand comfort is
+                        important</div>
+                    <div class="option" onclick="selectOption(4, 'trackball')">Trackball - less hand movement</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your budget for keyboard and mouse?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'budget')">Under $50 - basic and affordable</div>
+                    <div class="option" onclick="selectOption(5, 'moderate')">$50 - $100 - good quality</div>
+                    <div class="option" onclick="selectOption(5, 'premium')">$100 - $200 - comfortable and reliable
+                    </div>
+                    <div class="option" onclick="selectOption(5, 'top')">Over $200 - I want the best ergonomics</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Important Features -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">What's most important to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'comfort')">Maximum comfort for long hours</div>
+                    <div class="option" onclick="selectOption(6, 'wireless')">Wireless - no cables on my desk</div>
+                    <div class="option" onclick="selectOption(6, 'quiet')">Quiet typing - I share my space</div>
+                    <div class="option" onclick="selectOption(6, 'compact')">Compact size - save desk space</div>
+                    <div class="option" onclick="selectOption(6, 'simple')">Simple and easy to use</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            computerType: null,
+            typingVolume: null,
+            comfort: null,
+            mousePreference: null,
+            budget: null,
+            priority: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['computerType', 'typingVolume', 'comfort', 'mousePreference', 'budget', 'priority'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let setupType = '';
+            let reasons = [];
+
+            // Check if laptop-only user
+            if (answers.computerType === 'laptop-only') {
+                setupType = 'laptop-accessories';
+                reasons.push('Enhance your laptop experience with these helpful accessories');
+                return {
+                    setupType,
+                    reasons,
+                    recommendation: 'Laptop Accessories & Upgrades'
+                };
+            }
+
+            // Determine setup type based on comfort issues and typing volume
+            if ((answers.comfort === 'wrist' || answers.comfort === 'hand' || answers.comfort === 'shoulder') &&
+                (answers.typingVolume === 'moderate' || answers.typingVolume === 'heavy')) {
+                setupType = 'ergonomic';
+                reasons.push('Ergonomic keyboards and mice reduce strain and prevent long-term injury');
+                reasons.push('Split keyboard design keeps your shoulders and wrists in natural positions');
+            } else if (answers.budget === 'budget' || answers.priority === 'simple') {
+                setupType = 'basic';
+                reasons.push('Simple, reliable keyboard and mouse that get the job done');
+            } else if (answers.priority === 'compact') {
+                setupType = 'compact';
+                reasons.push('Space-saving design perfect for smaller desks');
+            } else {
+                setupType = 'standard';
+                reasons.push('Comfortable keyboard and mouse for everyday use');
+            }
+
+            // Add mouse-specific reasons
+            if (answers.mousePreference === 'ergonomic') {
+                reasons.push('Ergonomic mouse keeps your hand in a natural "handshake" position');
+            } else if (answers.mousePreference === 'trackball') {
+                reasons.push('Trackball eliminates arm movement - perfect for limited desk space');
+            } else if (answers.mousePreference === 'trackpad') {
+                reasons.push('Trackpad offers familiar gesture controls like on your phone');
+            }
+
+            // Add wireless reason
+            if (answers.priority === 'wireless') {
+                reasons.push('Wireless connection keeps your desk clean and clutter-free');
+            }
+
+            // Add quiet reason
+            if (answers.priority === 'quiet') {
+                reasons.push('Quiet keys and silent clicks won\'t disturb others around you');
+            }
+
+            return {
+                setupType,
+                reasons,
+                recommendation: setupType === 'ergonomic' ? 'Ergonomic Keyboard & Mouse' :
+                    setupType === 'compact' ? 'Compact Keyboard & Mouse' :
+                        setupType === 'basic' ? 'Basic Keyboard & Mouse' :
+                            'Standard Keyboard & Mouse'
+            };
+        }
+
+        function getRecommendations(setupType, budget, mousePreference, priority) {
+            const recommendations = {
+                'laptop-accessories': [
+                    {
+                        name: 'Laptop Stand + External Mouse',
+                        price: '$40-60',
+                        features: [
+                            'Adjustable laptop stand raises screen to eye level',
+                            'Reduces neck strain when using laptop',
+                            'Wireless mouse for better ergonomics than trackpad',
+                            'Logitech M330 Silent Plus mouse recommended',
+                            'Quiet clicks perfect for shared spaces',
+                            'Improves posture significantly'
+                        ],
+                        why: 'If you\'re happy with your laptop keyboard, raising the screen to eye level is the single best improvement you can make. Add an external mouse to avoid reaching for the trackpad, and you\'ll feel much more comfortable.',
+                        link: 'https://www.amazon.com/laptop-stand/s?k=laptop+stand'
+                    },
+                    {
+                        name: 'External Keyboard + Mouse + Stand',
+                        price: '$80-120',
+                        features: [
+                            'Full setup: keyboard, mouse, and laptop stand',
+                            'Use laptop as a second screen',
+                            'Much more comfortable for long work sessions',
+                            'Wireless keyboard and mouse recommended',
+                            'Logitech MK270 is a great affordable combo',
+                            'Transform your laptop into a full workstation'
+                        ],
+                        why: 'For serious laptop users, this full setup is worth it. The laptop becomes your second monitor while you type on a comfortable keyboard at the right height. Much better than hunching over your laptop.',
+                        link: 'https://www.amazon.com/Logitech-MK270-Wireless-Keyboard-Mouse/dp/B079JLY5M5'
+                    }
+                ],
+                'ergonomic': [
+                    {
+                        name: 'Logitech Ergo K860 + Lift Mouse',
+                        price: '$179 (combo)',
+                        features: [
+                            'Split curved keyboard reduces wrist strain by 25%',
+                            'Cushioned wrist rest with memory foam',
+                            'Adjustable palm lift for seated or standing desks',
+                            'Lift vertical mouse in natural handshake position',
+                            'Reduces forearm pronation (twisting)',
+                            'Quiet keys and clicks',
+                            'Wireless - Bluetooth or USB receiver',
+                            'Certified by ergonomics experts'
+                        ],
+                        why: 'The Logitech Ergo K860 and Lift mouse combo is the gold standard for ergonomic computing. The split keyboard keeps your shoulders relaxed, the wrist rest provides perfect support, and the vertical mouse eliminates wrist twisting. If you type all day, this investment pays off quickly.',
+                        link: 'https://www.amazon.com/Logitech-Wireless-Ergonomic-Keyboard-Bluetooth/dp/B0B688M8MW'
+                    },
+                    {
+                        name: 'Microsoft Ergonomic Keyboard + Mouse',
+                        price: '$59',
+                        features: [
+                            'Affordable ergonomic keyboard',
+                            'Split key design',
+                            'Cushioned palm rest',
+                            'Natural arc layout',
+                            'Wired connection (very reliable)',
+                            '3-year warranty',
+                            'Pair with any ergonomic mouse'
+                        ],
+                        why: 'Microsoft\'s ergonomic keyboard offers many of the same benefits as the Logitech K860 at half the price. It\'s wired instead of wireless, but that makes it even more reliable. Great entry into ergonomic keyboards.',
+                        link: 'https://www.amazon.com/Microsoft-Ergonomic-Keyboard/dp/B07XKC28V9'
+                    },
+                    {
+                        name: 'Logitech Wave Keys + M550 Mouse',
+                        price: '$99',
+                        features: [
+                            'Wave-design ergonomic keyboard',
+                            'Cushioned palm rest with 57% more wrist support',
+                            'Natural typing position',
+                            'Signature M550 ergonomic mouse',
+                            'Quiet typing and clicking',
+                            'Wireless with 3-year battery life',
+                            'Works with Windows and Mac'
+                        ],
+                        why: 'The Wave Keys offers ergonomic benefits in a more familiar keyboard layout - easier to adjust to than a split keyboard. Great middle ground between standard and fully ergonomic.',
+                        link: 'https://www.logitech.com/en-us/products/keyboards/wave-keys-ergonomic.html'
+                    }
+                ],
+                'basic': [
+                    {
+                        name: 'Logitech MK270 Wireless Combo',
+                        price: '$29.99',
+                        features: [
+                            'Full-size wireless keyboard',
+                            'Wireless mouse included',
+                            '8 multimedia hotkeys',
+                            'Compact mouse fits either hand',
+                            'Single USB receiver for both',
+                            '2-year keyboard battery, 1-year mouse',
+                            'Reliable 2.4GHz wireless connection'
+                        ],
+                        why: 'The Logitech MK270 is the best-selling keyboard and mouse combo for good reason - it\'s affordable, reliable, and just works. Perfect for basic home use without breaking the bank.',
+                        link: 'https://www.amazon.com/Logitech-MK270-Wireless-Keyboard-Mouse/dp/B079JLY5M5'
+                    },
+                    {
+                        name: 'Logitech MK345 Combo',
+                        price: '$49.99',
+                        features: [
+                            'Full-size keyboard with number pad',
+                            'Contoured wireless mouse',
+                            'Palm rest for wrist support',
+                            '12 programmable F-keys',
+                            'Quiet typing',
+                            'Spill-resistant keyboard',
+                            '3-year keyboard, 18-month mouse battery'
+                        ],
+                        why: 'A step up from the MK270 with better comfort features. The palm rest makes long typing sessions more comfortable, and the longer battery life means less hassle.',
+                        link: 'https://www.amazon.com/Logitech-MK345-Wireless-Combo-Right-Handed/dp/B00QX29B1E'
+                    }
+                ],
+                'compact': [
+                    {
+                        name: 'Logitech K380 + M350 Pebble',
+                        price: '$69.98',
+                        features: [
+                            'Ultra-compact and portable',
+                            'Bluetooth keyboard switches between 3 devices',
+                            'Silent, smooth typing',
+                            'Pebble mouse is slim and quiet',
+                            'Works with Windows, Mac, iPad, phones',
+                            'Minimalist design',
+                            '2-year keyboard, 18-month mouse battery'
+                        ],
+                        why: 'Perfect for small desks or people who work in multiple locations. The K380 keyboard is compact but still comfortable, and the Pebble mouse is slim enough to slip in a bag.',
+                        link: 'https://www.logitech.com/en-us/products/keyboards/k380-multi-device.html'
+                    },
+                    {
+                        name: 'Logitech MK470 Slim Combo',
+                        price: '$49.99',
+                        features: [
+                            'Modern, ultra-thin design',
+                            'Compact layout saves desk space',
+                            'Whisper-quiet typing and clicking',
+                            'Wireless 2.4GHz connection',
+                            'Very portable',
+                            'Matches modern laptop aesthetics'
+                        ],
+                        why: 'If you want a clean, minimalist desk setup, the MK470 delivers. Super quiet for shared spaces and compact enough for any desk.',
+                        link: 'https://www.logitech.com/en-us/products/combos/mk470-slim-wireless-keyboard-mouse.html'
+                    }
+                ],
+                'standard': [
+                    {
+                        name: 'Logitech MK850 Performance',
+                        price: '$99.99',
+                        features: [
+                            'Full-size keyboard with curved keyframe',
+                            'Cushioned palm rest for comfort',
+                            'Contoured mouse with hyper-fast scrolling',
+                            'Multi-device (switch between computers)',
+                            'Dual connectivity (Bluetooth + USB receiver)',
+                            'Long battery life (2 years)',
+                            'Works with Windows, Mac, Linux, Chrome OS'
+                        ],
+                        why: 'The MK850 is Logitech\'s premium combo that balances comfort, features, and reliability. Great for people who spend hours at their computer but don\'t need a fully split ergonomic setup.',
+                        link: 'https://www.amazon.com/Logitech-MK850-Performance-Wireless-Keyboard/dp/B01NAVO5PF'
+                    },
+                    {
+                        name: 'Logitech MX Keys + MX Master 3S',
+                        price: '$199.98',
+                        features: [
+                            'Premium keyboard with backlit keys',
+                            'Smart illumination (lights up when hands approach)',
+                            'MX Master 3S mouse - best productivity mouse made',
+                            'Ergonomic shape, ultra-fast scrolling',
+                            'Multi-device (up to 3 computers)',
+                            'Rechargeable batteries (USB-C)',
+                            'Logitech Flow - control multiple computers'
+                        ],
+                        why: 'This is the ultimate productivity combo. The MX Keys is Logitech\'s best keyboard, and the MX Master 3S is widely considered the best mouse you can buy. Worth every penny for serious computer users.',
+                        link: 'https://www.logitech.com/en-us/products/keyboards/mx-keys-wireless-keyboard.html'
+                    },
+                    {
+                        name: 'Logitech MK545 Advanced',
+                        price: '$69.99',
+                        features: [
+                            'Full-size keyboard with concave keys',
+                            'Cushioned palm rest',
+                            'Contoured mouse designed for either hand',
+                            'Quiet typing',
+                            'Long 3-year battery life',
+                            'Reliable wireless connection',
+                            'Spill-resistant keyboard'
+                        ],
+                        why: 'Great middle-ground option with comfort features and long battery life. The concave keys feel nice to type on, and the palm rest reduces wrist strain.',
+                        link: 'https://www.logitech.com/en-us/products/combos/mk545-advanced-wireless-keyboard-mouse.html'
+                    }
+                ]
+            };
+
+            let selectedRecs = recommendations[setupType] || recommendations['standard'];
+
+            // Filter by budget if applicable
+            if (answers.budget === 'budget') {
+                selectedRecs = selectedRecs.filter(r => !r.price.includes('$199') && !r.price.includes('$179'));
+            } else if (answers.budget === 'top') {
+                selectedRecs = selectedRecs.filter(r => r.price.includes('$199') || r.price.includes('$179') || r.price.includes('$150'));
+            }
+
+            // Ensure we have results
+            if (selectedRecs.length === 0) {
+                selectedRecs = recommendations[setupType] || recommendations['standard'];
+            }
+
+            return selectedRecs.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const productOptions = getRecommendations(rec.setupType, answers.budget, answers.mousePreference, answers.priority);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Setup!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Our Top Recommendations:</h3>
+            `;
+
+            productOptions.forEach(product => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>Key Features (In Plain English):</h4>
+                            <ul>
+                                ${product.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${product.why}</p>
+                        </div>
+                        <a href="${product.link}" class="product-link" target="_blank" rel="noopener">View This Product</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const productOptions = getRecommendations(rec.setupType, answers.budget, answers.mousePreference, answers.priority);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Keyboard & Mouse Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Products:', 20, y);
+            y += 10;
+
+            productOptions.forEach((product, index) => {
+                if (y > 220) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(product.name + ' - ' + product.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                doc.text('Features:', 20, y);
+                y += 6;
+
+                product.features.forEach(feature => {
+                    const lines = doc.splitTextToSize('• ' + feature, 165);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 5;
+                });
+
+                y += 5;
+                const whyLines = doc.splitTextToSize('Why: ' + product.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + product.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('keyboard-mouse-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

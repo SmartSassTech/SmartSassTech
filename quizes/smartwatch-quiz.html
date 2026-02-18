@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Smartwatch or Fitness Tracker - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Wearable</h1>
+            <p>Let us help you choose the right smartwatch or fitness tracker</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions to help find the perfect smartwatch or fitness tracker for you.
+                    This will only take a minute!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Primary Goal -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What's your main goal for wearing a smartwatch or fitness tracker?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'health')">Track my health (heart rate, steps, sleep)
+                    </div>
+                    <div class="option" onclick="selectOption(1, 'safety')">Stay safe (emergency calls, fall detection)
+                    </div>
+                    <div class="option" onclick="selectOption(1, 'fitness')">Monitor my fitness and workouts</div>
+                    <div class="option" onclick="selectOption(1, 'notifications')">Get phone notifications on my wrist
+                    </div>
+                    <div class="option" onclick="selectOption(1, 'all')">All of the above</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Phone Type -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">What type of phone do you have?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'iphone')">iPhone</div>
+                    <div class="option" onclick="selectOption(2, 'android')">Android (Samsung, Google, etc.)</div>
+                    <div class="option" onclick="selectOption(2, 'none')">I don't have a smartphone</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Tech Comfort -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">How comfortable are you with technology?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'simple')">I want something very simple and easy</div>
+                    <div class="option" onclick="selectOption(3, 'moderate')">I'm okay with some features</div>
+                    <div class="option" onclick="selectOption(3, 'advanced')">I like having lots of features to explore
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Activity Level -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">How active are you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'light')">Light activity (walking, everyday tasks)
+                    </div>
+                    <div class="option" onclick="selectOption(4, 'moderate')">Moderately active (regular walks, some
+                        exercise)</div>
+                    <div class="option" onclick="selectOption(4, 'very')">Very active (regular workouts, running,
+                        sports)</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your budget?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'under100')">Under $100</div>
+                    <div class="option" onclick="selectOption(5, '100-200')">$100 - $200</div>
+                    <div class="option" onclick="selectOption(5, '200-300')">$200 - $300</div>
+                    <div class="option" onclick="selectOption(5, 'over300')">Over $300</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Battery Life Importance -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">How important is long battery life to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'very')">Very important - I don't want to charge often
+                    </div>
+                    <div class="option" onclick="selectOption(6, 'moderate')">Moderately important</div>
+                    <div class="option" onclick="selectOption(6, 'not')">Not important - daily charging is fine</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            goal: null,
+            phone: null,
+            comfort: null,
+            activity: null,
+            budget: null,
+            battery: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['goal', 'phone', 'comfort', 'activity', 'budget', 'battery'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let deviceType = '';
+            let platform = '';
+            let reasons = [];
+
+            // Determine device type (smartwatch vs fitness tracker)
+            if (answers.goal === 'safety' || answers.goal === 'all' || answers.comfort === 'advanced') {
+                deviceType = 'smartwatch';
+                if (answers.goal === 'safety') {
+                    reasons.push('A smartwatch offers important safety features like emergency calling and fall detection');
+                } else {
+                    reasons.push('A smartwatch provides comprehensive features for all your needs');
+                }
+            } else if (answers.goal === 'health' || answers.goal === 'fitness') {
+                if (answers.comfort === 'simple' || answers.battery === 'very') {
+                    deviceType = 'tracker';
+                    reasons.push('A fitness tracker is simple to use and focuses on health tracking without overwhelming features');
+                } else {
+                    deviceType = 'smartwatch';
+                    reasons.push('A smartwatch gives you detailed health tracking plus helpful smart features');
+                }
+            } else {
+                deviceType = 'smartwatch';
+                reasons.push('A smartwatch will help you stay connected and see notifications easily');
+            }
+
+            // Determine platform
+            if (answers.phone === 'iphone') {
+                platform = 'apple';
+                reasons.push('Since you have an iPhone, an Apple Watch works seamlessly with your phone');
+            } else if (answers.phone === 'android') {
+                platform = 'android';
+                reasons.push('Android-compatible options work perfectly with your phone');
+            } else {
+                platform = 'standalone';
+                reasons.push('We\'ll recommend options that can work without needing a smartphone');
+            }
+
+            // Add comfort-based reason
+            if (answers.comfort === 'simple') {
+                reasons.push('These options are designed to be easy to use and understand');
+            } else if (answers.comfort === 'advanced') {
+                reasons.push('You\'ll enjoy exploring all the advanced features these devices offer');
+            }
+
+            // Add activity-based reason
+            if (answers.activity === 'very') {
+                reasons.push('Perfect for tracking your workouts and active lifestyle');
+            } else if (answers.activity === 'light') {
+                reasons.push('Great for keeping track of your daily steps and basic health metrics');
+            }
+
+            // Add battery reason
+            if (answers.battery === 'very') {
+                reasons.push('These options have excellent battery life so you won\'t need to charge frequently');
+            }
+
+            return {
+                deviceType,
+                platform,
+                reasons,
+                recommendation: deviceType === 'smartwatch' ?
+                    (platform === 'apple' ? 'Apple Watch' :
+                        platform === 'android' ? 'Android Smartwatch' :
+                            'Standalone Smartwatch') :
+                    'Fitness Tracker'
+            };
+        }
+
+        function getProducts(deviceType, platform, budget, battery, goal, comfort) {
+            const products = {
+                smartwatch: {
+                    apple: {
+                        'under100': [],
+                        '100-200': [],
+                        '200-300': [
+                            {
+                                name: 'Apple Watch SE 3 (GPS, 40mm)',
+                                price: '$249',
+                                specs: [
+                                    'Easy-to-read display with always-on option',
+                                    'Heart rate monitoring and fall detection',
+                                    'Activity tracking and workout modes',
+                                    'Up to 18 hours battery life',
+                                    'Water resistant for swimming',
+                                    'Seamless integration with iPhone'
+                                ],
+                                why: 'The Apple Watch SE 3 is Apple\'s most affordable smartwatch, offering all the essential health and safety features at a great price. It\'s easy to use, works perfectly with your iPhone, and includes important features like fall detection.',
+                                link: 'https://www.bestbuy.com/site/apple-watch-se-3-gps-40mm-starlight-aluminum-case-with-starlight-sport-band-s-m-starlight-2025/JJGCQGVWYX/6572694.p?skuId=6572694'
+                            },
+                            {
+                                name: 'Apple Watch SE 3 (GPS, 44mm)',
+                                price: '$279',
+                                specs: [
+                                    'Larger 44mm display - easier to read',
+                                    'All SE 3 health and safety features',
+                                    'Fall detection and emergency SOS',
+                                    'Activity and workout tracking',
+                                    'Water resistant',
+                                    'Works seamlessly with iPhone'
+                                ],
+                                why: 'If you prefer a larger screen that\'s easier to read and tap, the 44mm model is perfect. It has all the same great features as the 40mm version, just with a bigger display.',
+                                link: 'https://www.apple.com/shop/buy-watch/apple-watch-se'
+                            }
+                        ],
+                        'over300': [
+                            {
+                                name: 'Apple Watch Series 10 (GPS, 42mm)',
+                                price: '$399',
+                                specs: [
+                                    'Largest, brightest display yet',
+                                    'Advanced health features: ECG, blood oxygen',
+                                    'Temperature sensing for health insights',
+                                    'Fall detection and crash detection',
+                                    'Up to 18 hours battery, fast charging',
+                                    'All-day fitness and activity tracking'
+                                ],
+                                why: 'The latest Apple Watch with the most advanced health monitoring features. Perfect if you want the absolute best technology and most comprehensive health tracking Apple offers.',
+                                link: 'https://www.apple.com/shop/buy-watch/apple-watch'
+                            },
+                            {
+                                name: 'Apple Watch SE 3 (Cellular, 40mm)',
+                                price: '$299',
+                                specs: [
+                                    'Make calls without your phone nearby',
+                                    'Emergency SOS even without iPhone',
+                                    'All SE 3 health and safety features',
+                                    'Stream music on the go',
+                                    'Perfect for walks without your phone',
+                                    'Monthly cellular plan required (typically $10/month)'
+                                ],
+                                why: 'The cellular version lets you leave your iPhone at home while still being able to make calls, get notifications, and call for help in emergencies. Great for independence and peace of mind.',
+                                link: 'https://www.apple.com/shop/buy-watch/apple-watch-se'
+                            }
+                        ]
+                    },
+                    android: {
+                        'under100': [],
+                        '100-200': [
+                            {
+                                name: 'Fitbit Versa 4',
+                                price: '$199',
+                                specs: [
+                                    'Built-in GPS for tracking walks and runs',
+                                    'Heart rate and sleep tracking',
+                                    '6+ days of battery life',
+                                    'Call, text, and app notifications',
+                                    '40+ exercise modes',
+                                    'Water resistant to 50 meters'
+                                ],
+                                why: 'The Fitbit Versa 4 offers smartwatch features with exceptional battery life. Perfect if you want comprehensive fitness tracking without daily charging. Works with both iPhone and Android.',
+                                link: 'https://www.amazon.com/Fitbit-Fitness-Smartwatch-Readiness-Tracking/dp/B0B4MWCFV4'
+                            }
+                        ],
+                        '200-300': [
+                            {
+                                name: 'Fitbit Sense 2',
+                                price: '$249',
+                                specs: [
+                                    'Advanced health tracking with ECG',
+                                    'Stress management and body response tracking',
+                                    'Sleep tracking with sleep score',
+                                    '6+ days of battery life',
+                                    'Built-in GPS and heart rate zones',
+                                    'Large, bright AMOLED display'
+                                ],
+                                why: 'The most advanced Fitbit smartwatch with comprehensive health monitoring. Includes stress tracking, ECG, and exceptional battery life. Perfect for serious health monitoring with easy-to-understand insights.',
+                                link: 'https://www.amazon.com/Fitbit-Advanced-Smartwatch-Management-Tracking/dp/B0B4NLWP57'
+                            },
+                            {
+                                name: 'Samsung Galaxy Watch6 (40mm)',
+                                price: '$299',
+                                specs: [
+                                    'Beautiful, large Super AMOLED display',
+                                    'Advanced sleep coaching and tracking',
+                                    'Heart rate, ECG, and body composition',
+                                    '40+ hour battery life',
+                                    'Personalized heart rate zones',
+                                    'Works best with Samsung phones'
+                                ],
+                                why: 'Samsung\'s flagship smartwatch with beautiful design and comprehensive health features. Especially great if you have a Samsung phone, but works with other Android devices too.',
+                                link: 'https://www.samsung.com/us/watches/galaxy-watch6/'
+                            }
+                        ],
+                        'over300': [
+                            {
+                                name: 'Samsung Galaxy Watch6 Classic (43mm)',
+                                price: '$399',
+                                specs: [
+                                    'Premium design with rotating bezel',
+                                    'Larger 43mm display',
+                                    'All Galaxy Watch6 health features',
+                                    'Advanced sleep and fitness tracking',
+                                    'Up to 40 hours battery',
+                                    'Sapphire crystal display - extra durable'
+                                ],
+                                why: 'The premium version with a classic rotating bezel for easier navigation. More durable with sapphire crystal, perfect if you want the best Samsung has to offer.',
+                                link: 'https://www.samsung.com/us/watches/galaxy-watch6/buy/galaxy-watch6-classic-43mm-graphite-lte-sm-r955uzkaxaa/'
+                            }
+                        ]
+                    },
+                    standalone: {
+                        'under100': [],
+                        '100-200': [],
+                        '200-300': [],
+                        'over300': [
+                            {
+                                name: 'Medical Guardian MGMove',
+                                price: '$49.95 + $41.95/month',
+                                specs: [
+                                    'Works without a smartphone',
+                                    '24/7 emergency response button',
+                                    '10-second average response time',
+                                    'Two-way voice calling',
+                                    'GPS location tracking',
+                                    'Fall detection available',
+                                    'Medication reminders',
+                                    'Step counter and health tracking'
+                                ],
+                                why: 'Perfect if safety is your top priority or you don\'t have a smartphone. The MGMove is designed specifically for seniors with easy emergency calling and professional monitoring. Just press the button and speak directly to trained operators.',
+                                link: 'https://www.medicalguardian.com/products/mgmove'
+                            }
+                        ]
+                    }
+                },
+                tracker: {
+                    any: {
+                        'under100': [
+                            {
+                                name: 'Fitbit Inspire 3',
+                                price: '$99',
+                                specs: [
+                                    'Super simple and lightweight',
+                                    '10-day battery life',
+                                    'Heart rate and sleep tracking',
+                                    'Daily step counting',
+                                    'Automatic exercise recognition',
+                                    'Small, comfortable band'
+                                ],
+                                why: 'The Fitbit Inspire 3 is perfect if you want something simple that just tracks the basics. With 10-day battery life, you barely need to think about charging. Great for beginners!',
+                                link: 'https://www.amazon.com/Fitbit-Management-Intensity-Tracking-Included/dp/B0B5FCYMFD'
+                            }
+                        ],
+                        '100-200': [
+                            {
+                                name: 'Fitbit Charge 6',
+                                price: '$159',
+                                specs: [
+                                    'Built-in GPS for tracking walks',
+                                    'Heart rate monitoring',
+                                    '7-day battery life',
+                                    'YouTube Music controls',
+                                    'Google Maps on your wrist',
+                                    'Water resistant'
+                                ],
+                                why: 'The Charge 6 gives you more features than the Inspire 3 while still being easy to use. Built-in GPS means you can track your walks without your phone. Great balance of features and simplicity.',
+                                link: 'https://www.amazon.com/Fitbit-Charge-6-Fitness-Tracker/dp/B0CC66XW96'
+                            }
+                        ],
+                        '200-300': [
+                            {
+                                name: 'Garmin Venu Sq 2',
+                                price: '$249',
+                                specs: [
+                                    'Bright, colorful touchscreen',
+                                    '11-day battery life',
+                                    'Built-in GPS',
+                                    'Comprehensive health tracking',
+                                    'Sleep score and body battery',
+                                    'Preloaded workouts and sports apps'
+                                ],
+                                why: 'Garmin is known for accuracy and battery life. The Venu Sq 2 combines a beautiful screen with incredible battery life and very accurate health tracking. Perfect for active seniors who want detailed data.',
+                                link: 'https://www.amazon.com/Garmin-Smartwatch-All-Day-Monitoring-Tracking/dp/B0B6HS1J6W'
+                            }
+                        ],
+                        'over300': [
+                            {
+                                name: 'Garmin Lily 2',
+                                price: '$249',
+                                specs: [
+                                    'Elegant, small design perfect for smaller wrists',
+                                    '5-day battery life',
+                                    'Health and fitness tracking',
+                                    'Stress tracking and body battery',
+                                    'Beautiful patterned lens',
+                                    'Very lightweight and comfortable'
+                                ],
+                                why: 'The Garmin Lily 2 is designed specifically for people who want something small, elegant, and comfortable. It doesn\'t look like a typical fitness tracker - it looks like a beautiful watch.',
+                                link: 'https://www.garmin.com/en-US/p/882586'
+                            }
+                        ]
+                    }
+                }
+            };
+
+            let selectedProducts;
+
+            if (deviceType === 'smartwatch') {
+                selectedProducts = products.smartwatch[platform][budget];
+
+                // Fallback logic
+                if (!selectedProducts || selectedProducts.length === 0) {
+                    if (budget === 'under100') {
+                        selectedProducts = products.smartwatch[platform]['100-200'];
+                    } else if (budget === '100-200') {
+                        selectedProducts = products.smartwatch[platform]['200-300'];
+                    } else if (budget === '200-300') {
+                        selectedProducts = products.smartwatch[platform]['over300'];
+                    }
+                }
+            } else {
+                selectedProducts = products.tracker.any[budget];
+
+                if (!selectedProducts || selectedProducts.length === 0) {
+                    if (budget === 'under100') {
+                        selectedProducts = products.tracker.any['100-200'];
+                    } else if (budget === '100-200') {
+                        selectedProducts = products.tracker.any['200-300'];
+                    } else if (budget === '200-300') {
+                        selectedProducts = products.tracker.any['over300'];
+                    }
+                }
+            }
+
+            if (!selectedProducts || selectedProducts.length === 0) {
+                return [{
+                    name: 'Budget Recommendation',
+                    price: 'See options',
+                    specs: ['We recommend looking at the next price range up for quality options in this category.'],
+                    why: 'Quality smartwatches and fitness trackers in this exact price range are limited, but moving up just one budget level opens up excellent options.',
+                    link: platform === 'apple' ? 'https://www.apple.com/shop/buy-watch/apple-watch-se' : 'https://www.amazon.com/s?k=fitness+tracker'
+                }];
+            }
+
+            return selectedProducts.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const products = getProducts(rec.deviceType, rec.platform, answers.budget, answers.battery, answers.goal, answers.comfort);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Match!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Our Top Recommendations:</h3>
+            `;
+
+            products.forEach(product => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>Key Features (In Plain English):</h4>
+                            <ul>
+                                ${product.specs.map(spec => `<li>${spec}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${product.why}</p>
+                        </div>
+                        <a href="${product.link}" class="product-link" target="_blank" rel="noopener">View This Product</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const products = getProducts(rec.deviceType, rec.platform, answers.budget, answers.battery, answers.goal, answers.comfort);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Smartwatch/Fitness Tracker Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Products:', 20, y);
+            y += 10;
+
+            products.forEach((product, index) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(product.name + ' - ' + product.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                product.specs.forEach(spec => {
+                    const lines = doc.splitTextToSize('• ' + spec, 170);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 6;
+                });
+
+                y += 5;
+                const whyLines = doc.splitTextToSize('Why: ' + product.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + product.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('smartwatch-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Knowledge base and resources for technology help. Learn about scam protection, device setup, internet, passwords, and more.">
+    <title>Resources | SmartSass Tech</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth-init.js"></script>
+</head>
+
+<body>
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="search-container">
+                    <input type="search" class="search-input" placeholder="Search" aria-label="Search">
+                </div>
+
+                <div class="logo-container">
+                    <a href="index.html" aria-label="SmartSass Tech Home">
+                        <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                            class="logo">
+                    </a>
+                </div>
+
+                <div class="header-actions">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="booking.html" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Main navigation" class="sticky-nav">
+        <div class="container">
+            <ul class="nav-tabs">
+                <li class="nav-tab"><a href="index.html">Home</a></li>
+                <li class="nav-tab active"><a href="resources.html">Resources</a></li>
+                <li class="nav-tab"><a href="about.html">About</a></li>
+                <li class="nav-tab"><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Wave Divider -->
+    <div class="wave-divider">
+        <svg viewBox="0 0 1200 100" preserveAspectRatio="none">
+            <path d="M0,50 Q300,0 600,50 T1200,50 L1200,0 L0,0 Z" fill="#2F4168" />
+        </svg>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <section class="section">
+            <div class="container">
+                <h1 class="text-center mb-xl">Knowledge Base Categories</h1>
+
+                <!-- Resource Cards -->
+                <div class="card-grid" id="resource-grid">
+                    <div class="card" data-category="security">
+                        <div class="card-icon">🔒</div>
+                        <h3 class="card-title">Scam Protection & Online Safety</h3>
+                        <p class="card-description">Learn how to identify scams, protect yourself online, and stay safe
+                            while browsing the internet.</p>
+                    </div>
+
+                    <div class="card" data-category="setup">
+                        <div class="card-icon">📱</div>
+                        <h3 class="card-title">Device Setup, Updates & Troubleshooting</h3>
+                        <p class="card-description">Get help setting up new devices, installing updates, and fixing
+                            common problems with your tech.</p>
+                    </div>
+
+                    <div class="card" data-category="internet">
+                        <div class="card-icon">📶</div>
+                        <h3 class="card-title">Internet & WiFi</h3>
+                        <p class="card-description">Connect to WiFi, troubleshoot internet issues, and optimize your
+                            home network.</p>
+                    </div>
+
+                    <div class="card" data-category="passwords">
+                        <div class="card-icon">🔑</div>
+                        <h3 class="card-title">Passwords & Account Security</h3>
+                        <p class="card-description">Create strong passwords, manage them securely, and protect your
+                            online accounts.</p>
+                    </div>
+
+                    <div class="card" data-category="video-calls">
+                        <div class="card-icon">📹</div>
+                        <h3 class="card-title">Video Calls & Communication</h3>
+                        <p class="card-description">Master Zoom, FaceTime, and other video calling platforms to stay
+                            connected with loved ones.</p>
+                    </div>
+
+                    <div class="card" data-category="photos">
+                        <div class="card-icon">📸</div>
+                        <h3 class="card-title">Photo Organization & Cloud Storage</h3>
+                        <p class="card-description">Organize your photos, use iCloud and Google Photos, and keep your
+                            memories safe.</p>
+                    </div>
+
+                    <div class="card" data-category="email">
+                        <div class="card-icon">✉️</div>
+                        <h3 class="card-title">Email Setup & Management</h3>
+                        <p class="card-description">Set up email accounts, organize your inbox, and communicate
+                            effectively.</p>
+                    </div>
+
+                    <div class="card" data-category="banking">
+                        <div class="card-icon">🏦</div>
+                        <h3 class="card-title">Online Banking & Shopping</h3>
+                        <p class="card-description">Safely manage your finances online and shop securely on the
+                            internet.</p>
+                    </div>
+
+                    <div class="card" data-category="printers">
+                        <div class="card-icon">🖨️</div>
+                        <h3 class="card-title">Printers & Printing</h3>
+                        <p class="card-description">Set up printers, troubleshoot printing issues, and scan documents.
+                        </p>
+                    </div>
+
+                    <div class="card" data-category="smart-tv">
+                        <div class="card-icon">📺</div>
+                        <h3 class="card-title">Smart TV & Streaming</h3>
+                        <p class="card-description">Set up streaming services, use your smart TV, and watch your
+                            favorite shows.</p>
+                    </div>
+
+                    <div class="card" data-category="software">
+                        <div class="card-icon">💻</div>
+                        <h3 class="card-title">Software & Apps</h3>
+                        <p class="card-description">Download and use apps, update software, and learn new programs.</p>
+                    </div>
+
+                    <div class="card" data-category="basics">
+                        <div class="card-icon">📚</div>
+                        <h3 class="card-title">Digital Skills Basics</h3>
+                        <p class="card-description">Learn essential computer and smartphone skills from the ground up.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <!-- Footer Top: Brand & Business Info -->
+            <div class="footer-top-info">
+                <div class="footer-logo-container">
+                    <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                        class="footer-logo">
+                </div>
+                <div class="footer-business-details">
+                    <h3>SMARTSASS TECH</h3>
+                    <p>Serving the Rochester, NY area</p>
+                    <p><strong>(585) 210-9758</strong></p>
+                    <p><a href="mailto:smartsasstech@gmail.com" class="footer-email">smartsasstech@gmail.com</a></p>
+                </div>
+            </div>
+
+            <!-- Footer Bottom: Link Columns -->
+            <div class="footer-content">
+                <!-- Account Links -->
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Account Settings</a></li>
+                        <li><a href="#">My Bookings</a></li>
+                        <li><a href="#">My Subscriptions</a></li>
+                        <li><a href="#">My Rewards</a></li>
+                        <li><a href="#">Plans & Pricing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quizzes -->
+                <div class="footer-section">
+                    <h3>Quizzes</h3>
+                    <ul class="footer-links">
+                        <li><a href="quizes/computer-quiz.html">Computer Quiz</a></li>
+                        <li><a href="quizes/smartwatch-quiz.html">Wearable Quiz</a></li>
+                        <li><a href="quizes/phone-quiz.html">Phone Quiz</a></li>
+                        <li><a href="quizes/streaming-quiz.html">Streaming Quiz</a></li>
+                        <li><a href="quizes/security-camera-quiz.html">Security Cam Quiz</a></li>
+                        <li><a href="quizes/printer-quiz.html">Printer Quiz</a></li>
+                        <li><a href="quizes/internet-provider-quiz.html">Internet Quiz</a></li>
+                        <li><a href="quizes/keyboard-mouse-quiz.html">Keyboard Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="resources.html">Resources</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="booking.html">Services</a></li>
+                        <li><a href="booking.html">Booking Calendar</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartSass Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

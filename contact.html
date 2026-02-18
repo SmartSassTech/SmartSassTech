@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Contact SmartSass Tech for technology support in Rochester, NY. Call (585) 210-9758 or email smartsasstech@gmail.com">
+    <title>Contact Us | SmartSass Tech</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth-init.js"></script>
+</head>
+
+<body>
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="search-container">
+                    <input type="search" class="search-input" placeholder="Search" aria-label="Search">
+                </div>
+
+                <div class="logo-container">
+                    <a href="index.html" aria-label="SmartSass Tech Home">
+                        <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                            class="logo">
+                    </a>
+                </div>
+
+                <div class="header-actions">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="booking.html" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Main navigation" class="sticky-nav">
+        <div class="container">
+            <ul class="nav-tabs">
+                <li class="nav-tab"><a href="index.html">Home</a></li>
+                <li class="nav-tab"><a href="resources.html">Resources</a></li>
+                <li class="nav-tab"><a href="about.html">About</a></li>
+                <li class="nav-tab active"><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <section class="section">
+            <div class="container">
+                <h1 class="text-center mb-xl">Get In Touch</h1>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-xl);">
+                    <!-- Contact Info -->
+                    <div
+                        style="background-color: var(--color-white); padding: var(--spacing-xl); border-radius: var(--radius-lg);">
+                        <h2 style="margin-bottom: var(--spacing-lg);">Contact Information</h2>
+
+                        <div style="margin-bottom: var(--spacing-lg);">
+                            <h3
+                                style="font-size: var(--font-size-large); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                📞 Phone
+                            </h3>
+                            <p style="font-size: var(--font-size-large); margin-left: 32px;">
+                                <a href="tel:5852109758" style="color: var(--color-primary); font-weight: 600;">(585)
+                                    210-9758</a>
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: var(--spacing-lg);">
+                            <h3
+                                style="font-size: var(--font-size-large); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                ✉️ Email
+                            </h3>
+                            <p style="font-size: var(--font-size-large); margin-left: 32px;">
+                                <a href="mailto:smartsasstech@gmail.com"
+                                    style="color: var(--color-primary); font-weight: 600;">smartsasstech@gmail.com</a>
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: var(--spacing-lg);">
+                            <h3
+                                style="font-size: var(--font-size-large); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                📍 Service Area
+                            </h3>
+                            <p style="font-size: var(--font-size-large); margin-left: 32px;">
+                                Rochester, NY and surrounding areas
+                            </p>
+                        </div>
+
+                        <div
+                            style="margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 2px solid var(--color-border);">
+                            <h3 style="margin-bottom: var(--spacing-md);">Prefer to Book Online?</h3>
+                            <a href="booking.html" class="btn btn-primary">Book a Session</a>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div
+                        style="background-color: var(--color-white); padding: var(--spacing-xl); border-radius: var(--radius-lg);">
+                        <h2 style="margin-bottom: var(--spacing-lg);">Send Us a Message</h2>
+
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label for="name" class="form-label">Your Name *</label>
+                                <input type="text" id="name" name="name" class="form-input" required
+                                    aria-required="true">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" id="email" name="email" class="form-input" required
+                                    aria-required="true">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea id="message" name="message" class="form-textarea" required
+                                    aria-required="true" placeholder="Tell us how we can help you..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+
+                            <div id="form-message"
+                                style="margin-top: var(--spacing-md); padding: var(--spacing-sm); border-radius: var(--radius-sm); display: none;">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <!-- Footer Top: Brand & Business Info -->
+            <div class="footer-top-info">
+                <div class="footer-logo-container">
+                    <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                        class="footer-logo">
+                </div>
+                <div class="footer-business-details">
+                    <h3>SMARTSASS TECH</h3>
+                    <p>Serving the Rochester, NY area</p>
+                    <p><strong>(585) 210-9758</strong></p>
+                    <p><a href="mailto:smartsasstech@gmail.com" class="footer-email">smartsasstech@gmail.com</a></p>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <!-- Footer Bottom: Link Columns -->
+            <div class="footer-content">
+                <!-- Account Links -->
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Account Settings</a></li>
+                        <li><a href="#">My Bookings</a></li>
+                        <li><a href="#">My Subscriptions</a></li>
+                        <li><a href="#">My Rewards</a></li>
+                        <li><a href="#">Plans & Pricing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quizzes -->
+                <div class="footer-section">
+                    <h3>Quizzes</h3>
+                    <ul class="footer-links">
+                        <li><a href="quizes/computer-quiz.html">Computer Quiz</a></li>
+                        <li><a href="quizes/smartwatch-quiz.html">Wearable Quiz</a></li>
+                        <li><a href="quizes/phone-quiz.html">Phone Quiz</a></li>
+                        <li><a href="quizes/streaming-quiz.html">Streaming Quiz</a></li>
+                        <li><a href="quizes/security-camera-quiz.html">Security Cam Quiz</a></li>
+                        <li><a href="quizes/printer-quiz.html">Printer Quiz</a></li>
+                        <li><a href="quizes/internet-provider-quiz.html">Internet Quiz</a></li>
+                        <li><a href="quizes/keyboard-mouse-quiz.html">Keyboard Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="resources.html">Resources</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="booking.html">Services</a></li>
+                        <li><a href="booking.html">Booking Calendar</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartSass Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

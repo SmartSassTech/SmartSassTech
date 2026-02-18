@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Learn about TV streaming services and devices. Get expert help with Roku, Fire TV, Apple TV, and streaming subscriptions from SmartSass Tech in Rochester, NY.">
+    <title>TV & Streaming | SmartSass Tech</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth-init.js"></script>
+</head>
+
+<body>
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="search-container">
+                    <input type="search" class="search-input" placeholder="Search" aria-label="Search">
+                </div>
+
+                <div class="logo-container">
+                    <a href="index.html" aria-label="SmartSass Tech Home">
+                        <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                            class="logo">
+                    </a>
+                </div>
+
+                <div class="header-actions">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="booking.html" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Main navigation" class="sticky-nav">
+        <div class="container">
+            <ul class="nav-tabs">
+                <li class="nav-tab"><a href="index.html">Home</a></li>
+                <li class="nav-tab"><a href="resources.html">Resources</a></li>
+                <li class="nav-tab"><a href="about.html">About</a></li>
+                <li class="nav-tab"><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <section class="hero section">
+            <div class="container">
+                <h1 class="hero-title">TV & Streaming</h1>
+                <a href="quizes/streaming-quiz.html" class="btn btn-primary">Take Streaming Service Match Quiz</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">What Streaming Service is Right For You?</h2>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3 class="card-title">Streaming Services</h3>
+                        <p class="card-description">
+                            Services like Netflix, Hulu, Disney+, and Amazon Prime let you watch shows and movies
+                            on demand. No cable required – just an internet connection! Many offer free trials so
+                            you can see what you like.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Streaming Devices</h3>
+                        <p class="card-description">
+                            Devices like Roku, Fire TV, Apple TV, and Chromecast connect to your TV and let you
+                            access streaming services. Smart TVs have these apps built in, so you might not need
+                            a separate device!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <p class="cta-text">
+                        <strong>TIP:</strong> Start with one streaming service and see how you like it. Many people
+                        find that 2-3 services give them all the content they want without breaking the bank!
+                    </p>
+                    <h3>Perfect Streaming Match</h3>
+                    <p>Confused about which streaming services and devices are right for you? Take our quiz to get
+                        personalized recommendations.</p>
+                    <a href="quizes/streaming-quiz.html" class="btn btn-primary">Take Quiz</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- What We Help With -->
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">Specific TV & Streaming Help We Provide</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-icon">📺</div>
+                        <h3 class="card-title">Streaming Device Setup</h3>
+                        <p class="card-description">We'll connect your Roku, Fire TV, or Apple TV and make sure it's
+                            talking to your television correctly.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🍿</div>
+                        <h3 class="card-title">App Login & Activation</h3>
+                        <p class="card-description">Stop typing with a remote! We'll help you log into Netflix, Hulu,
+                            and Disney+ and show you how to find your shows.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">✂️</div>
+                        <h3 class="card-title">"Cutting the Cord" Help</h3>
+                        <p class="card-description">Tired of high cable bills? We'll help you find the right streaming
+                            services so you can finally ditch the cable box.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📶</div>
+                        <h3 class="card-title">Fixing Buffering Issues</h3>
+                        <p class="card-description">Is your show constantly pausing to load? We'll troubleshoot your
+                            connection to ensure smooth, clear video.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔄</div>
+                        <h3 class="card-title">Managing Subscriptions</h3>
+                        <p class="card-description">Learn how to easily sign up for, cancel, or change your streaming
+                            services so you're only paying for what you watch.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔊</div>
+                        <h3 class="card-title">Sound & Picture Settings</h3>
+                        <p class="card-description">We'll adjust your TV and streaming settings to make sure you're
+                            getting the best possible sound and picture.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">Official Support & Resources</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title"><a href="https://help.netflix.com" target="_blank">Netflix Support</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://help.hulu.com" target="_blank">Hulu Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://help.disneyplus.com" target="_blank">Disney+
+                                Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a
+                                href="https://www.amazon.com/gp/help/customer/display.html?nodeId=GUVGB3QMQRYRERYW"
+                                target="_blank">Amazon Prime Video Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.roku.com" target="_blank">Roku Support</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.apple.com/apple-tv" target="_blank">Apple TV
+                                Support</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section section">
+            <div class="container">
+                <h2 class="mb-xl">Need a Hand? We're Here For You!</h2>
+                <p class="cta-text">
+                    If you're stuck, don't worry -- you don't have to figure it out alone.
+                    We'll walk you through any issue with patience and clear instructions.
+                    Whether it's a simple setup or frustrating error, we've got your back.
+                </p>
+                <a href="booking.html" class="btn btn-primary btn-large">Book a Personal Session</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <!-- Footer Top: Brand & Business Info -->
+            <div class="footer-top-info">
+                <div class="footer-logo-container">
+                    <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                        class="footer-logo">
+                </div>
+                <div class="footer-business-details">
+                    <h3>SMARTSASS TECH</h3>
+                    <p>Serving the Rochester, NY area</p>
+                    <p><strong>(585) 210-9758</strong></p>
+                    <p><a href="mailto:smartsasstech@gmail.com" class="footer-email">smartsasstech@gmail.com</a></p>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <!-- Footer Bottom: Link Columns -->
+            <div class="footer-content">
+                <!-- Account Links -->
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Account Settings</a></li>
+                        <li><a href="#">My Bookings</a></li>
+                        <li><a href="#">My Subscriptions</a></li>
+                        <li><a href="#">My Rewards</a></li>
+                        <li><a href="#">Plans & Pricing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quizzes -->
+                <div class="footer-section">
+                    <h3>Quizzes</h3>
+                    <ul class="footer-links">
+                        <li><a href="quizes/computer-quiz.html">Computer Quiz</a></li>
+                        <li><a href="quizes/smartwatch-quiz.html">Wearable Quiz</a></li>
+                        <li><a href="quizes/phone-quiz.html">Phone Quiz</a></li>
+                        <li><a href="quizes/streaming-quiz.html">Streaming Quiz</a></li>
+                        <li><a href="quizes/security-camera-quiz.html">Security Cam Quiz</a></li>
+                        <li><a href="quizes/printer-quiz.html">Printer Quiz</a></li>
+                        <li><a href="quizes/internet-provider-quiz.html">Internet Quiz</a></li>
+                        <li><a href="quizes/keyboard-mouse-quiz.html">Keyboard Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="resources.html">Resources</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="booking.html">Services</a></li>
+                        <li><a href="booking.html">Booking Calendar</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartSass Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>

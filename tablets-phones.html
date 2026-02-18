@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Learn about tablets and phones. Get expert help with your iPad, iPhone, Android device, or tablet from SmartSass Tech in Rochester, NY.">
+    <title>Tablets & Phones | SmartSass Tech</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/auth-init.js"></script>
+</head>
+
+<body>
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="search-container">
+                    <input type="search" class="search-input" placeholder="Search" aria-label="Search">
+                </div>
+
+                <div class="logo-container">
+                    <a href="index.html" aria-label="SmartSass Tech Home">
+                        <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                            class="logo">
+                    </a>
+                </div>
+
+                <div class="header-actions">
+                    <a href="login.html" class="btn btn-secondary">Log In</a>
+                    <a href="booking.html" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav aria-label="Main navigation" class="sticky-nav">
+        <div class="container">
+            <ul class="nav-tabs">
+                <li class="nav-tab"><a href="index.html">Home</a></li>
+                <li class="nav-tab"><a href="resources.html">Resources</a></li>
+                <li class="nav-tab"><a href="about.html">About</a></li>
+                <li class="nav-tab"><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <section class="hero section">
+            <div class="container">
+                <h1 class="hero-title">Tablets & Phones</h1>
+                <a href="quizes/phone-quiz.html" class="btn btn-primary">Take Phone Match Quiz</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">What's the Difference Between a Tablet & Phone?</h2>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3 class="card-title">Tablet</h3>
+                        <p class="card-description">
+                            Larger screen (typically 7-13 inches), great for reading, watching videos, and browsing.
+                            Some tablets can make calls, but most focus on apps and media consumption.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="card-title">Phone</h3>
+                        <p class="card-description">
+                            Portable, fits in your pocket, makes calls and texts. Modern smartphones do everything:
+                            photos, videos, apps, navigation, and staying connected on the go.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <p class="cta-text">
+                        <strong>TIP:</strong> If you want something easy to carry everywhere for calls and quick tasks,
+                        go with a phone. If you prefer a bigger screen for reading or watching videos at home,
+                        consider a tablet!
+                    </p>
+                    <h3>Perfect Phone Match</h3>
+                    <p>Finding the right phone or tablet can be overwhelming. Take our quiz to discover the perfect
+                        device for your needs.</p>
+                    <a href="quizes/phone-quiz.html" class="btn btn-primary">Take Quiz</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- What We Help With -->
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">Specific Phone & Tablet Help We Provide</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-icon">📱</div>
+                        <h3 class="card-title">iPhone & Android Setup</h3>
+                        <p class="card-description">Bought a new phone? We'll help you transfer your contacts, photos,
+                            and apps from your old device.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💬</div>
+                        <h3 class="card-title">Mastering Texting & Email</h3>
+                        <p class="card-description">Learn how to send photos, use emojis, and manage your emails easily
+                            on your mobile device.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📹</div>
+                        <h3 class="card-title">Stay Connected via Video</h3>
+                        <p class="card-description">We'll show you how to use FaceTime, Zoom, or WhatsApp to see and
+                            talk to your family anytime.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📸</div>
+                        <h3 class="card-title">Camera & Photo Skills</h3>
+                        <p class="card-description">Learn how to take great photos, find them later, and share them with
+                            your loved ones.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🧩</div>
+                        <h3 class="card-title">App Instruction</h3>
+                        <p class="card-description">Want to use Uber, MyChart, or Facebook? We'll walk you through any
+                            app until you feel like a pro.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">☁️</div>
+                        <h3 class="card-title">Cloud Storage & Backups</h3>
+                        <p class="card-description">Never worry about losing your memories. We'll set up iCloud or
+                            Google Photos to keep them safe.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="mb-xl text-center">Official Support & Resources</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.apple.com/iphone" target="_blank">Apple iPhone
+                                Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.apple.com/ipad" target="_blank">Apple iPad
+                                Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://www.samsung.com/us/support/mobile/"
+                                target="_blank">Samsung Mobile Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.google.com/android" target="_blank">Android
+                                Support</a></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title"><a href="https://support.google.com/pixelphone" target="_blank">Google
+                                Pixel Support</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section section">
+            <div class="container">
+                <h2 class="mb-xl">Need a Hand? We're Here For You!</h2>
+                <p class="cta-text">
+                    If you're stuck, don't worry -- you don't have to figure it out alone.
+                    We'll walk you through any issue with patience and clear instructions.
+                    Whether it's a simple setup or frustrating error, we've got your back.
+                </p>
+                <a href="booking.html" class="btn btn-primary btn-large">Book a Personal Session</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <!-- Footer Top: Brand & Business Info -->
+            <div class="footer-top-info">
+                <div class="footer-logo-container">
+                    <img src="assets/images/SST Logo Black & Taupe No Background.svg" alt="SmartSass Tech"
+                        class="footer-logo">
+                </div>
+                <div class="footer-business-details">
+                    <h3>SMARTSASS TECH</h3>
+                    <p>Serving the Rochester, NY area</p>
+                    <p><strong>(585) 210-9758</strong></p>
+                    <p><a href="mailto:smartsasstech@gmail.com" class="footer-email">smartsasstech@gmail.com</a></p>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <!-- Footer Bottom: Link Columns -->
+            <div class="footer-content">
+                <!-- Account Links -->
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Account Settings</a></li>
+                        <li><a href="#">My Bookings</a></li>
+                        <li><a href="#">My Subscriptions</a></li>
+                        <li><a href="#">My Rewards</a></li>
+                        <li><a href="#">Plans & Pricing</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quizzes -->
+                <div class="footer-section">
+                    <h3>Quizzes</h3>
+                    <ul class="footer-links">
+                        <li><a href="quizes/computer-quiz.html">Computer Quiz</a></li>
+                        <li><a href="quizes/smartwatch-quiz.html">Wearable Quiz</a></li>
+                        <li><a href="quizes/phone-quiz.html">Phone Quiz</a></li>
+                        <li><a href="quizes/streaming-quiz.html">Streaming Quiz</a></li>
+                        <li><a href="quizes/security-camera-quiz.html">Security Cam Quiz</a></li>
+                        <li><a href="quizes/printer-quiz.html">Printer Quiz</a></li>
+                        <li><a href="quizes/internet-provider-quiz.html">Internet Quiz</a></li>
+                        <li><a href="quizes/keyboard-mouse-quiz.html">Keyboard Quiz</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="resources.html">Resources</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="booking.html">Services</a></li>
+                        <li><a href="booking.html">Booking Calendar</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartSass Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>
