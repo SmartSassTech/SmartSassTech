@@ -364,10 +364,8 @@ a:focus-visible {
 }
 
 .hero-title {
-  font-size: var(--font-size-hero) !important;
   margin-bottom: var(--spacing-md);
   color: var(--color-primary);
-  line-height: 1.1;
 }
 
 .hero-subtitle {
@@ -400,25 +398,24 @@ a:focus-visible {
 }
 
 .device-slide {
-  flex: 0 0 calc(40% - var(--spacing-md));
-  min-width: 280px;
+  flex: 0 0 calc(33.333% - var(--spacing-md));
+  min-width: 200px;
   text-decoration: none;
   display: flex;
 }
 
 .device-slide-card {
-  background-color: var(--color-white);
+  background-color: var(--color-card-bg);
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow: var(--shadow-sm);
-  height: 420px;
+  height: 400px;
+  /* Increased height */
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
 }
 
 .device-slide-card:hover {
@@ -427,9 +424,9 @@ a:focus-visible {
 }
 
 .device-slide-card img {
-  width: 90%;
-  height: 90%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 

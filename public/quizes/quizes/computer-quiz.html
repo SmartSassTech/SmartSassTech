@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Computer - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Computer</h1>
+            <p>Let us help you choose the right computer for your needs</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions to help find the perfect computer for you. This will only take a
+                    minute!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Primary Use -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What will you mainly use this computer for?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'family')">Staying in touch with family (email, video
+                        calls)</div>
+                    <div class="option" onclick="selectOption(1, 'browsing')">Browsing the web & watching videos</div>
+                    <div class="option" onclick="selectOption(1, 'photos')">Managing photos & documents</div>
+                    <div class="option" onclick="selectOption(1, 'banking')">Online banking & shopping</div>
+                    <div class="option" onclick="selectOption(1, 'all')">All of the above</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Portability -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">Where will you use your computer most?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'home')">Mainly at home in one spot</div>
+                    <div class="option" onclick="selectOption(2, 'around')">Move it around the house</div>
+                    <div class="option" onclick="selectOption(2, 'travel')">Take it outside the home regularly</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Comfort Level -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">Which best describes you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'new')">New to computers / want something very simple
+                    </div>
+                    <div class="option" onclick="selectOption(3, 'basics')">Comfortable with basics, want easy to use
+                    </div>
+                    <div class="option" onclick="selectOption(3, 'confident')">Pretty confident with technology</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Apple Familiarity -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">Do you currently use any Apple devices?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'yes')">Yes, I have an iPhone or iPad</div>
+                    <div class="option" onclick="selectOption(4, 'no')">No, I use Android or don't have a smartphone
+                    </div>
+                    <div class="option" onclick="selectOption(4, 'either')">I'm open to either</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your comfortable budget range?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'under500')">Under $500</div>
+                    <div class="option" onclick="selectOption(5, '500-800')">$500 - $800</div>
+                    <div class="option" onclick="selectOption(5, '800-1200')">$800 - $1,200</div>
+                    <div class="option" onclick="selectOption(5, 'over1200')">Over $1,200</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Screen Size -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">How important is a larger screen?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'very')">Very important - I want a big, easy-to-read
+                        screen</div>
+                    <div class="option" onclick="selectOption(6, 'moderate')">Moderately important</div>
+                    <div class="option" onclick="selectOption(6, 'not')">Not important - compact is fine</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            primaryUse: null,
+            portability: null,
+            comfort: null,
+            apple: null,
+            budget: null,
+            screenSize: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            // Reset all answers
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            // Hide all questions
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                // Deselect all options
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            // Show start screen
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            // Remove selected class from all options in this question
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            // Add selected class to clicked option
+            event.target.classList.add('selected');
+
+            // Store answer
+            const keys = ['primaryUse', 'portability', 'comfort', 'apple', 'budget', 'screenSize'];
+            answers[keys[questionNum - 1]] = value;
+
+            // Enable next button
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let deviceType = '';
+            let platform = '';
+            let reasons = [];
+
+            // Determine device type (desktop vs laptop)
+            if (answers.portability === 'home') {
+                deviceType = 'desktop';
+                reasons.push('A desktop is perfect since you\'ll mainly use it in one spot at home');
+            } else if (answers.portability === 'travel') {
+                deviceType = 'laptop';
+                reasons.push('A laptop gives you the portability you need to take it with you');
+            } else {
+                if (answers.screenSize === 'very') {
+                    deviceType = 'desktop';
+                    reasons.push('A desktop will give you the large screen you want for comfortable viewing');
+                } else {
+                    deviceType = 'laptop';
+                    reasons.push('A laptop offers flexibility to move around your home while still being easy to use');
+                }
+            }
+
+            // Determine platform (Apple vs Windows)
+            if (answers.apple === 'yes') {
+                platform = 'apple';
+                reasons.push('Since you already use an iPhone or iPad, an Apple computer will work seamlessly with your devices');
+            } else if (answers.comfort === 'new' || answers.comfort === 'basics') {
+                if (answers.apple === 'no') {
+                    platform = 'windows';
+                    reasons.push('Windows computers are familiar, affordable, and perfect for your everyday needs');
+                } else {
+                    platform = 'windows';
+                    reasons.push('Windows offers great value and is easy to learn for essential tasks');
+                }
+            } else {
+                if (answers.budget === 'over1200') {
+                    platform = 'apple';
+                    reasons.push('Your budget allows for Apple\'s premium quality and long-lasting performance');
+                } else {
+                    platform = 'windows';
+                    reasons.push('Windows gives you excellent features at a great price point');
+                }
+            }
+
+            // Add comfort-specific reasons
+            if (answers.comfort === 'new') {
+                if (platform === 'apple') {
+                    reasons.push('Apple computers are known for their simple, intuitive interface - perfect for beginners');
+                } else {
+                    reasons.push('Modern Windows computers are designed to be user-friendly and easy to learn');
+                }
+            }
+
+            // Add screen size reason
+            if (answers.screenSize === 'very' && deviceType === 'desktop') {
+                reasons.push('Desktop computers can have large 24" monitors that make everything easy to see');
+            } else if (answers.screenSize === 'very' && deviceType === 'laptop') {
+                reasons.push('We\'ll recommend laptops with 15.6" or larger screens for comfortable viewing');
+            }
+
+            return {
+                deviceType,
+                platform,
+                reasons,
+                recommendation: `${platform === 'apple' ? 'Apple' : 'Windows'} ${deviceType === 'desktop' ? 'Desktop' : 'Laptop'}`
+            };
+        }
+
+        function getProducts(deviceType, platform, budget, screenSize) {
+            const products = {
+                laptop: {
+                    apple: {
+                        'under500': [],
+                        '500-800': [
+                            {
+                                name: 'MacBook Air M3 (13-inch, Refurbished)',
+                                price: '$699',
+                                specs: [
+                                    '13.6-inch Retina display - crystal clear and easy to read',
+                                    'All-day battery life (up to 18 hours)',
+                                    'Very lightweight at just 2.7 pounds',
+                                    'Works perfectly with your iPhone and iPad'
+                                ],
+                                why: 'This is an excellent value for a MacBook. While it\'s a previous generation (M3 instead of M4), it\'s still incredibly fast, easy to use, and will last for many years. Perfect for video calls, web browsing, and staying connected.',
+                                link: '[https://www.bestbuy.com/site/macbooks/macbook-air/pcmcat378600050008.c?id=pcmcat378600050008](https://www.bestbuy.com/site/macbooks/macbook-air/pcmcat378600050008.c?id=pcmcat378600050008)'
+                            }
+                        ],
+                        '800-1200': [
+                            {
+                                name: 'MacBook Air M3 (13-inch, 16GB RAM)',
+                                price: '$1,099',
+                                specs: [
+                                    '13.6-inch Retina display with brilliant colors',
+                                    'M3 chip - fast and efficient',
+                                    '16GB memory for smooth multitasking',
+                                    '512GB storage for all your photos and files',
+                                    'All-day battery life'
+                                ],
+                                why: 'This is the sweet spot for a MacBook Air. The upgraded memory ensures it will stay fast for years, and the larger storage means plenty of room for photos, videos, and documents. Integrates beautifully with iPhone and iPad.',
+                                link: '[https://www.bestbuy.com/site/apple-macbook-air-13-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8JKLK/6594447.p?skuId=6594447](https://www.bestbuy.com/site/apple-macbook-air-13-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8JKLK/6594447.p?skuId=6594447)'
+                            },
+                            {
+                                name: 'MacBook Air M3 (15-inch)',
+                                price: '$1,099',
+                                specs: [
+                                    '15.3-inch Retina display - larger screen, easier to see',
+                                    'M3 chip for excellent performance',
+                                    '16GB memory',
+                                    '256GB storage',
+                                    'Still thin and portable'
+                                ],
+                                why: 'If you want the bigger screen for easier reading and viewing, this 15-inch model is perfect. It\'s still lightweight enough to carry around but gives you much more comfortable screen space.',
+                                link: '[https://www.bestbuy.com/site/apple-macbook-air-15-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8J5P9/6594448.p?skuId=6594448](https://www.bestbuy.com/site/apple-macbook-air-15-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8J5P9/6594448.p?skuId=6594448)'
+                            }
+                        ],
+                        'over1200': [
+                            {
+                                name: 'MacBook Air M4 (13-inch)',
+                                price: '$1,299',
+                                specs: [
+                                    '13.6-inch Retina display',
+                                    'Latest M4 chip - fastest ever',
+                                    '16GB memory',
+                                    '256GB storage',
+                                    'All-day battery life',
+                                    'Latest Apple technology'
+                                ],
+                                why: 'This is the newest MacBook Air with Apple\'s latest M4 chip. It\'s incredibly fast, will last for many years, and includes all of Apple\'s newest features. The best choice if you want the latest technology.',
+                                link: '[https://www.apple.com/shop/buy-mac/macbook-air/13-inch-m4](https://www.apple.com/shop/buy-mac/macbook-air/13-inch-m4)'
+                            },
+                            {
+                                name: 'MacBook Air M3 (15-inch, 512GB)',
+                                price: '$1,299',
+                                specs: [
+                                    '15.3-inch Retina display - large and easy to read',
+                                    'M3 chip',
+                                    '16GB memory',
+                                    '512GB storage - plenty of space',
+                                    'Thin and lightweight design'
+                                ],
+                                why: 'This gives you the larger 15-inch screen that\'s easier on the eyes, plus double the storage space for all your photos, videos, and files. A wonderful all-around choice.',
+                                link: '[https://www.bestbuy.com/site/apple-macbook-air-15-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8J5P9/6594448.p?skuId=6594448](https://www.bestbuy.com/site/apple-macbook-air-15-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8J5P9/6594448.p?skuId=6594448)'
+                            },
+                            {
+                                name: 'MacBook Air M4 (15-inch)',
+                                price: '$1,499',
+                                specs: [
+                                    '15.3-inch Retina display',
+                                    'Latest M4 chip',
+                                    '16GB memory',
+                                    '256GB storage',
+                                    'Larger screen for comfortable viewing'
+                                ],
+                                why: 'The combination of the latest M4 chip and the larger 15-inch screen. Perfect if you want the newest technology with a bigger, easier-to-read display.',
+                                link: '[https://www.apple.com/shop/buy-mac/macbook-air/15-inch-m4](https://www.apple.com/shop/buy-mac/macbook-air/15-inch-m4)'
+                            }
+                        ]
+                    },
+                    windows: {
+                        'under500': [
+                            {
+                                name: 'HP Pavilion 15.6" Laptop',
+                                price: '$449',
+                                specs: [
+                                    '15.6-inch Full HD screen',
+                                    'Intel Core i3 processor',
+                                    '16GB memory',
+                                    '512GB storage',
+                                    'Windows 11',
+                                    'Backlit keyboard'
+                                ],
+                                why: 'Excellent value with a big screen and plenty of memory for multitasking. The large keyboard makes typing easy, and it has more than enough power for video calls, web browsing, and everyday tasks.',
+                                link: '[https://www.amazon.com/HP-Pavilion-Computer-Fingerprint-Microsoft/dp/B0FPXT5L4T](https://www.amazon.com/HP-Pavilion-Computer-Fingerprint-Microsoft/dp/B0FPXT5L4T)'
+                            },
+                            {
+                                name: 'Acer Aspire 3',
+                                price: '$399',
+                                specs: [
+                                    '15.6-inch Full HD display',
+                                    'Intel processor',
+                                    '8GB memory',
+                                    '256GB storage',
+                                    'Windows 11 Home'
+                                ],
+                                why: 'A reliable, budget-friendly choice that handles all essential tasks well. Great for beginners who want a straightforward, no-fuss laptop.',
+                                link: '[https://www.bestbuy.com/site/laptops/acer-laptops/pcmcat247400050004.c?id=pcmcat247400050004](https://www.bestbuy.com/site/laptops/acer-laptops/pcmcat247400050004.c?id=pcmcat247400050004)'
+                            }
+                        ],
+                        '500-800': [
+                            {
+                                name: 'HP Pavilion 15.6" Touchscreen Laptop',
+                                price: '$599',
+                                specs: [
+                                    '15.6-inch Full HD touchscreen',
+                                    'Intel Core i7 processor',
+                                    '16GB memory',
+                                    '512GB storage',
+                                    'Windows 11 Pro',
+                                    'Backlit keyboard for easy nighttime use'
+                                ],
+                                why: 'This laptop offers exceptional value with a powerful processor, touchscreen capability, and plenty of memory. The large screen is easy to read, and Windows 11 Pro includes extra features for security and productivity.',
+                                link: '[https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0G4V9NQC4](https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0G4V9NQC4)'
+                            },
+                            {
+                                name: 'Lenovo IdeaPad Flex 5',
+                                price: '$699',
+                                specs: [
+                                    '15.6-inch Full HD touchscreen',
+                                    'AMD Ryzen 7 processor',
+                                    '16GB memory',
+                                    '512GB storage',
+                                    'Converts to tablet mode',
+                                    'Excellent keyboard comfort'
+                                ],
+                                why: 'This 2-in-1 laptop can flip into tablet mode, giving you flexibility in how you use it. The touchscreen is great for beginners, and Lenovo keyboards are known for being very comfortable to type on.',
+                                link: '[https://www.bestbuy.com/site/lenovo-laptops/lenovo-ideapad-laptops/pcmcat247400050009.c?id=pcmcat247400050009](https://www.bestbuy.com/site/lenovo-laptops/lenovo-ideapad-laptops/pcmcat247400050009.c?id=pcmcat247400050009)'
+                            }
+                        ],
+                        '800-1200': [
+                            {
+                                name: 'HP Pavilion 15.6" (Premium Config)',
+                                price: '$899',
+                                specs: [
+                                    '15.6-inch Full HD touchscreen',
+                                    'Intel Core i7 processor',
+                                    '32GB memory - very fast multitasking',
+                                    '1TB storage - tons of space',
+                                    'Windows 11 Pro',
+                                    'Long battery life'
+                                ],
+                                why: 'This premium configuration has double the memory and storage of most laptops. It will stay fast for many years and has plenty of room for all your photos, videos, and documents. Excellent long-term investment.',
+                                link: '[https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0G4HYM1MV](https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0G4HYM1MV)'
+                            },
+                            {
+                                name: 'Microsoft Surface Laptop Go 3',
+                                price: '$799',
+                                specs: [
+                                    '12.4-inch touchscreen',
+                                    'Intel Core i5 processor',
+                                    '8GB memory',
+                                    '256GB storage',
+                                    'Very lightweight (2.5 lbs)',
+                                    'Windows 11'
+                                ],
+                                why: 'Microsoft\'s own laptop combines touchscreen convenience with traditional keyboard functionality. Ultra-portable and well-designed for everyday tasks.',
+                                link: '[https://www.microsoft.com/en-us/surface/devices/surface-laptop-go-3](https://www.microsoft.com/en-us/surface/devices/surface-laptop-go-3)'
+                            }
+                        ],
+                        'over1200': [
+                            {
+                                name: 'HP Pavilion 15.6" (Max Config)',
+                                price: '$1,299',
+                                specs: [
+                                    '15.6-inch Full HD touchscreen',
+                                    'Intel Core i7 processor',
+                                    '64GB memory - maximum performance',
+                                    '2TB storage - massive space',
+                                    'Windows 11 Pro',
+                                    'Premium build quality'
+                                ],
+                                why: 'This is the ultimate configuration with maximum memory and storage. Perfect if you want a laptop that will stay fast for many years and never worry about running out of space.',
+                                link: '[https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0FMQN6P6N](https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0FMQN6P6N)'
+                            }
+                        ]
+                    }
+                },
+                desktop: {
+                    apple: {
+                        'under500': [],
+                        '500-800': [],
+                        '800-1200': [],
+                        'over1200': [
+                            {
+                                name: 'iMac 24" M4 (Base Model)',
+                                price: '$1,299',
+                                specs: [
+                                    '24-inch 4.5K Retina display - stunning clarity',
+                                    'Apple M4 chip - latest generation',
+                                    '16GB memory',
+                                    '256GB storage',
+                                    'Built-in 12MP camera for video calls',
+                                    'All-in-one design - no messy cables',
+                                    'Wireless keyboard and mouse included'
+                                ],
+                                why: 'The iMac is Apple\'s all-in-one desktop with a gorgeous 24-inch display that makes everything crystal clear. Perfect if you have an iPhone or iPad - everything works together seamlessly. Very easy to set up and use.',
+                                link: '[https://www.bestbuy.com/site/apple-imac-24-inch-all-in-one-m4-chip-built-for-apple-intelligence-8-core-cpu-8-core-gpu-16gb-memory-256gb-ssd-silver/JJGCQ3F4SG/6594442.p?skuId=6594442](https://www.bestbuy.com/site/apple-imac-24-inch-all-in-one-m4-chip-built-for-apple-intelligence-8-core-cpu-8-core-gpu-16gb-memory-256gb-ssd-silver/JJGCQ3F4SG/6594442.p?skuId=6594442)'
+                            },
+                            {
+                                name: 'iMac 24" M4 (Upgraded)',
+                                price: '$1,499',
+                                specs: [
+                                    '24-inch 4.5K Retina display',
+                                    'Apple M4 chip with 10-core GPU',
+                                    '16GB memory',
+                                    '512GB storage - double the space',
+                                    '4 USB ports instead of 2',
+                                    'Gigabit Ethernet built into power adapter',
+                                    'Choice of vibrant colors'
+                                ],
+                                why: 'This upgraded model has double the storage and additional ports for connecting printers and other devices. The more powerful graphics make video calls even smoother and photos look amazing.',
+                                link: '[https://www.bestbuy.com/site/apple-imac-24-inch-all-in-one-m4-chip-built-for-apple-intelligence-10-core-cpu-10-core-gpu-16gb-memory-256gb-ssd-blue/JJGCQ3V3H7/6594443.p?skuId=6594443](https://www.bestbuy.com/site/apple-imac-24-inch-all-in-one-m4-chip-built-for-apple-intelligence-10-core-cpu-10-core-gpu-16gb-memory-256gb-ssd-blue/JJGCQ3V3H7/6594443.p?skuId=6594443)'
+                            },
+                            {
+                                name: 'iMac 24" M4 (Premium)',
+                                price: '$1,899',
+                                specs: [
+                                    '24-inch 4.5K Retina display',
+                                    'Apple M4 chip with 10-core GPU',
+                                    '24GB memory - extra performance',
+                                    '512GB storage',
+                                    'All premium features',
+                                    'Beautiful color options'
+                                ],
+                                why: 'This premium configuration has extra memory for the smoothest possible performance. Perfect if you want the absolute best and plan to keep this computer for many years.',
+                                link: '[https://www.apple.com/shop/buy-mac/imac](https://www.apple.com/shop/buy-mac/imac)'
+                            }
+                        ]
+                    },
+                    windows: {
+                        'under500': [
+                            {
+                                name: 'HP All-in-One Desktop 24"',
+                                price: '$499',
+                                specs: [
+                                    '24-inch Full HD display',
+                                    'Intel processor',
+                                    '8GB memory',
+                                    '256GB storage',
+                                    'Windows 11',
+                                    'Wireless keyboard and mouse included',
+                                    'Built-in webcam and speakers'
+                                ],
+                                why: 'An excellent budget all-in-one desktop with a nice big screen. Everything is included - just plug it in and you\'re ready to go. No complicated setup or cables to deal with.',
+                                link: '[https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464](https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464)'
+                            }
+                        ],
+                        '500-800': [
+                            {
+                                name: 'Dell Inspiron 24 All-in-One',
+                                price: '$749',
+                                specs: [
+                                    '23.8-inch Full HD anti-glare display',
+                                    'Intel Core i5 processor',
+                                    '16GB memory',
+                                    '1TB storage - lots of space',
+                                    'Windows 11 Home',
+                                    '1080p HD camera for video calls',
+                                    'Wireless keyboard and mouse',
+                                    'Clean, clutter-free design'
+                                ],
+                                why: 'Dell makes reliable, easy-to-use computers. This all-in-one has a large screen that\'s easy on the eyes, plenty of storage for photos and documents, and excellent support if you need help.',
+                                link: '[https://www.amazon.com/Dell-Inspiron-Desktop-10-Core-Graphics/dp/B0DZCHJ8KC](https://www.amazon.com/Dell-Inspiron-Desktop-10-Core-Graphics/dp/B0DZCHJ8KC)'
+                            },
+                            {
+                                name: 'HP All-in-One 24" (Premium)',
+                                price: '$799',
+                                specs: [
+                                    '24-inch Full HD touchscreen',
+                                    'Intel Core i5 processor',
+                                    '16GB memory',
+                                    '512GB storage',
+                                    'Windows 11',
+                                    'Touchscreen for easy navigation',
+                                    'Modern, sleek design'
+                                ],
+                                why: 'The touchscreen makes this computer very easy to use - just tap what you want. Great for beginners and those who want a modern, simple computing experience.',
+                                link: '[https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464](https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464)'
+                            }
+                        ],
+                        '800-1200': [
+                            {
+                                name: 'Dell Inspiron 24 (Premium Config)',
+                                price: '$999',
+                                specs: [
+                                    '23.8-inch Full HD touchscreen',
+                                    'Intel Core i7 processor - very fast',
+                                    '32GB memory - maximum multitasking',
+                                    '1TB storage',
+                                    'Windows 11 Pro',
+                                    'Premium build quality',
+                                    'Excellent warranty and support'
+                                ],
+                                why: 'This premium configuration will stay fast for many years. The powerful processor and lots of memory mean you can have many programs and browser tabs open without any slowdown.',
+                                link: '[https://www.amazon.com/Dell-Inspiron-Computer-Ultra-Quiet-Wireless/dp/B0DYK8JKX9](https://www.amazon.com/Dell-Inspiron-Computer-Ultra-Quiet-Wireless/dp/B0DYK8JKX9)'
+                            },
+                            {
+                                name: 'HP All-in-One 24" (Max Config)',
+                                price: '$1,099',
+                                specs: [
+                                    '24-inch Full HD touchscreen',
+                                    'Intel Core i7 processor',
+                                    '32GB memory',
+                                    '1TB storage',
+                                    'Windows 11 Pro',
+                                    'Premium features throughout'
+                                ],
+                                why: 'Top-of-the-line Windows all-in-one with maximum memory and storage. Perfect if you want the best performance and plan to keep this computer for many years.',
+                                link: '[https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464](https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464)'
+                            }
+                        ],
+                        'over1200': [
+                            {
+                                name: 'Dell Inspiron 24 (Ultimate Config)',
+                                price: '$1,299',
+                                specs: [
+                                    '24-inch Full HD touchscreen',
+                                    'Latest Intel Core i7 processor',
+                                    '64GB memory - maximum performance',
+                                    '2TB storage - massive space',
+                                    'Windows 11 Pro',
+                                    'Premium warranty',
+                                    'Top-tier build quality'
+                                ],
+                                why: 'The ultimate Windows all-in-one desktop. This has maximum memory and storage, ensuring it will stay fast and have plenty of space for many years to come.',
+                                link: '[https://www.amazon.com/Dell-Inspiron-Computer-Ultra-Quiet-I5-1334U/dp/B0FLW6QLVD](https://www.amazon.com/Dell-Inspiron-Computer-Ultra-Quiet-I5-1334U/dp/B0FLW6QLVD)'
+                            }
+                        ]
+                    }
+                }
+            };
+
+            // Adjust products based on screen size preference
+            let selectedProducts = products[deviceType][platform][budget];
+
+            if (!selectedProducts || selectedProducts.length === 0) {
+                // If no products in exact budget, try adjacent ranges
+                if (budget === 'under500') {
+                    selectedProducts = products[deviceType][platform]['500-800'];
+                } else if (budget === '500-800') {
+                    selectedProducts = products[deviceType][platform]['800-1200'];
+                } else if (budget === '800-1200') {
+                    selectedProducts = products[deviceType][platform]['over1200'];
+                }
+            }
+
+            // If still no products (like budget Apple laptops), provide guidance
+            if (!selectedProducts || selectedProducts.length === 0) {
+                return [{
+                    name: 'Budget Recommendation',
+                    price: 'See options',
+                    specs: ['Unfortunately, there are no quality ' + platform + ' ' + deviceType + 's in this exact price range.'],
+                    why: 'For quality ' + platform + ' computers, we recommend looking at the next budget range up, or considering Windows alternatives which offer excellent value in this price range.',
+                    link: platform === 'apple' ? '[https://www.apple.com/shop/refurbished](https://www.apple.com/shop/refurbished)' : '[https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464](https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464)'
+                }];
+            }
+
+            // Return up to 3 products
+            return selectedProducts.slice(0, 3);
+        }
+
+        function showResults() {
+            // Hide question
+            document.getElementById('question6').classList.remove('active');
+
+            // Get recommendation
+            const rec = determineRecommendation();
+            const products = getProducts(rec.deviceType, rec.platform, answers.budget, answers.screenSize);
+
+            // Build results HTML
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Computer Match!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Our Top Recommendations:</h3>
+            `;
+
+            // Add products
+            products.forEach(product => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>Key Features (In Plain English):</h4>
+                            <ul>
+                                ${product.specs.map(spec => `<li>${spec}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${product.why}</p>
+                        </div>
+                        <a href="${product.link}" class="product-link" target="_blank" rel="noopener">View This Computer</a>
+                    </div>
+                `;
+            });
+
+            // Add action buttons
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            // Display results
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            // Hide results
+            document.getElementById('results').classList.remove('active');
+
+            // Reset and go to start
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const products = getProducts(rec.deviceType, rec.platform, answers.budget, answers.screenSize);
+
+            // Add header
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Computer Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            // Add recommendation
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            // Add reasons
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            // Add products
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Products:', 20, y);
+            y += 10;
+
+            products.forEach((product, index) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(product.name + ' - ' + product.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                product.specs.forEach(spec => {
+                    const lines = doc.splitTextToSize('• ' + spec, 170);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 6;
+                });
+
+                y += 5;
+                const whyLines = doc.splitTextToSize('Why: ' + product.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + product.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            // Add footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | [smartsasstech@gmail.com](mailto:smartsasstech@gmail.com)', 105, 285, { align: 'center' });
+            }
+
+            // Save
+            doc.save('computer-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

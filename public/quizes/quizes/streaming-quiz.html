@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Streaming Service - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        .shows-list {
+            margin-top: 15px;
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #4a5568;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Streaming Service</h1>
+            <p>Let us help you choose the right streaming service for your viewing preferences</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few questions about the types of shows and movies you like to watch. This will help
+                    us recommend the best streaming service for you!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Favorite Genre -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What type of content do you enjoy most?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'drama')">Dramas & Serious Shows</div>
+                    <div class="option" onclick="selectOption(1, 'comedy')">Comedies & Light Entertainment</div>
+                    <div class="option" onclick="selectOption(1, 'action')">Action, Thrillers & Crime Shows</div>
+                    <div class="option" onclick="selectOption(1, 'family')">Family & Kids Programming</div>
+                    <div class="option" onclick="selectOption(1, 'scifi')">Sci-Fi, Fantasy & Supernatural</div>
+                    <div class="option" onclick="selectOption(1, 'reality')">Reality TV & Documentaries</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Specific Shows -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">Which of these shows or types of content interests you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'netflix')">
+                        Stranger Things, Wednesday, Squid Game
+                        <div class="shows-list">Popular Netflix Originals</div>
+                    </div>
+                    <div class="option" onclick="selectOption(2, 'hbo')">
+                        House of the Dragon, The Last of Us, Succession
+                        <div class="shows-list">HBO Prestige Dramas</div>
+                    </div>
+                    <div class="option" onclick="selectOption(2, 'disney')">
+                        Marvel Shows, Star Wars, Disney Classics
+                        <div class="shows-list">Disney/Marvel/Star Wars Content</div>
+                    </div>
+                    <div class="option" onclick="selectOption(2, 'prime')">
+                        The Boys, Jack Ryan, Lord of the Rings
+                        <div class="shows-list">Amazon Prime Exclusives</div>
+                    </div>
+                    <div class="option" onclick="selectOption(2, 'apple')">
+                        Ted Lasso, Severance, The Morning Show
+                        <div class="shows-list">Apple TV+ Originals</div>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Sports Interest -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">Are you interested in live sports or news?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'yes')">Yes, live sports are important to me</div>
+                    <div class="option" onclick="selectOption(3, 'sometimes')">Occasionally, but not a dealbreaker</div>
+                    <div class="option" onclick="selectOption(3, 'no')">No, I mainly watch shows and movies</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Ads Tolerance -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">How do you feel about commercials?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'no-ads')">I hate ads - I want commercial-free viewing
+                    </div>
+                    <div class="option" onclick="selectOption(4, 'ok-ads')">A few ads are okay if it saves money</div>
+                    <div class="option" onclick="selectOption(4, 'save-money')">I'll watch ads to get the lowest price
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your monthly budget for streaming?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'under10')">Under $10/month</div>
+                    <div class="option" onclick="selectOption(5, '10-15')">$10-$15/month</div>
+                    <div class="option" onclick="selectOption(5, '15-20')">$15-$20/month</div>
+                    <div class="option" onclick="selectOption(5, 'over20')">Over $20/month - I want the best</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Multiple Services -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">Are you open to subscribing to multiple services?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'one')">Just one - keep it simple</div>
+                    <div class="option" onclick="selectOption(6, 'bundle')">Yes, if I can get a bundle deal</div>
+                    <div class="option" onclick="selectOption(6, 'multiple')">Yes, I'm open to having 2-3 services</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            genre: null,
+            shows: null,
+            sports: null,
+            ads: null,
+            budget: null,
+            multiple: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['genre', 'shows', 'sports', 'ads', 'budget', 'multiple'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let primaryService = '';
+            let reasons = [];
+
+            // Strong preferences from Q2 override other considerations
+            if (answers.shows === 'netflix') {
+                primaryService = 'netflix';
+                reasons.push('You\'ll love Netflix Originals like Stranger Things, Wednesday, and Squid Game');
+            } else if (answers.shows === 'hbo') {
+                primaryService = 'hbo';
+                reasons.push('HBO Max has the prestige dramas you want like House of the Dragon and The Last of Us');
+            } else if (answers.shows === 'disney') {
+                primaryService = 'disney';
+                reasons.push('Perfect for Marvel, Star Wars, and classic Disney content');
+            } else if (answers.shows === 'prime') {
+                primaryService = 'prime';
+                reasons.push('Amazon Prime Video has great originals like The Boys and Jack Ryan');
+            } else if (answers.shows === 'apple') {
+                primaryService = 'apple';
+                reasons.push('Apple TV+ has award-winning shows like Ted Lasso and Severance');
+            } else {
+                // Use genre preferences
+                if (answers.genre === 'family') {
+                    primaryService = 'disney';
+                    reasons.push('Disney+ has the best family and kids content');
+                } else if (answers.genre === 'scifi') {
+                    primaryService = 'netflix';
+                    reasons.push('Netflix has excellent sci-fi and fantasy programming');
+                } else if (answers.genre === 'drama') {
+                    primaryService = 'hbo';
+                    reasons.push('HBO Max is known for high-quality dramas');
+                } else if (answers.genre === 'comedy') {
+                    primaryService = 'netflix';
+                    reasons.push('Netflix has a huge selection of comedies and light entertainment');
+                } else if (answers.genre === 'action') {
+                    primaryService = 'prime';
+                    reasons.push('Amazon Prime Video has great action and thriller content');
+                } else {
+                    primaryService = 'netflix';
+                    reasons.push('Netflix has the largest variety of content');
+                }
+            }
+
+            // Sports consideration
+            if (answers.sports === 'yes') {
+                if (answers.multiple === 'bundle' || answers.multiple === 'multiple') {
+                    reasons.push('Consider adding ESPN+ or Peacock for live sports');
+                }
+            }
+
+            // Budget-based reasons
+            if (answers.budget === 'under10' && answers.ads === 'save-money') {
+                reasons.push('With ads, you can keep costs low while enjoying great content');
+            } else if (answers.ads === 'no-ads') {
+                reasons.push('Ad-free viewing gives you an uninterrupted experience');
+            }
+
+            // Bundle recommendation
+            if (answers.multiple === 'bundle') {
+                if (primaryService === 'disney' || primaryService === 'hbo') {
+                    reasons.push('Disney offers a great bundle with Hulu and ESPN+');
+                }
+            }
+
+            return {
+                primaryService,
+                reasons,
+                recommendation: getServiceName(primaryService)
+            };
+        }
+
+        function getServiceName(service) {
+            const names = {
+                'netflix': 'Netflix',
+                'hbo': 'HBO Max',
+                'disney': 'Disney+',
+                'prime': 'Amazon Prime Video',
+                'apple': 'Apple TV+',
+                'hulu': 'Hulu'
+            };
+            return names[service] || 'Netflix';
+        }
+
+        function getServices(primaryService, budget, ads, multiple, sports) {
+            const services = {
+                netflix: [
+                    {
+                        name: 'Netflix (With Ads)',
+                        price: '$7.99/month',
+                        features: [
+                            'Thousands of movies and TV shows',
+                            'Netflix Originals: Stranger Things, Wednesday, Squid Game',
+                            'New content added regularly',
+                            'Watch on any device',
+                            'HD quality available',
+                            'Some commercials during viewing'
+                        ],
+                        shows: 'Stranger Things, Wednesday, Squid Game, The Crown, Bridgerton, Ozark, You, The Diplomat, Nobody Wants This',
+                        why: 'Netflix has the largest library of content and produces more original shows than anyone. The ad-supported plan makes it very affordable while still giving you access to everything Netflix offers.',
+                        link: 'https://www.netflix.com/signup'
+                    },
+                    {
+                        name: 'Netflix Standard (No Ads)',
+                        price: '$17.99/month',
+                        features: [
+                            'Everything in the ad plan',
+                            'No commercials - uninterrupted viewing',
+                            'Watch on 2 screens at once',
+                            'Full HD (1080p) quality',
+                            'Can download shows to watch offline',
+                            'Share with one person outside your home (+$8.99)'
+                        ],
+                        shows: 'All Netflix content with no interruptions',
+                        why: 'Perfect if you can\'t stand commercials and want to watch on multiple devices. Great value for families or couples who watch different things.',
+                        link: 'https://www.netflix.com/signup'
+                    }
+                ],
+                hbo: [
+                    {
+                        name: 'HBO Max (With Ads)',
+                        price: '$10.99/month',
+                        features: [
+                            'All HBO originals and Max content',
+                            'House of the Dragon, The Last of Us, Succession',
+                            'Warner Bros movies',
+                            'DC superhero content',
+                            '2K streaming quality',
+                            'Some commercials'
+                        ],
+                        shows: 'House of the Dragon, The Last of Us, Succession, Game of Thrones, The White Lotus, Euphoria, True Detective',
+                        why: 'HBO is known for the highest-quality prestige dramas. The ad-supported plan gives you access to everything HBO offers including new Warner Bros movies.',
+                        link: 'https://www.max.com'
+                    },
+                    {
+                        name: 'HBO Max Standard (No Ads)',
+                        price: '$18.49/month',
+                        features: [
+                            'All HBO Max content',
+                            'No commercials',
+                            'Download content for offline viewing',
+                            'Watch on 2 devices simultaneously',
+                            'Full HD quality'
+                        ],
+                        shows: 'All HBO content without interruptions',
+                        why: 'The gold standard for prestige TV. If you love high-quality dramas and don\'t want ads, this is worth every penny.',
+                        link: 'https://www.max.com'
+                    },
+                    {
+                        name: 'HBO Max Premium (No Ads)',
+                        price: '$22.99/month',
+                        features: [
+                            'Everything in Standard',
+                            '4K Ultra HD quality',
+                            'Dolby Atmos audio',
+                            'Watch on 4 devices at once',
+                            'Up to 100 offline downloads'
+                        ],
+                        shows: 'Maximum quality viewing experience',
+                        why: 'For those with 4K TVs who want the absolute best picture and sound quality. Perfect for families with multiple viewers.',
+                        link: 'https://www.max.com'
+                    }
+                ],
+                disney: [
+                    {
+                        name: 'Disney+ (With Ads)',
+                        price: '$9.99/month',
+                        features: [
+                            'All Disney classics and new releases',
+                            'Marvel shows and movies',
+                            'Star Wars content (Mandalorian, Ahsoka)',
+                            'Pixar, National Geographic',
+                            'Perfect for families and kids',
+                            'Some commercials'
+                        ],
+                        shows: 'The Mandalorian, Loki, WandaVision, The Bear (on Hulu), all Disney movies',
+                        why: 'Unbeatable for families with kids. All Disney, Marvel, Star Wars, and Pixar content in one place.',
+                        link: 'https://www.disneyplus.com/sign-up'
+                    },
+                    {
+                        name: 'Disney+ & Hulu Bundle (With Ads)',
+                        price: '$10.99/month',
+                        features: [
+                            'Both Disney+ AND Hulu together',
+                            'Disney/Marvel/Star Wars PLUS adult content',
+                            'Huge value - two services for less than one',
+                            'Best bundle deal in streaming',
+                            'Some commercials on both'
+                        ],
+                        shows: 'Everything from Disney+ plus Hulu hits like The Bear, Only Murders in the Building, The Handmaid\'s Tale',
+                        why: 'The best value in streaming - two major services for $11. You get family content from Disney and grown-up shows from Hulu.',
+                        link: 'https://www.disneyplus.com/sign-up'
+                    },
+                    {
+                        name: 'Disney+ & Hulu Bundle (No Ads)',
+                        price: '$19.99/month',
+                        features: [
+                            'Disney+ and Hulu - no commercials',
+                            'Download content for offline viewing',
+                            'Uninterrupted family and adult entertainment',
+                            'Perfect for all ages'
+                        ],
+                        shows: 'All Disney+ and Hulu content, ad-free',
+                        why: 'Perfect for families who want both kids content and grown-up shows without any commercials.',
+                        link: 'https://www.disneyplus.com/sign-up'
+                    }
+                ],
+                prime: [
+                    {
+                        name: 'Amazon Prime Video (Standalone, With Ads)',
+                        price: '$8.99/month',
+                        features: [
+                            'Amazon Originals like The Boys, Jack Ryan',
+                            'Thursday Night Football',
+                            'Large movie library',
+                            'Rent/buy new releases',
+                            'Some commercials',
+                            'No other Prime benefits (shipping, music, etc.)'
+                        ],
+                        shows: 'The Boys, Jack Ryan, The Lord of the Rings: Rings of Power, Reacher, The Marvelous Mrs. Maisel',
+                        why: 'Great value if you just want the video content without full Amazon Prime membership.',
+                        link: 'https://www.amazon.com/primevideo'
+                    },
+                    {
+                        name: 'Amazon Prime (includes Video)',
+                        price: '$14.99/month or $139/year',
+                        features: [
+                            'Prime Video included',
+                            'PLUS free 2-day shipping on Amazon',
+                            'Prime Music, Prime Reading',
+                            'Exclusive deals and early access',
+                            'Photos storage',
+                            'Some ads in video (add $3/mo for no ads)'
+                        ],
+                        shows: 'All Prime Video content PLUS all Amazon Prime benefits',
+                        why: 'If you shop on Amazon regularly, this is a no-brainer. You get streaming plus shipping and other benefits.',
+                        link: 'https://www.amazon.com/prime'
+                    }
+                ],
+                apple: [
+                    {
+                        name: 'Apple TV+',
+                        price: '$12.99/month',
+                        features: [
+                            'All original content - no library shows',
+                            'Award-winning shows: Ted Lasso, Severance',
+                            'No commercials ever',
+                            'Share with up to 5 family members',
+                            'High quality production values',
+                            'Download for offline viewing'
+                        ],
+                        shows: 'Ted Lasso, Severance, The Morning Show, Shrinking, For All Mankind, Foundation',
+                        why: 'Apple focuses on quality over quantity. Every show is an original production with high production values. Great if you prefer a curated selection.',
+                        link: 'https://tv.apple.com'
+                    }
+                ]
+            };
+
+            let selectedServices = services[primaryService] || services.netflix;
+
+            // Filter based on ad preference and budget
+            if (ads === 'save-money' || budget === 'under10') {
+                // Prefer ad-supported plans
+                selectedServices = selectedServices.filter(s => s.name.includes('With Ads') || s.price.startsWith('$8') || s.price.startsWith('$9') || s.price.startsWith('$10'));
+            } else if (ads === 'no-ads') {
+                // Prefer ad-free plans
+                selectedServices = selectedServices.filter(s => s.name.includes('No Ads') || !s.name.includes('With Ads'));
+            }
+
+            // If nothing matches after filtering, show all options for that service
+            if (selectedServices.length === 0) {
+                selectedServices = services[primaryService] || services.netflix;
+            }
+
+            return selectedServices.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const serviceOptions = getServices(rec.primaryService, answers.budget, answers.ads, answers.multiple, answers.sports);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Streaming Match!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Plan Options:</h3>
+            `;
+
+            serviceOptions.forEach(service => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${service.name}</div>
+                            <div class="product-price">${service.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>What You Get:</h4>
+                            <ul>
+                                ${service.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="product-why">
+                            <h4>Popular Shows on This Service:</h4>
+                            <p>${service.shows}</p>
+                        </div>
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${service.why}</p>
+                        </div>
+                        <a href="${service.link}" class="product-link" target="_blank" rel="noopener">Sign Up for ${service.name.split(' ')[0]}</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const serviceOptions = getServices(rec.primaryService, answers.budget, answers.ads, answers.multiple, answers.sports);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Streaming Service Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Plan Options:', 20, y);
+            y += 10;
+
+            serviceOptions.forEach((service, index) => {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(service.name + ' - ' + service.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                doc.text('Features:', 20, y);
+                y += 6;
+
+                service.features.forEach(feature => {
+                    const lines = doc.splitTextToSize('• ' + feature, 165);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 5;
+                });
+
+                y += 3;
+                doc.setFont(undefined, 'bold');
+                doc.text('Popular Shows:', 20, y);
+                y += 6;
+                doc.setFont(undefined, 'normal');
+                const showLines = doc.splitTextToSize(service.shows, 165);
+                doc.text(showLines, 25, y);
+                y += showLines.length * 5 + 3;
+
+                const whyLines = doc.splitTextToSize('Why: ' + service.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 5 + 10;
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('streaming-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

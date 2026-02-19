@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Internet Plan - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        .location-note {
+            background: #e6f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.95em;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Internet Plan</h1>
+            <p>Rochester, NY Internet Provider Recommendations</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions about your internet needs to recommend the best provider and
+                    plan for your Rochester, NY home.</p>
+                <div class="location-note">
+                    <strong>Note:</strong> This quiz provides recommendations specific to Rochester, NY and surrounding
+                    areas where Greenlight Networks, Spectrum, and Frontier are available.
+                </div>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Primary Internet Use -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What do you mainly use the internet for?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'basic')">Basic browsing and email</div>
+                    <div class="option" onclick="selectOption(1, 'streaming')">Streaming TV shows and movies</div>
+                    <div class="option" onclick="selectOption(1, 'gaming')">Online gaming or 4K streaming</div>
+                    <div class="option" onclick="selectOption(1, 'work')">Working from home with video calls</div>
+                    <div class="option" onclick="selectOption(1, 'heavy')">Heavy use - multiple people streaming,
+                        gaming, and working</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Number of Devices -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">How many devices connect to the internet in your home?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, '1-3')">1-3 devices (phone, tablet, computer)</div>
+                    <div class="option" onclick="selectOption(2, '4-7')">4-7 devices</div>
+                    <div class="option" onclick="selectOption(2, '8-12')">8-12 devices</div>
+                    <div class="option" onclick="selectOption(2, '12+')">More than 12 devices</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Number of Users -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">How many people use the internet at the same time?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, '1')">Just me</div>
+                    <div class="option" onclick="selectOption(3, '2')">2 people</div>
+                    <div class="option" onclick="selectOption(3, '3-4')">3-4 people</div>
+                    <div class="option" onclick="selectOption(3, '5+')">5 or more people</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: House Size -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">What's the size of your home?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'small')">Small (apartment or 1-2 bedrooms)</div>
+                    <div class="option" onclick="selectOption(4, 'medium')">Medium (3 bedrooms, single floor)</div>
+                    <div class="option" onclick="selectOption(4, 'large')">Large (4+ bedrooms or multi-floor)</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your monthly budget for internet?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'budget')">Under $50/month - I want the lowest price
+                    </div>
+                    <div class="option" onclick="selectOption(5, 'moderate')">$50-$75/month - Good value</div>
+                    <div class="option" onclick="selectOption(5, 'premium')">$75-$100/month - Best performance</div>
+                    <div class="option" onclick="selectOption(5, 'unlimited')">Over $100/month - I want the fastest
+                        speeds</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Priority -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">What's most important to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'price')">Lowest monthly price</div>
+                    <div class="option" onclick="selectOption(6, 'reliability')">Most reliable service</div>
+                    <div class="option" onclick="selectOption(6, 'speed')">Fastest speeds available</div>
+                    <div class="option" onclick="selectOption(6, 'local')">Local company with great customer service
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            usage: null,
+            devices: null,
+            users: null,
+            houseSize: null,
+            budget: null,
+            priority: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['usage', 'devices', 'users', 'houseSize', 'budget', 'priority'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let provider = '';
+            let reasons = [];
+
+            // Determine provider based on priority and usage
+            if (answers.priority === 'local' || answers.priority === 'reliability') {
+                provider = 'greenlight';
+                reasons.push('Greenlight Networks is rated #1 in Rochester by Consumer Reports');
+                reasons.push('Local Rochester company with outstanding customer service');
+                reasons.push('100% fiber optic - the most reliable internet technology');
+            } else if (answers.usage === 'heavy' || answers.usage === 'gaming' || answers.priority === 'speed') {
+                provider = 'greenlight';
+                reasons.push('Greenlight offers the fastest fiber speeds in Rochester - up to 8 Gbps!');
+                reasons.push('Symmetrical speeds - upload as fast as download');
+            } else if (answers.budget === 'budget' || answers.priority === 'price') {
+                provider = 'spectrum';
+                reasons.push('Spectrum offers competitive pricing starting at $30/month');
+                reasons.push('Widely available across Rochester with no contracts');
+            } else {
+                // Default to Greenlight for most users
+                provider = 'greenlight';
+                reasons.push('Greenlight provides the best overall value in Rochester');
+                reasons.push('No data caps, no contracts, no hidden fees');
+            }
+
+            // Add usage-based reasons
+            if (answers.usage === 'work') {
+                reasons.push('Fast upload speeds perfect for video calls and file sharing');
+            } else if (answers.usage === 'streaming') {
+                reasons.push('More than enough speed for smooth 4K streaming');
+            }
+
+            // Add device/user-based reasons
+            if (answers.devices === '12+' || answers.users === '5+') {
+                reasons.push('Handles many devices and users simultaneously without slowdown');
+            }
+
+            // Add house size reason
+            if (answers.houseSize === 'large') {
+                reasons.push('We recommend adding a mesh Wi-Fi system for whole-home coverage');
+            }
+
+            return {
+                provider,
+                reasons,
+                recommendation: provider === 'greenlight' ? 'Greenlight Networks' : 'Spectrum'
+            };
+        }
+
+        function getPlans(provider, usage, budget, devices) {
+            const plans = {
+                greenlight: [
+                    {
+                        name: 'Greenlight 500 Mbps',
+                        price: '$55/month',
+                        features: [
+                            '500 Mbps download AND upload (symmetrical)',
+                            'Perfect for 4K streaming and video calls',
+                            'No data caps - use as much as you want',
+                            'No contracts - cancel anytime',
+                            'No hidden fees or price increases',
+                            'Wi-Fi router for $5/month (optional)',
+                            'Rated #1 in US by Consumer Reports'
+                        ],
+                        why: 'Greenlight\'s 500 Mbps plan is perfect for most families. With symmetrical speeds (500 up AND down), you get smooth video calls, fast uploads, and reliable streaming on multiple devices. This is Greenlight\'s most popular plan.',
+                        link: 'https://www.greenlightnetworks.com/rochester-ny/',
+                        bestFor: 'Most families and remote workers'
+                    },
+                    {
+                        name: 'Greenlight 1 Gig',
+                        price: '$75/month',
+                        features: [
+                            '1,000 Mbps (1 Gig) download AND upload',
+                            'Handles 10+ devices simultaneously',
+                            'Perfect for gaming, 4K streaming, large file transfers',
+                            'No data caps, no contracts',
+                            'Future-proof speeds',
+                            'Same great Greenlight service',
+                            'Local Rochester company'
+                        ],
+                        why: 'The 1 Gig plan is ideal for tech-savvy households, gamers, or families with many connected devices. You\'ll never experience slowdowns, even with everyone online at once.',
+                        link: 'https://www.greenlightnetworks.com/rochester-ny/',
+                        bestFor: 'Gamers, large families, tech enthusiasts'
+                    },
+                    {
+                        name: 'Greenlight 2 Gig',
+                        price: '$100/month',
+                        features: [
+                            '2,000 Mbps (2 Gig) symmetrical speeds',
+                            'Extreme performance for demanding users',
+                            'Stream, game, work, and upload all at once',
+                            'Perfect for content creators',
+                            'Support for 15+ simultaneous devices',
+                            'Fastest speeds without going to 8 Gig',
+                            'No data caps, no contracts'
+                        ],
+                        why: 'The 2 Gig plan is for power users who demand the absolute best. Perfect for content creators, streamers, or households with extreme internet usage.',
+                        link: 'https://www.greenlightnetworks.com/rochester-ny/',
+                        bestFor: 'Content creators, streamers, power users'
+                    },
+                    {
+                        name: 'Greenlight 8 Gig',
+                        price: '$150/month',
+                        features: [
+                            '8,000 Mbps (8 Gig) - fastest in Rochester!',
+                            'Absolutely future-proof',
+                            'Perfect for smart homes with 20+ devices',
+                            'Instant downloads and uploads',
+                            'Professional-grade performance',
+                            'Still no data caps or contracts',
+                            'Symmetrical speeds (8 Gig up AND down)'
+                        ],
+                        why: 'Greenlight\'s fastest plan - 8 Gig symmetrical speeds. Only needed if you have extreme usage, run a home business, or want the absolute cutting-edge technology.',
+                        link: 'https://www.greenlightnetworks.com/rochester-ny/',
+                        bestFor: 'Ultimate performance, home businesses'
+                    }
+                ],
+                spectrum: [
+                    {
+                        name: 'Spectrum Internet',
+                        price: '$30/month (new customers)',
+                        features: [
+                            'Up to 300 Mbps download speed',
+                            'Up to 10 Mbps upload speed',
+                            'Good for browsing and standard streaming',
+                            'No data caps',
+                            'No contracts required',
+                            'Widely available in Rochester',
+                            'Bundle with TV and phone available'
+                        ],
+                        why: 'Spectrum\'s entry-level plan is very affordable and works well for basic internet needs. Good for 1-2 people who mainly browse and stream. Note: Upload speeds are much slower than download.',
+                        link: 'https://www.spectrum.com',
+                        bestFor: 'Budget-conscious, light internet users'
+                    },
+                    {
+                        name: 'Spectrum Internet Ultra',
+                        price: '$50/month (promotional)',
+                        features: [
+                            'Up to 500 Mbps download speed',
+                            'Up to 20 Mbps upload speed',
+                            'Good for families',
+                            'Multiple device streaming',
+                            'No data caps',
+                            'No contracts',
+                            'Includes security suite'
+                        ],
+                        why: 'Better than the basic plan with faster downloads. Works well for families who stream on multiple devices. However, upload speeds are still limited compared to fiber.',
+                        link: 'https://www.spectrum.com',
+                        bestFor: 'Families, moderate streaming'
+                    },
+                    {
+                        name: 'Spectrum Internet Gig',
+                        price: '$90/month',
+                        features: [
+                            'Up to 1,000 Mbps download',
+                            'Up to 35 Mbps upload',
+                            'Fastest Spectrum offers',
+                            'Good for large households',
+                            'No data caps',
+                            'Advanced WiFi included',
+                            'Note: Requires compatible equipment'
+                        ],
+                        why: 'Spectrum\'s fastest plan with 1 Gig download. However, uploads are still only 35 Mbps (much slower than Greenlight). Consider Greenlight 1 Gig for the same download speed with 1,000 Mbps upload for less money.',
+                        link: 'https://www.spectrum.com',
+                        bestFor: 'Large households, mostly downloading'
+                    }
+                ],
+                frontier: [
+                    {
+                        name: 'Frontier Fiber 500',
+                        price: '$45/month (with autopay)',
+                        features: [
+                            '500 Mbps download AND upload',
+                            'Fiber optic connection',
+                            'Symmetrical speeds',
+                            'No data caps',
+                            'No annual contract',
+                            'Wi-Fi router included',
+                            'Available in select Rochester areas'
+                        ],
+                        why: 'Frontier Fiber is a good alternative if available in your area. Similar to Greenlight with symmetrical fiber speeds, though Frontier has less coverage in Rochester.',
+                        link: 'https://frontier.com',
+                        bestFor: 'Areas where Greenlight isn\'t available'
+                    },
+                    {
+                        name: 'Frontier Fiber 1 Gig',
+                        price: '$65/month (with autopay)',
+                        features: [
+                            '1,000 Mbps download AND upload',
+                            '100% fiber optic',
+                            'Symmetrical speeds',
+                            'No data caps',
+                            'Wi-Fi router included',
+                            'Good customer reviews',
+                            'Growing Rochester coverage'
+                        ],
+                        why: 'Frontier\'s 1 Gig fiber is competitive with Greenlight. Good option if Frontier Fiber is available at your address.',
+                        link: 'https://frontier.com',
+                        bestFor: 'Fast speeds where Frontier Fiber available'
+                    }
+                ]
+            };
+
+            let selectedPlans = plans[provider] || plans['greenlight'];
+
+            // Filter based on usage and budget
+            if (answers.usage === 'basic' && answers.budget === 'budget') {
+                selectedPlans = selectedPlans.filter(p =>
+                    p.name.includes('500') || p.price.startsWith('$30') || p.price.startsWith('$45')
+                );
+            } else if (answers.usage === 'heavy' || answers.devices === '12+') {
+                selectedPlans = selectedPlans.filter(p =>
+                    p.name.includes('Gig') || p.name.includes('2 Gig') || p.name.includes('8 Gig')
+                );
+            }
+
+            // Ensure we have at least 2 plans
+            if (selectedPlans.length < 2) {
+                selectedPlans = plans[provider] || plans['greenlight'];
+            }
+
+            return selectedPlans.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const planOptions = getPlans(rec.provider, answers.usage, answers.budget, answers.devices);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Internet Provider!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="location-note">
+                    <strong>Important:</strong> Availability varies by address in Rochester. We recommend checking if your address is in the service area before signing up.
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Recommended Plans:</h3>
+            `;
+
+            planOptions.forEach(plan => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${plan.name}</div>
+                            <div class="product-price">${plan.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>What You Get:</h4>
+                            <ul>
+                                ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${plan.bestFor ? `<p style="margin: 15px 0; padding: 12px; background: #e6f7ff; border-radius: 6px; font-weight: 600;"><strong>Best For:</strong> ${plan.bestFor}</p>` : ''}
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${plan.why}</p>
+                        </div>
+                        <a href="${plan.link}" class="product-link" target="_blank" rel="noopener">Check Availability & Sign Up</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const planOptions = getPlans(rec.provider, answers.usage, answers.budget, answers.devices);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Internet Provider Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Rochester, NY - From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Plans:', 20, y);
+            y += 10;
+
+            planOptions.forEach((plan, index) => {
+                if (y > 220) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(plan.name + ' - ' + plan.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                doc.text('Features:', 20, y);
+                y += 6;
+
+                plan.features.forEach(feature => {
+                    const lines = doc.splitTextToSize('• ' + feature, 165);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 5;
+                });
+
+                if (plan.bestFor) {
+                    y += 3;
+                    doc.text('Best For: ' + plan.bestFor, 25, y);
+                    y += 6;
+                }
+
+                y += 3;
+                const whyLines = doc.splitTextToSize('Why: ' + plan.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + plan.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('internet-provider-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

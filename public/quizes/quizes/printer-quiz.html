@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Printer - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        .cost-note {
+            background: #fff5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.95em;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Printer</h1>
+            <p>Let us help you choose the right printer, scanner, and copier</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions to help find the perfect printer for your needs. This will only
+                    take a minute!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: What You'll Print -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What will you mainly be printing?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'text')">Mostly text documents (letters, forms,
+                        reports)</div>
+                    <div class="option" onclick="selectOption(1, 'mixed')">A mix of documents and some photos</div>
+                    <div class="option" onclick="selectOption(1, 'photos')">Lots of photos and colorful documents</div>
+                    <div class="option" onclick="selectOption(1, 'occasional')">Very occasional printing - just a few
+                        pages a month</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: How Much You'll Print -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">How much do you print?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'light')">Just a few pages a week</div>
+                    <div class="option" onclick="selectOption(2, 'moderate')">10-50 pages per week</div>
+                    <div class="option" onclick="selectOption(2, 'heavy')">50+ pages per week (200+ per month)</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Scanner/Copier Needs -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">Do you need to scan or copy documents?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'yes-adf')">Yes, and I often scan multiple pages at
+                        once</div>
+                    <div class="option" onclick="selectOption(3, 'yes-basic')">Yes, but just one page at a time is fine
+                    </div>
+                    <div class="option" onclick="selectOption(3, 'no')">No, just printing is enough</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Ink Cost Priority -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">How important are low ink costs?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'very')">Very important - I want the lowest ink costs
+                        possible</div>
+                    <div class="option" onclick="selectOption(4, 'moderate')">Moderately important</div>
+                    <div class="option" onclick="selectOption(4, 'not')">Not a big concern - I don't print much</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your budget for the printer?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'under100')">Under $100</div>
+                    <div class="option" onclick="selectOption(5, '100-200')">$100 - $200</div>
+                    <div class="option" onclick="selectOption(5, '200-300')">$200 - $300</div>
+                    <div class="option" onclick="selectOption(5, 'over300')">Over $300 - I want the best</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Important Features -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">What's most important to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'speed')">Fast printing speed</div>
+                    <div class="option" onclick="selectOption(6, 'quality')">Best print quality</div>
+                    <div class="option" onclick="selectOption(6, 'simple')">Easy to set up and use</div>
+                    <div class="option" onclick="selectOption(6, 'wireless')">Wireless printing from phone/tablet</div>
+                    <div class="option" onclick="selectOption(6, 'compact')">Small and compact size</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            printType: null,
+            volume: null,
+            scanner: null,
+            inkCost: null,
+            budget: null,
+            priority: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['printType', 'volume', 'scanner', 'inkCost', 'priority'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let printerType = '';
+            let reasons = [];
+
+            // Determine printer type based on needs
+            if (answers.printType === 'text' && answers.volume === 'heavy') {
+                printerType = 'laser';
+                reasons.push('Laser printers are perfect for high-volume text printing');
+                reasons.push('Much faster than inkjet for documents');
+                reasons.push('Toner lasts much longer than ink cartridges');
+            } else if (answers.inkCost === 'very' && (answers.volume === 'moderate' || answers.volume === 'heavy')) {
+                printerType = 'ecotank';
+                reasons.push('Ink tank printers have the absolute lowest ink costs - save up to 90%!');
+                reasons.push('Refill bottles cost about $15 and print thousands of pages');
+            } else if (answers.printType === 'photos') {
+                printerType = 'photo-inkjet';
+                reasons.push('Inkjet printers produce the best quality photos');
+                reasons.push('Vibrant colors perfect for printing family pictures');
+            } else if (answers.budget === 'under100' && answers.volume === 'light') {
+                printerType = 'budget-inkjet';
+                reasons.push('Affordable and perfect for occasional printing');
+            } else {
+                printerType = 'all-in-one';
+                reasons.push('All-in-one printers give you print, scan, and copy in one device');
+            }
+
+            // Add scanner/copier reason
+            if (answers.scanner === 'yes-adf') {
+                reasons.push('Automatic document feeder makes scanning multi-page documents easy');
+            } else if (answers.scanner === 'yes-basic') {
+                reasons.push('Built-in scanner and copier for your occasional needs');
+            }
+
+            // Add wireless reason if it's a priority
+            if (answers.priority === 'wireless') {
+                reasons.push('Easy wireless printing from your phone, tablet, or computer');
+            }
+
+            // Add simplicity reason
+            if (answers.priority === 'simple') {
+                reasons.push('Simple setup and user-friendly operation');
+            }
+
+            return {
+                printerType,
+                reasons,
+                recommendation: getPrinterTypeName(printerType)
+            };
+        }
+
+        function getPrinterTypeName(type) {
+            const names = {
+                'laser': 'Laser Printer',
+                'ecotank': 'Ink Tank Printer (EcoTank/MegaTank)',
+                'photo-inkjet': 'Photo Inkjet Printer',
+                'budget-inkjet': 'Budget Inkjet Printer',
+                'all-in-one': 'All-in-One Inkjet Printer'
+            };
+            return names[type] || 'All-in-One Printer';
+        }
+
+        function getPrinters(printerType, budget, scanner, printType) {
+            const printers = {
+                'laser': [
+                    {
+                        name: 'Brother HL-L2460DW',
+                        price: '$159',
+                        features: [
+                            'Black and white laser printer (text only)',
+                            'Fast printing - up to 36 pages per minute',
+                            'Very low cost per page - about 3 cents',
+                            'Wireless and duplex (two-sided) printing',
+                            'Toner lasts for up to 3,000 pages',
+                            'Compact size fits anywhere',
+                            'Very reliable - laser printers rarely break'
+                        ],
+                        why: 'Perfect if you mainly print text documents. The Brother HL-L2460DW is incredibly reliable, prints crisp black text, and the toner lasts forever. At 3 cents per page, you\'ll save a fortune compared to inkjet printers.',
+                        link: 'https://www.amazon.com/dp/B0BHQHYMVN',
+                        inkCost: 'Toner costs about $40 and lasts 3,000 pages (3¢ per page)'
+                    },
+                    {
+                        name: 'Brother MFC-L2750DW XL',
+                        price: '$299',
+                        features: [
+                            'All-in-one: print, scan, copy, AND fax',
+                            'Automatic document feeder (50 sheets)',
+                            'Fast 36 pages per minute',
+                            'Wireless and two-sided printing',
+                            'Large touchscreen display',
+                            '3 cents per page cost',
+                            'Includes high-yield toner (3,000 pages)'
+                        ],
+                        why: 'The complete package for home offices. Print, scan, copy, and fax with professional quality. The automatic document feeder is perfect for scanning multi-page documents. Extremely reliable and economical.',
+                        link: 'https://www.amazon.com/dp/B076Q61R2N',
+                        inkCost: 'Same low 3¢ per page - toner lasts 3,000 pages'
+                    }
+                ],
+                'ecotank': [
+                    {
+                        name: 'Epson EcoTank ET-2800',
+                        price: '$249',
+                        features: [
+                            'Refillable ink tanks - no cartridges!',
+                            'Comes with 2 years worth of ink included',
+                            'Print up to 7,500 color pages with included ink',
+                            'Print, scan, and copy',
+                            'Wireless printing',
+                            'Cost: less than 1 cent per black page, 5 cents per color page',
+                            'Easy-to-fill ink bottles (no mess)'
+                        ],
+                        why: 'The EcoTank ET-2800 saves you a fortune on ink. The included bottles print thousands of pages, and replacement ink is just $13 per color. Perfect for families who print regularly but hate expensive ink cartridges.',
+                        link: 'https://www.amazon.com/dp/B0B3VZ4XVJ',
+                        inkCost: 'Included ink lasts 2 years! Replacement bottles: $13 each, print 4,500 pages'
+                    },
+                    {
+                        name: 'Canon PIXMA G3290 MegaTank',
+                        price: '$229',
+                        features: [
+                            'Refillable ink tanks like EcoTank',
+                            'Comes with enough ink for 12,000 black or 7,700 color pages',
+                            'Print, scan, and copy',
+                            'Wireless printing from phone',
+                            'Very affordable ongoing costs',
+                            'Automatic two-sided printing',
+                            'Compact and simple to use'
+                        ],
+                        why: 'Canon\'s affordable answer to EcoTank. The MegaTank system uses bottled ink that costs pennies per page. Great value and the included ink lasts for years of typical home use.',
+                        link: 'https://www.amazon.com/dp/B0C4MJBDPC',
+                        inkCost: 'Ink bottles cost $13-16 each and print thousands of pages'
+                    },
+                    {
+                        name: 'Epson EcoTank ET-4760',
+                        price: '$449',
+                        features: [
+                            'Premium EcoTank with automatic document feeder',
+                            '2 years of ink included (up to 14,000 pages)',
+                            'Print, scan, copy, and fax',
+                            '30-sheet ADF for multi-page scanning',
+                            'Large color touchscreen',
+                            'Wireless printing and Ethernet',
+                            'Automatic two-sided printing and scanning'
+                        ],
+                        why: 'The ultimate ink tank printer for home offices. Includes everything you need including ADF for scanning stacks of documents. The ink savings alone will pay for the printer within a year if you print regularly.',
+                        link: 'https://www.amazon.com/dp/B08FBZT7FB',
+                        inkCost: 'Same ultra-low costs - less than 1¢ per page for black and white'
+                    }
+                ],
+                'photo-inkjet': [
+                    {
+                        name: 'Canon PIXMA TR8620',
+                        price: '$199',
+                        features: [
+                            'Excellent photo printing quality',
+                            '5-ink system for vibrant colors',
+                            'Print, scan, copy, and fax',
+                            'Automatic document feeder (20 sheets)',
+                            'Wireless printing from phone',
+                            'Large 4.3" touchscreen',
+                            'Prints on photo paper, envelopes, labels'
+                        ],
+                        why: 'The TR8620 produces stunning photos with vibrant colors and sharp detail. Perfect for printing family photos, invitations, and colorful documents. The 5-ink system ensures professional-looking results.',
+                        link: 'https://www.amazon.com/dp/B07PLHFLH4',
+                        inkCost: 'Individual ink tanks mean you only replace colors you use (about $15-20 each)'
+                    },
+                    {
+                        name: 'Epson Expression Photo XP-970',
+                        price: '$279',
+                        features: [
+                            'Professional photo quality - 6 individual inks',
+                            'Prints up to 11x17" (tabloid size)',
+                            'Amazing color accuracy',
+                            'Print, scan, and copy',
+                            '50-sheet rear specialty tray',
+                            'Front and rear paper feeding',
+                            'Wireless and Ethernet'
+                        ],
+                        why: 'If photo quality is your top priority, the XP-970\'s 6-color ink system produces gallery-quality prints. The ability to print 11x17" photos is perfect for special prints and presentations.',
+                        link: 'https://www.amazon.com/dp/B07RL7G53F',
+                        inkCost: '6 individual inks ($18-20 each) - only replace what you use'
+                    }
+                ],
+                'budget-inkjet': [
+                    {
+                        name: 'Canon PIXMA TR4720',
+                        price: '$79.99',
+                        features: [
+                            'Affordable all-in-one: print, scan, copy, and fax',
+                            'Wireless printing from phone and computer',
+                            'Automatic document feeder (20 sheets)',
+                            'Compact size - fits anywhere',
+                            'Easy setup with Canon PRINT app',
+                            'Good print quality for documents and photos',
+                            'Auto two-sided printing'
+                        ],
+                        why: 'The best value under $100. The TR4720 includes everything most people need - wireless printing, scanning, copying, and even an automatic document feeder. Perfect for occasional home use.',
+                        link: 'https://www.amazon.com/dp/B0BQ799JDJ',
+                        inkCost: 'Standard cartridges: $25-30 per set. For occasional use, this is fine.'
+                    },
+                    {
+                        name: 'HP DeskJet 2755e',
+                        price: '$59.99',
+                        features: [
+                            'Very affordable all-in-one',
+                            'Print, scan, and copy',
+                            'Wireless printing',
+                            'Works with Alexa and Google Assistant',
+                            'HP Smart app for easy setup',
+                            'Compact and simple',
+                            'Includes 6 months of HP Instant Ink free'
+                        ],
+                        why: 'The most affordable wireless all-in-one from a trusted brand. Perfect if you print very little and want something simple. The HP Instant Ink subscription can save money if you print regularly.',
+                        link: 'https://www.amazon.com/dp/B08MXQY6N5',
+                        inkCost: 'Cartridges or HP Instant Ink subscription ($1-10/month depending on volume)'
+                    }
+                ],
+                'all-in-one': [
+                    {
+                        name: 'Brother MFC-J995DW',
+                        price: '$199',
+                        features: [
+                            'All-in-one: print, scan, copy, and fax',
+                            'Comes with ink for up to 2 years!',
+                            'Very low cost per page (1.4¢ black, 6.7¢ color)',
+                            'Automatic document feeder (20 sheets)',
+                            'Wireless printing',
+                            'Two-sided printing',
+                            'Fast and reliable'
+                        ],
+                        why: 'The Brother MFC-J995DW is the best all-around printer for most people. It includes enough ink to last up to 2 years, has low ongoing costs, and includes all the features you need. Excellent value and very reliable.',
+                        link: 'https://www.amazon.com/dp/B07D5RGWHG',
+                        inkCost: 'High-yield cartridges last 3,000 pages and cost $56 (1.9¢ per page)'
+                    },
+                    {
+                        name: 'HP OfficeJet Pro 9125e',
+                        price: '$299',
+                        features: [
+                            'Professional all-in-one for home offices',
+                            'Very fast - 24 pages per minute',
+                            'Print, scan, copy, and fax',
+                            'Automatic two-sided scanning',
+                            'Large paper capacity (250 sheets)',
+                            '35-sheet automatic document feeder',
+                            'Color touchscreen display',
+                            '6 months HP+ (ink delivery service) included'
+                        ],
+                        why: 'The OfficeJet Pro 9125e is built for productivity. Fast printing, automatic duplex scanning, and professional quality make it perfect for busy home offices. The HP+ service delivers ink before you run out.',
+                        link: 'https://www.amazon.com/dp/B09RMKX64T',
+                        inkCost: 'HP Instant Ink subscription ($6-20/month) or standard cartridges'
+                    },
+                    {
+                        name: 'Canon PIXMA TR8620a',
+                        price: '$199',
+                        features: [
+                            'Versatile all-in-one with great photo quality',
+                            'Print, scan, copy, and fax',
+                            '20-sheet automatic document feeder',
+                            'Wireless and Ethernet connectivity',
+                            '5 individual ink tanks',
+                            'Large color touchscreen',
+                            'Prints on CDs/DVDs too'
+                        ],
+                        why: 'The TR8620a balances great document printing with excellent photo quality. The 5-ink system produces vibrant photos, and it has all the features you need for home office work.',
+                        link: 'https://www.amazon.com/dp/B07PLHFLH4',
+                        inkCost: 'Individual ink tanks ($15-20 each) - only replace what runs out'
+                    }
+                ]
+            };
+
+            let selectedPrinters = printers[printerType] || printers['all-in-one'];
+
+            // Make sure we have valid printers
+            if (!selectedPrinters || selectedPrinters.length === 0) {
+                selectedPrinters = printers['all-in-one'];
+            }
+
+            return selectedPrinters.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const printerOptions = getPrinters(rec.printerType, answers.budget, answers.scanner, answers.printType);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Printer Match!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Our Top Printer Recommendations:</h3>
+            `;
+
+            printerOptions.forEach(printer => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${printer.name}</div>
+                            <div class="product-price">${printer.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>Key Features (In Plain English):</h4>
+                            <ul>
+                                ${printer.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${printer.inkCost ? `<div class="cost-note"><strong>Ink/Toner Costs:</strong> ${printer.inkCost}</div>` : ''}
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${printer.why}</p>
+                        </div>
+                        <a href="${printer.link}" class="product-link" target="_blank" rel="noopener">View This Printer</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const printerOptions = getPrinters(rec.printerType, answers.budget, answers.scanner, answers.printType);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Printer Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Printers:', 20, y);
+            y += 10;
+
+            printerOptions.forEach((printer, index) => {
+                if (y > 220) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(printer.name + ' - ' + printer.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                doc.text('Features:', 20, y);
+                y += 6;
+
+                printer.features.forEach(feature => {
+                    const lines = doc.splitTextToSize('• ' + feature, 165);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 5;
+                });
+
+                if (printer.inkCost) {
+                    y += 3;
+                    const costLines = doc.splitTextToSize('Ink/Toner Costs: ' + printer.inkCost, 165);
+                    doc.text(costLines, 25, y);
+                    y += costLines.length * 5 + 3;
+                }
+
+                y += 3;
+                const whyLines = doc.splitTextToSize('Why: ' + printer.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + printer.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('printer-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

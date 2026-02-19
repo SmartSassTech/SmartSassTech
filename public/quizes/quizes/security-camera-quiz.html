@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Security Camera - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Security Camera</h1>
+            <p>Let us help you choose the right security camera for your home</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions to help find the perfect security camera system for your needs.
+                    This will only take a minute!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Location -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">Where do you want to place your cameras?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'indoor')">Indoors only (inside my home)</div>
+                    <div class="option" onclick="selectOption(1, 'outdoor')">Outdoors only (yard, driveway, entrance)
+                    </div>
+                    <div class="option" onclick="selectOption(1, 'both')">Both indoors and outdoors</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Power Source -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">How do you prefer to power your cameras?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'battery')">Battery-powered - no wires or outlets
+                        needed</div>
+                    <div class="option" onclick="selectOption(2, 'wired')">Plugged in - reliable power, no battery
+                        changes</div>
+                    <div class="option" onclick="selectOption(2, 'either')">Either is fine with me</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Storage Preference -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">How do you want to store your recorded videos?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'cloud')">Cloud storage - videos saved online,
+                        accessible anywhere</div>
+                    <div class="option" onclick="selectOption(3, 'local')">Local storage - videos saved on a memory card
+                        or device</div>
+                    <div class="option" onclick="selectOption(3, 'both')">Both cloud and local options</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Monthly Subscription -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">Are you willing to pay a monthly subscription for extra features?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'no')">No - I want no monthly fees</div>
+                    <div class="option" onclick="selectOption(4, 'small')">Maybe - if it's under $5/month</div>
+                    <div class="option" onclick="selectOption(4, 'yes')">Yes - I want the best features</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your budget per camera?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'under50')">Under $50</div>
+                    <div class="option" onclick="selectOption(5, '50-100')">$50 - $100</div>
+                    <div class="option" onclick="selectOption(5, '100-200')">$100 - $200</div>
+                    <div class="option" onclick="selectOption(5, 'over200')">Over $200</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Important Features -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">What features are most important to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'quality')">Best video quality - see every detail</div>
+                    <div class="option" onclick="selectOption(6, 'night')">Great night vision - see clearly in the dark
+                    </div>
+                    <div class="option" onclick="selectOption(6, 'battery')">Long battery life - fewer recharges</div>
+                    <div class="option" onclick="selectOption(6, 'smart')">Smart features - person detection, alerts,
+                        etc.</div>
+                    <div class="option" onclick="selectOption(6, 'simple')">Easy to set up and use</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            location: null,
+            power: null,
+            storage: null,
+            subscription: null,
+            budget: null,
+            features: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['location', 'power', 'storage', 'subscription', 'budget', 'features'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let cameraType = '';
+            let reasons = [];
+
+            // Determine camera type based on preferences
+            if (answers.subscription === 'no' && answers.storage === 'local') {
+                cameraType = 'no-subscription';
+                reasons.push('These cameras have no monthly fees - all features included');
+                reasons.push('Local storage on SD card means your videos stay private');
+            } else if (answers.budget === 'under50' || answers.budget === '50-100') {
+                cameraType = 'budget';
+                reasons.push('Excellent value - great features at an affordable price');
+            } else if (answers.features === 'quality' || answers.budget === 'over200') {
+                cameraType = 'premium';
+                reasons.push('Top-tier video quality and advanced features');
+            } else {
+                cameraType = 'mid-range';
+                reasons.push('Perfect balance of features and affordability');
+            }
+
+            // Add location-specific reasons
+            if (answers.location === 'outdoor' || answers.location === 'both') {
+                reasons.push('Weather-resistant cameras that can handle rain, snow, and heat');
+            }
+
+            if (answers.location === 'indoor' || answers.location === 'both') {
+                reasons.push('Easy to place anywhere inside your home');
+            }
+
+            // Add power-specific reasons
+            if (answers.power === 'battery') {
+                reasons.push('Battery-powered for flexible placement without outlets');
+            } else if (answers.power === 'wired') {
+                reasons.push('Always powered - never worry about charging batteries');
+            }
+
+            // Add feature-specific reasons
+            if (answers.features === 'night') {
+                reasons.push('Excellent night vision to see clearly in complete darkness');
+            } else if (answers.features === 'battery') {
+                reasons.push('Long-lasting batteries mean less maintenance');
+            } else if (answers.features === 'smart') {
+                reasons.push('Smart AI detection alerts you to people, not just any motion');
+            } else if (answers.features === 'simple') {
+                reasons.push('Quick and easy setup - you\'ll be monitoring in minutes');
+            }
+
+            return {
+                cameraType,
+                reasons,
+                recommendation: getCameraTypeName(cameraType)
+            };
+        }
+
+        function getCameraTypeName(type) {
+            const names = {
+                'no-subscription': 'No Subscription Security Cameras',
+                'budget': 'Budget-Friendly Security Cameras',
+                'mid-range': 'Mid-Range Security Cameras',
+                'premium': 'Premium Security Cameras'
+            };
+            return names[type] || 'Security Cameras';
+        }
+
+        function getCameras(cameraType, location, power, budget) {
+            const cameras = {
+                'no-subscription': [
+                    {
+                        name: 'Wyze Cam v4',
+                        price: '$35.99',
+                        features: [
+                            '2.5K video quality - very sharp and clear',
+                            'Color night vision - see in full color at night',
+                            'Works indoors and outdoors',
+                            'Local storage on SD card (up to 512GB)',
+                            'Free 14-day cloud storage included',
+                            'Person, pet, and package detection',
+                            'Two-way audio to speak through the camera',
+                            'Plugs into outlet (power cord included)'
+                        ],
+                        why: 'The Wyze Cam v4 is the best value in security cameras. You get amazing 2.5K video quality, color night vision, and smart detection features with no monthly fees required. Local storage on an SD card means your videos stay private. Perfect for anyone who wants professional features without subscriptions.',
+                        link: 'https://www.amazon.com/dp/B0BXBBK6V8'
+                    },
+                    {
+                        name: 'Eufy Indoor Cam C120',
+                        price: '$39.99',
+                        features: [
+                            '2K video quality',
+                            'Works indoors',
+                            'Pan and tilt - move camera remotely',
+                            'Local storage on SD card (up to 128GB)',
+                            'No monthly fees ever',
+                            'AI person detection',
+                            'Two-way audio',
+                            'Plugs into outlet'
+                        ],
+                        why: 'Eufy cameras never require subscriptions. The C120 has pan and tilt, so you can move the camera view from your phone. Great for keeping an eye on a whole room without multiple cameras.',
+                        link: 'https://www.amazon.com/dp/B0CHKTYSW2'
+                    },
+                    {
+                        name: 'Eufy SoloCam S340 (Outdoor Solar)',
+                        price: '$199.99',
+                        features: [
+                            '3K video quality with 8x zoom',
+                            'Completely wireless with built-in solar panel',
+                            'Never needs charging in sunlight',
+                            '8GB built-in storage - no SD card needed',
+                            'No monthly fees',
+                            'Dual cameras for wide and close-up views',
+                            'Weatherproof for all seasons',
+                            'Smart AI detection'
+                        ],
+                        why: 'This camera charges itself with sunlight, so you never need to plug it in or change batteries. Built-in storage means no SD cards to manage. Perfect for outdoor spots far from outlets.',
+                        link: 'https://www.amazon.com/dp/B0C7PT8Q3N'
+                    }
+                ],
+                'budget': [
+                    {
+                        name: 'Wyze Cam v4',
+                        price: '$35.99',
+                        features: [
+                            '2.5K video - better than 1080p',
+                            'Color night vision',
+                            'Indoor/outdoor use',
+                            'Free 14-day cloud storage',
+                            'Local SD card storage option',
+                            'AI person, pet, package detection',
+                            'Two-way talk',
+                            'Requires outlet power'
+                        ],
+                        why: 'Under $40 and packed with features that cost much more on other cameras. The 2.5K video is incredibly sharp, and color night vision helps you see details at night. Best budget camera available.',
+                        link: 'https://www.amazon.com/dp/B0BXBBK6V8'
+                    },
+                    {
+                        name: 'Blink Outdoor 4',
+                        price: '$79.99 (often on sale for less)',
+                        features: [
+                            '1080p HD video',
+                            'Battery-powered (2 AA batteries included)',
+                            'Up to 2 years battery life',
+                            'Weatherproof for outdoor use',
+                            'Infrared night vision',
+                            'Two-way audio',
+                            'Works with Alexa',
+                            'Optional cloud storage $3/month'
+                        ],
+                        why: 'Blink cameras have the longest battery life - up to 2 years on just two AA batteries! Completely wireless so you can mount them anywhere. Great for outdoor spots without power outlets.',
+                        link: 'https://www.amazon.com/dp/B0B1NKHZ9C'
+                    },
+                    {
+                        name: 'Blink Mini 2',
+                        price: '$39.99',
+                        features: [
+                            '1080p HD video',
+                            'Indoor/outdoor capable',
+                            'Color night vision with built-in spotlight',
+                            'Person detection',
+                            'Two-way audio',
+                            'Plugs into outlet',
+                            'Works with Alexa',
+                            'Optional cloud storage $3/month'
+                        ],
+                        why: 'The most affordable camera that works both indoors and outdoors. Tiny size makes it easy to place anywhere. The built-in spotlight helps with night vision.',
+                        link: 'https://www.amazon.com/dp/B0BKP9ZYQS'
+                    }
+                ],
+                'mid-range': [
+                    {
+                        name: 'Eufy Indoor Cam E30',
+                        price: '$99.99',
+                        features: [
+                            '4K video quality - incredible detail',
+                            'Pan, tilt, and zoom remotely',
+                            'Color night vision with spotlight',
+                            'Auto-tracking follows people',
+                            'Local SD card storage (no fees)',
+                            'Person, pet, and sound detection',
+                            'Two-way audio with built-in siren',
+                            'Works with Alexa and Google'
+                        ],
+                        why: '4K video means you can zoom in and still see clearly. Auto-tracking follows people as they move. No monthly fees required, but cloud storage available if wanted.',
+                        link: 'https://www.amazon.com/dp/B0D1MNVQSF'
+                    },
+                    {
+                        name: 'TP-Link Tapo C120',
+                        price: '$49.99',
+                        features: [
+                            '2K video quality',
+                            'Works indoors',
+                            'Local SD card storage',
+                            'Person detection',
+                            'Two-way audio',
+                            'Privacy mode (shutter)',
+                            'Works with Alexa and Google',
+                            'Easy setup'
+                        ],
+                        why: 'Great mid-range indoor camera with a privacy shutter you can close when home. Local storage means no monthly fees. Very reliable.',
+                        link: 'https://www.amazon.com/dp/B09XFSBC7D'
+                    }
+                ],
+                'premium': [
+                    {
+                        name: 'Arlo Pro 5S 2K',
+                        price: '$249.99',
+                        features: [
+                            '2K HDR video with amazing clarity',
+                            'Wire-free with rechargeable battery',
+                            'Color night vision',
+                            '160° field of view - see more area',
+                            'Two-way audio',
+                            'Weather-resistant',
+                            'Direct Wi-Fi (no hub needed)',
+                            'Smart notifications for people, vehicles, animals'
+                        ],
+                        why: 'Arlo is the premium brand in home security. The Pro 5S has the widest field of view, best video quality, and most reliable motion detection. Worth the investment for complete peace of mind.',
+                        link: 'https://www.amazon.com/dp/B0BK4LN33T',
+                        subscription: 'Optional Arlo Secure: $5/month for 30-day cloud storage and advanced AI'
+                    },
+                    {
+                        name: 'Google Nest Cam Battery',
+                        price: '$179.99',
+                        features: [
+                            '1080p HDR video',
+                            'Battery-powered or wired',
+                            'Indoor/outdoor use',
+                            '3 hours of free event history',
+                            'Intelligent alerts (people, animals, vehicles)',
+                            'Night vision',
+                            'Two-way talk',
+                            'Works perfectly with Google Home'
+                        ],
+                        why: 'Google Nest cameras integrate beautifully with Google Home devices. Smart alerts tell you exactly what triggered the camera. Battery-powered but can also be plugged in.',
+                        link: 'https://store.google.com/product/nest_cam_battery',
+                        subscription: 'Optional Nest Aware: $8/month for 30-day history and extra features'
+                    },
+                    {
+                        name: 'Ring Stick Up Cam Pro Battery',
+                        price: '$229.99',
+                        features: [
+                            '1080p HDR video',
+                            'Battery-powered with optional solar panel',
+                            'Indoor/outdoor',
+                            'Color night vision',
+                            '3D motion detection',
+                            'Two-way talk',
+                            'Bird\'s Eye View aerial map',
+                            'Works with Alexa'
+                        ],
+                        why: 'Ring is owned by Amazon and integrates perfectly with Alexa. The 3D motion detection pinpoints exactly where motion occurred. Excellent for comprehensive home monitoring.',
+                        link: 'https://www.amazon.com/dp/B0BFD1JSHM',
+                        subscription: 'Ring Protect: $5/month for 180-day video history'
+                    }
+                ]
+            };
+
+            let selectedCameras = cameras[cameraType] || cameras['budget'];
+
+            // Filter by location preference
+            if (answers.location === 'outdoor') {
+                selectedCameras = selectedCameras.filter(cam =>
+                    cam.features.some(f => f.includes('outdoor') || f.includes('weather') || f.includes('battery'))
+                );
+            } else if (answers.location === 'indoor') {
+                selectedCameras = selectedCameras.filter(cam =>
+                    cam.features.some(f => f.includes('indoor') || f.includes('Indoor'))
+                );
+            }
+
+            // If filters removed all options, use original list
+            if (selectedCameras.length === 0) {
+                selectedCameras = cameras[cameraType] || cameras['budget'];
+            }
+
+            return selectedCameras.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const cameraOptions = getCameras(rec.cameraType, answers.location, answers.power, answers.budget);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Security Camera Match!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why These Are Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Our Top Camera Recommendations:</h3>
+            `;
+
+            cameraOptions.forEach(camera => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${camera.name}</div>
+                            <div class="product-price">${camera.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>Key Features (In Plain English):</h4>
+                            <ul>
+                                ${camera.features.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${camera.why}</p>
+                        </div>
+                        ${camera.subscription ? `<p style="margin: 15px 0; padding: 15px; background: #fff5f5; border-left: 4px solid #667eea; font-size: 0.95em;"><strong>Note:</strong> ${camera.subscription}</p>` : ''}
+                        <a href="${camera.link}" class="product-link" target="_blank" rel="noopener">View This Camera</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const cameraOptions = getCameras(rec.cameraType, answers.location, answers.power, answers.budget);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Security Camera Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why These Are Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Cameras:', 20, y);
+            y += 10;
+
+            cameraOptions.forEach((camera, index) => {
+                if (y > 230) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(camera.name + ' - ' + camera.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                doc.text('Features:', 20, y);
+                y += 6;
+
+                camera.features.forEach(feature => {
+                    const lines = doc.splitTextToSize('• ' + feature, 165);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 5;
+                });
+
+                y += 5;
+                const whyLines = doc.splitTextToSize('Why: ' + camera.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                if (camera.subscription) {
+                    const subLines = doc.splitTextToSize('Note: ' + camera.subscription, 170);
+                    doc.text(subLines, 25, y);
+                    y += subLines.length * 6 + 5;
+                }
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + camera.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('security-camera-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Perfect Phone - SmartSass Tech</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/SST Logo Black & Taupe No Background.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 20px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .option:hover {
+            background: #edf2f7;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .result-recommendation {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-reasons {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .result-reasons h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-reasons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-reasons li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #4a5568;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .result-reasons li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .product-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-left: 20px;
+        }
+
+        .product-specs {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-specs h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-specs ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .product-specs li {
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .product-why {
+            margin-bottom: 20px;
+        }
+
+        .product-why h4 {
+            font-family: 'Poppins', sans-serif;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .product-why p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .product-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .product-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .start-screen h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .start-screen .btn {
+            font-size: 1.2em;
+            padding: 18px 45px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-title {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 18px 20px;
+                font-size: 1em;
+            }
+
+            .product-header {
+                flex-direction: column;
+            }
+
+            .product-price {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Find Your Perfect Phone</h1>
+            <p>Let us help you choose the right smartphone or flip phone</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div id="startScreen" class="start-screen">
+                <h2>Welcome!</h2>
+                <p>We'll ask you a few simple questions to help find the perfect phone for you. This will only take a
+                    minute!</p>
+                <button class="btn btn-primary" onclick="startQuiz()">Let's Get Started</button>
+            </div>
+
+            <!-- Question 1: Phone Type Preference -->
+            <div id="question1" class="question-container">
+                <h2 class="question-title">What type of phone appeals to you most?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'simple')">Something very simple - just calling and
+                        texting</div>
+                    <div class="option" onclick="selectOption(1, 'smartphone-easy')">A smartphone, but one that's easy
+                        to use</div>
+                    <div class="option" onclick="selectOption(1, 'smartphone-full')">A full-featured smartphone with all
+                        the bells and whistles</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="goToStart()">Back to Start</button>
+                    <button class="btn btn-primary" id="next1" disabled onclick="nextQuestion(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 2: Current Phone Ecosystem -->
+            <div id="question2" class="question-container">
+                <h2 class="question-title">Do you currently use an iPhone or prefer Apple products?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'yes')">Yes, I use iPhone or other Apple devices</div>
+                    <div class="option" onclick="selectOption(2, 'no')">No, I use Android or other brands</div>
+                    <div class="option" onclick="selectOption(2, 'either')">I'm open to either - just want what's best
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(1)">Back</button>
+                    <button class="btn btn-primary" id="next2" disabled onclick="nextQuestion(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 3: Primary Use -->
+            <div id="question3" class="question-container">
+                <h2 class="question-title">What will you mainly use your phone for?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'calls')">Mostly just phone calls</div>
+                    <div class="option" onclick="selectOption(3, 'calls-text')">Calls and texting</div>
+                    <div class="option" onclick="selectOption(3, 'photos')">Calls, texts, and taking lots of photos
+                    </div>
+                    <div class="option" onclick="selectOption(3, 'everything')">Everything - photos, videos, apps,
+                        internet</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(2)">Back</button>
+                    <button class="btn btn-primary" id="next3" disabled onclick="nextQuestion(4)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 4: Special Needs -->
+            <div id="question4" class="question-container">
+                <h2 class="question-title">Do any of these apply to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'hearing')">I use a hearing aid</div>
+                    <div class="option" onclick="selectOption(4, 'vision')">I need larger text and buttons</div>
+                    <div class="option" onclick="selectOption(4, 'emergency')">I want easy access to emergency services
+                    </div>
+                    <div class="option" onclick="selectOption(4, 'none')">None of these apply</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(3)">Back</button>
+                    <button class="btn btn-primary" id="next4" disabled onclick="nextQuestion(5)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 5: Budget -->
+            <div id="question5" class="question-container">
+                <h2 class="question-title">What's your budget for a new phone?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'under100')">Under $100</div>
+                    <div class="option" onclick="selectOption(5, '100-300')">$100 - $300</div>
+                    <div class="option" onclick="selectOption(5, '300-500')">$300 - $500</div>
+                    <div class="option" onclick="selectOption(5, 'over500')">Over $500</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(4)">Back</button>
+                    <button class="btn btn-primary" id="next5" disabled onclick="nextQuestion(6)">Next</button>
+                </div>
+            </div>
+
+            <!-- Question 6: Screen Size -->
+            <div id="question6" class="question-container">
+                <h2 class="question-title">How important is a larger screen to you?</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'very')">Very important - I want a big, easy-to-read
+                        screen</div>
+                    <div class="option" onclick="selectOption(6, 'moderate')">Moderately important</div>
+                    <div class="option" onclick="selectOption(6, 'compact')">I prefer something small and compact</div>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="prevQuestion(5)">Back</button>
+                    <button class="btn btn-primary" id="next6" disabled onclick="showResults()">See My Results</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="results-container">
+                <!-- Results will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {
+            phoneType: null,
+            ecosystem: null,
+            primaryUse: null,
+            specialNeeds: null,
+            budget: null,
+            screenSize: null
+        };
+
+        const totalQuestions = 6;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('question1').classList.add('active');
+            updateProgress(1);
+        }
+
+        function goToStart() {
+            Object.keys(answers).forEach(key => answers[key] = null);
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById('question' + i).classList.remove('active');
+                const options = document.getElementById('question' + i).querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+            }
+
+            document.getElementById('startScreen').style.display = 'block';
+            updateProgress(0);
+        }
+
+        function selectOption(questionNum, value) {
+            const options = document.getElementById('question' + questionNum).querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+
+            const keys = ['phoneType', 'ecosystem', 'primaryUse', 'specialNeeds', 'budget', 'screenSize'];
+            answers[keys[questionNum - 1]] = value;
+
+            document.getElementById('next' + questionNum).disabled = false;
+        }
+
+        function nextQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function prevQuestion(questionNum) {
+            const currentQuestion = document.querySelector('.question-container.active');
+            currentQuestion.classList.remove('active');
+            document.getElementById('question' + questionNum).classList.add('active');
+            updateProgress(questionNum);
+        }
+
+        function updateProgress(currentQuestion) {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function determineRecommendation() {
+            let deviceType = '';
+            let platform = '';
+            let reasons = [];
+
+            // Determine device type (flip vs smartphone)
+            if (answers.phoneType === 'simple') {
+                deviceType = 'flip';
+                reasons.push('A flip phone keeps things simple - just the basics you need');
+            } else {
+                deviceType = 'smartphone';
+                if (answers.phoneType === 'smartphone-easy') {
+                    reasons.push('We\'ve selected smartphones that are designed to be easy to use');
+                } else {
+                    reasons.push('You\'ll have access to all the latest smartphone features');
+                }
+            }
+
+            // Determine platform
+            if (deviceType === 'smartphone') {
+                if (answers.ecosystem === 'yes') {
+                    platform = 'iphone';
+                    reasons.push('Since you already use Apple products, an iPhone will work seamlessly with your other devices');
+                } else if (answers.ecosystem === 'no') {
+                    platform = 'android';
+                    reasons.push('Android phones offer great value and work perfectly with your current setup');
+                } else {
+                    // Open to either - decide based on budget
+                    if (answers.budget === 'over500' || answers.budget === '300-500') {
+                        platform = 'iphone';
+                        reasons.push('Your budget allows for an iPhone, which is known for being user-friendly and reliable');
+                    } else {
+                        platform = 'android';
+                        reasons.push('Android phones offer excellent value with all the features you need');
+                    }
+                }
+            } else {
+                platform = 'flip';
+                reasons.push('Simple physical buttons make dialing and texting straightforward');
+            }
+
+            // Add use-based reasons
+            if (answers.primaryUse === 'photos' || answers.primaryUse === 'everything') {
+                reasons.push('Your phone will have a great camera for capturing memories');
+            }
+
+            // Add special needs reasons
+            if (answers.specialNeeds === 'hearing') {
+                reasons.push('These phones are compatible with hearing aids for clear sound');
+            } else if (answers.specialNeeds === 'vision') {
+                reasons.push('Large text and buttons make everything easy to see and tap');
+            } else if (answers.specialNeeds === 'emergency') {
+                reasons.push('Quick access to emergency services for your safety and peace of mind');
+            }
+
+            // Add screen size reason
+            if (answers.screenSize === 'very' && deviceType === 'smartphone') {
+                reasons.push('Large screen makes reading texts, viewing photos, and browsing much easier');
+            }
+
+            return {
+                deviceType,
+                platform,
+                reasons,
+                recommendation: deviceType === 'flip' ? 'Easy Flip Phone' :
+                    (platform === 'iphone' ? 'iPhone' : 'Android Smartphone')
+            };
+        }
+
+        function getProducts(deviceType, platform, budget, specialNeeds, primaryUse, screenSize) {
+            const products = {
+                flip: {
+                    'under100': [
+                        {
+                            name: 'Consumer Cellular IRIS Easy Flip',
+                            price: '$59',
+                            specs: [
+                                'Large, backlit buttons - easy to see and press',
+                                'Simple menu with big text',
+                                'Emergency SOS button',
+                                'Hearing aid compatible (M4/T4 rating)',
+                                'Built-in flashlight and magnifier',
+                                'Works with Consumer Cellular service'
+                            ],
+                            why: 'The IRIS Easy Flip is the best value flip phone for seniors. It has everything you need - big buttons, loud speakers, and an emergency button - without any complicated features. Perfect if you just want to make calls and send simple texts.',
+                            link: 'https://www.consumercellular.com/shopping/iris-easy-flip'
+                        },
+                        {
+                            name: 'Nokia 2780 Flip',
+                            price: '$89.99',
+                            specs: [
+                                'Large 2.7-inch main screen',
+                                'Simple, easy-to-read menus',
+                                'Google Assistant voice commands',
+                                'Hearing aid compatible',
+                                'Long battery life (up to 7 days standby)',
+                                'Works with most carriers when unlocked'
+                            ],
+                            why: 'Nokia makes very durable phones. This flip phone is simple to use but includes modern features like voice commands so you can call someone just by speaking their name.',
+                            link: 'https://www.bestbuy.com/site/nokia-2780-flip-phone-unlocked-black/6522623.p'
+                        }
+                    ],
+                    '100-300': [
+                        {
+                            name: 'Jitterbug Flip2',
+                            price: '$79.99 + plans from $14.99/mo',
+                            specs: [
+                                'Very large buttons and text',
+                                'List-based menu - super simple',
+                                'Urgent Response button connects to 24/7 help',
+                                'Amazon Alexa built-in for voice commands',
+                                'Loud, clear speaker (hearing aid compatible)',
+                                'Powerful flashlight',
+                                'Works only with Lively service'
+                            ],
+                            why: 'The Jitterbug Flip2 is designed specifically for seniors. The Urgent Response button connects you to trained operators 24/7 who can send help if needed. Optional health monitoring services available.',
+                            link: 'https://www.lively.com/phones/jitterbug-flip2/'
+                        },
+                        {
+                            name: 'Alcatel Go Flip 4',
+                            price: '$89.99',
+                            specs: [
+                                '2.8-inch display with large text',
+                                'Google Assistant voice commands',
+                                'Emergency SOS button',
+                                'Hearing aid compatible',
+                                '4G LTE and Wi-Fi calling',
+                                'Simple camera for basic photos'
+                            ],
+                            why: 'A reliable, affordable flip phone with modern conveniences. The Google Assistant means you can make calls, set reminders, and check the weather just by speaking.',
+                            link: 'https://www.bestbuy.com/site/alcatel-go-flip-4-4gb-memory-prepaid-black-t-mobile/6428659.p'
+                        }
+                    ],
+                    '300-500': [],
+                    'over500': []
+                },
+                smartphone: {
+                    iphone: {
+                        'under100': [],
+                        '100-300': [],
+                        '300-500': [
+                            {
+                                name: 'iPhone SE (3rd Generation)',
+                                price: '$429',
+                                specs: [
+                                    'Compact 4.7-inch screen with Home button',
+                                    'Touch ID fingerprint sensor - secure and easy',
+                                    'Fast A15 processor (same as iPhone 13)',
+                                    'Great camera for photos and videos',
+                                    'All-day battery life',
+                                    'Water resistant',
+                                    'Works with all carriers'
+                                ],
+                                why: 'The iPhone SE is Apple\'s most affordable iPhone. It has the familiar Home button (no face scanning needed), a fast processor, and all the features you\'d expect from an iPhone at a great price.',
+                                link: 'https://www.apple.com/shop/buy-iphone/iphone-se'
+                            },
+                            {
+                                name: 'iPhone 16e',
+                                price: '$599 (refurbished $439)',
+                                specs: [
+                                    'Large 6.1-inch easy-to-read screen',
+                                    'Face ID for secure unlocking',
+                                    'Up to 26 hours of battery life',
+                                    'Excellent camera system',
+                                    'Crash detection and emergency SOS',
+                                    'Action button for quick shortcuts',
+                                    'Latest iOS features and updates'
+                                ],
+                                why: 'The iPhone 16e is Apple\'s newest budget-friendly model with a larger screen than the SE, longer battery life, and modern features like crash detection. Great for those who want current technology without the premium price.',
+                                link: 'https://www.apple.com/iphone-16/'
+                            }
+                        ],
+                        'over500': [
+                            {
+                                name: 'iPhone 15',
+                                price: '$729',
+                                specs: [
+                                    'Beautiful 6.1-inch Super Retina display',
+                                    'A16 Bionic chip - very fast',
+                                    '48MP main camera - stunning photos',
+                                    'All-day battery life',
+                                    'Crash detection and emergency features',
+                                    'Durable Ceramic Shield glass',
+                                    'Face ID for security'
+                                ],
+                                why: 'The iPhone 15 offers premium features with a gorgeous screen and incredible camera. Perfect if you want to take beautiful photos of family and capture special moments.',
+                                link: 'https://www.apple.com/shop/buy-iphone/iphone-15'
+                            },
+                            {
+                                name: 'iPhone 16',
+                                price: '$829',
+                                specs: [
+                                    'Latest iPhone with newest features',
+                                    'Advanced camera system',
+                                    'Apple Intelligence features',
+                                    'Action button for quick access',
+                                    'Excellent battery life',
+                                    'Most durable iPhone glass',
+                                    'Future-proof for years to come'
+                                ],
+                                why: 'The newest iPhone with all the latest features and technology. This phone will stay current and supported for many years, making it a great long-term investment.',
+                                link: 'https://www.apple.com/iphone-16/'
+                            }
+                        ]
+                    },
+                    android: {
+                        'under100': [],
+                        '100-300': [
+                            {
+                                name: 'Jitterbug Smart4',
+                                price: '$119.99 (often on sale for $47.99)',
+                                specs: [
+                                    'Large 6.75-inch screen - very easy to read',
+                                    'Simple list-style menu (no confusing icons)',
+                                    'Urgent Response button for 24/7 help',
+                                    'Loud speaker and hearing aid compatible',
+                                    'Voice assistant built-in',
+                                    'Long 5,000 mAh battery',
+                                    'Works only with Lively service'
+                                ],
+                                why: 'The Jitterbug Smart4 is designed specifically for seniors who want a smartphone without the complexity. Simple menus, big text, and the Urgent Response button for emergencies. Optional health monitoring available.',
+                                link: 'https://www.lively.com/phones/jitterbug-smart4/'
+                            },
+                            {
+                                name: 'Motorola Moto G 5G (2025)',
+                                price: '$179',
+                                specs: [
+                                    'Large 6.5-inch HD+ display',
+                                    'Two-day battery life',
+                                    'Good camera for photos',
+                                    'Hearing aid compatible (M3/T3)',
+                                    'Fast 5G internet',
+                                    'Clean, simple Android interface',
+                                    'Works with most carriers'
+                                ],
+                                why: 'Excellent value for a modern smartphone. The two-day battery means you won\'t need to charge every night, and the large screen makes everything easy to see.',
+                                link: 'https://www.motorola.com/us/smartphones-moto-g-5g-2025/p'
+                            },
+                            {
+                                name: 'Samsung Galaxy A15 5G',
+                                price: '$199',
+                                specs: [
+                                    'Large 6.5-inch Super AMOLED display',
+                                    'Easy Mode for simplified interface',
+                                    'Good camera for photos and videos',
+                                    '5G for fast internet',
+                                    'All-day battery',
+                                    'Samsung\'s reliable quality',
+                                    'Works with all carriers'
+                                ],
+                                why: 'Samsung\'s affordable smartphone with a beautiful screen. "Easy Mode" simplifies everything with larger icons and text, perfect for first-time smartphone users.',
+                                link: 'https://www.samsung.com/us/smartphones/galaxy-a-series/'
+                            }
+                        ],
+                        '300-500': [
+                            {
+                                name: 'Samsung Galaxy A54',
+                                price: '$449',
+                                specs: [
+                                    'Beautiful 6.4-inch AMOLED display',
+                                    'Easy Mode for simple operation',
+                                    'Excellent camera system',
+                                    'Two-day battery life',
+                                    'Water and dust resistant',
+                                    '5G connectivity',
+                                    'Premium build quality'
+                                ],
+                                why: 'This phone balances ease of use with advanced features. Easy Mode when you want simplicity, full features when you\'re ready to explore. Excellent camera and beautiful screen.',
+                                link: 'https://www.samsung.com/us/smartphones/galaxy-a-series/'
+                            },
+                            {
+                                name: 'Google Pixel 9a',
+                                price: '$499',
+                                specs: [
+                                    'Clean, simple Android interface',
+                                    'Excellent camera with AI features',
+                                    'Fast Google Tensor processor',
+                                    'All-day battery',
+                                    'Free Google Photos storage',
+                                    'Regular security updates',
+                                    'Great voice commands'
+                                ],
+                                why: 'Google\'s own phone with the cleanest, simplest Android experience. Fantastic camera that takes great photos automatically, and excellent voice commands for hands-free use.',
+                                link: 'https://store.google.com/product/pixel_9a'
+                            }
+                        ],
+                        'over500': [
+                            {
+                                name: 'Samsung Galaxy S24',
+                                price: '$799',
+                                specs: [
+                                    'Premium 6.2-inch display',
+                                    'Top-tier camera system',
+                                    'Very fast processor',
+                                    'All-day battery with fast charging',
+                                    'Water and dust resistant',
+                                    'Samsung AI features',
+                                    'Premium build and materials'
+                                ],
+                                why: 'Samsung\'s flagship phone with all the premium features. Beautiful screen, incredible camera, and will stay fast and current for many years.',
+                                link: 'https://www.samsung.com/us/smartphones/galaxy-s24/'
+                            }
+                        ]
+                    }
+                }
+            };
+
+            let selectedProducts;
+
+            if (deviceType === 'flip') {
+                selectedProducts = products.flip[budget];
+
+                if (!selectedProducts || selectedProducts.length === 0) {
+                    selectedProducts = products.flip['100-300'];
+                }
+            } else {
+                selectedProducts = products.smartphone[platform][budget];
+
+                if (!selectedProducts || selectedProducts.length === 0) {
+                    if (budget === 'under100') {
+                        selectedProducts = products.smartphone[platform]['100-300'];
+                    } else if (budget === '100-300') {
+                        selectedProducts = products.smartphone[platform]['300-500'];
+                    } else if (budget === '300-500') {
+                        selectedProducts = products.smartphone[platform]['over500'];
+                    }
+                }
+            }
+
+            if (!selectedProducts || selectedProducts.length === 0) {
+                return [{
+                    name: 'Budget Recommendation',
+                    price: 'See options',
+                    specs: ['For quality phones in this category, we recommend looking at the next price range up.'],
+                    why: 'Quality options in this exact price range are limited, but moving up just one budget level opens up excellent choices.',
+                    link: platform === 'iphone' ? 'https://www.apple.com/iphone/' : 'https://www.bestbuy.com/site/mobile-cell-phones/unlocked-cell-phones/pcmcat226800050011.c?id=pcmcat226800050011'
+                }];
+            }
+
+            return selectedProducts.slice(0, 3);
+        }
+
+        function showResults() {
+            document.getElementById('question6').classList.remove('active');
+
+            const rec = determineRecommendation();
+            const products = getProducts(rec.deviceType, rec.platform, answers.budget, answers.specialNeeds, answers.primaryUse, answers.screenSize);
+
+            let resultsHTML = `
+                <div class="result-header">
+                    <h2>Your Perfect Phone Match!</h2>
+                    <div class="result-recommendation">${rec.recommendation}</div>
+                </div>
+                
+                <div class="result-reasons">
+                    <h3>Why This Is Perfect For You:</h3>
+                    <ul>
+                        ${rec.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <h3 style="font-family: 'Poppins', sans-serif; color: #2d3748; margin-bottom: 20px; font-size: 1.5em;">Our Top Recommendations:</h3>
+            `;
+
+            products.forEach(product => {
+                resultsHTML += `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                        <div class="product-specs">
+                            <h4>Key Features (In Plain English):</h4>
+                            <ul>
+                                ${product.specs.map(spec => `<li>${spec}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="product-why">
+                            <h4>Why We Recommend This:</h4>
+                            <p>${product.why}</p>
+                        </div>
+                        <a href="${product.link}" class="product-link" target="_blank" rel="noopener">View This Phone</a>
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div class="result-actions">
+                    <button class="btn btn-primary" onclick="downloadPDF()">Download Results as PDF</button>
+                    <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = resultsHTML;
+            document.getElementById('results').classList.add('active');
+            updateProgress(totalQuestions);
+        }
+
+        function startOver() {
+            document.getElementById('results').classList.remove('active');
+            goToStart();
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const rec = determineRecommendation();
+            const products = getProducts(rec.deviceType, rec.platform, answers.budget, answers.specialNeeds, answers.primaryUse, answers.screenSize);
+
+            doc.setFontSize(20);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Your Phone Recommendations', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('From SmartSass Tech', 105, 28, { align: 'center' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended: ' + rec.recommendation, 20, 45);
+
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Why This Is Perfect For You:', 20, 55);
+
+            let y = 63;
+            rec.reasons.forEach(reason => {
+                const lines = doc.splitTextToSize('• ' + reason, 170);
+                doc.text(lines, 25, y);
+                y += lines.length * 7;
+            });
+
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('Recommended Products:', 20, y);
+            y += 10;
+
+            products.forEach((product, index) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(13);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(product.name + ' - ' + product.price, 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+
+                product.specs.forEach(spec => {
+                    const lines = doc.splitTextToSize('• ' + spec, 170);
+                    doc.text(lines, 25, y);
+                    y += lines.length * 6;
+                });
+
+                y += 5;
+                const whyLines = doc.splitTextToSize('Why: ' + product.why, 170);
+                doc.text(whyLines, 25, y);
+                y += whyLines.length * 6 + 5;
+
+                doc.setTextColor(102, 126, 234);
+                doc.text('Link: ' + product.link, 25, y);
+                y += 10;
+                doc.setTextColor(0, 0, 0);
+            });
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text('SmartSass Tech | (585) 645-4549 | smartsasstech@gmail.com', 105, 285, { align: 'center' });
+            }
+
+            doc.save('phone-recommendations.pdf');
+        }
+    </script>
+</body>
+
+</html>
