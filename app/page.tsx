@@ -19,10 +19,8 @@ export default async function Home() {
           <h1 className="hero-title">Support for Every Device You Use</h1>
         </div>
 
-        {/* Device Category Slider (Outside container for full-width) */}
-        <div className="slider-container">
-          <DeviceSlider />
-        </div>
+        {/* Device Category Slider (full-width) */}
+        <DeviceSlider />
       </section>
 
       {/* Featured Articles Section - Replaces the static "Resources" from original if desired, or appended */}

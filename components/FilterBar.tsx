@@ -236,11 +236,9 @@ export default function FilterBar({
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {filteredArticles.map((article: ArticleMetadata) => (
-              <div key={article.slug} className="bg-white rounded-lg shadow-sm p-4">
-                <ArticleCard article={article} />
-              </div>
+              <ArticleCard key={article.slug} article={article} />
             ))}
           </div>
         )}

@@ -17,10 +17,10 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
   return (
     <div className="bg-kb-bg">
       {/* Header */}
-      <section className="bg-kb-navy text-white py-12">
+      <section style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)', padding: '4rem 0 3.5rem' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-2">Browse All Articles</h1>
-          <p className="text-kb-cream">
+          <h1 className="text-5xl font-bold mb-3 text-white tracking-tight">Browse All Articles</h1>
+          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.2rem' }}>
             Filter by topic and device to find the help you need
           </p>
         </div>

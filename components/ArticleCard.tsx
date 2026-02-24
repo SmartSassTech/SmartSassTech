@@ -7,76 +7,74 @@ interface ArticleCardProps {
   article: ArticleMetadata
 }
 
+const TYPE_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
+  'how-to': { bg: '#EEF2FF', text: '#3730A3', dot: '#4F46E5' },
+  'setup': { bg: '#EEF2FF', text: '#3730A3', dot: '#4F46E5' },
+  'tutorial': { bg: '#F0FDF4', text: '#166534', dot: '#16A34A' },
+  'safety': { bg: '#FFF7ED', text: '#9A3412', dot: '#EA580C' },
+  'security': { bg: '#FFF7ED', text: '#9A3412', dot: '#EA580C' },
+  'troubleshooting': { bg: '#F0F9FF', text: '#075985', dot: '#0284C7' },
+  'educational': { bg: '#FAF5FF', text: '#6B21A8', dot: '#9333EA' },
+  'consumer decision': { bg: '#FDF4FF', text: '#701A75', dot: '#C026D3' },
+  'guide': { bg: '#F0FDF4', text: '#166534', dot: '#16A34A' },
+  'reference': { bg: '#EEF2FF', text: '#3730A3', dot: '#4F46E5' },
+  'news': { bg: '#FAF5FF', text: '#6B21A8', dot: '#9333EA' },
+}
+
+function getTypeStyle(type: string) {
+  const key = Object.keys(TYPE_STYLES).find(k => type.toLowerCase().includes(k))
+  return key ? TYPE_STYLES[key] : { bg: '#F3F4F6', text: '#374151', dot: '#6B7280' }
+}
+
 export default function ArticleCard({ article }: ArticleCardProps) {
-  const getBadgeColor = (type: string) => {
-    const t = type.toLowerCase()
-    // Map new CSV types to colors
-    if (t.includes('how-to') || t.includes('setup')) return 'bg-kb-navy text-white'
-    if (t.includes('tutorial')) return 'bg-kb-teal text-white'
-    if (t.includes('safety') || t.includes('security')) return 'bg-kb-orange text-white'
-    if (t.includes('troubleshooting')) return 'bg-kb-slate text-white'
-    if (t.includes('educational')) return 'bg-kb-purple text-white'
-    if (t.includes('consumer decision')) return 'bg-kb-blue text-white'
-
-    // Legacy fallbacks
-    if (t === 'guide') return 'bg-kb-teal text-white'
-    if (t === 'reference') return 'bg-kb-navy text-white'
-    if (t === 'news') return 'bg-kb-purple text-white'
-
-    return 'bg-kb-pale text-kb-navy'
-  }
+  const typeStyle = article.articleType ? getTypeStyle(article.articleType) : null
+  const tags = [
+    ...(article.hardware || []),
+    ...(article.platforms || []),
+    ...(article.deviceType || []),
+    ...(article.platformCategory ? [article.platformCategory] : []),
+  ].slice(0, 3)
 
   return (
-    <Link href={`/articles/${article.slug}`}>
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all h-full p-6 border-l-4 border-kb-navy hover:border-kb-slate cursor-pointer relative">
-        <div className="flex justify-between items-start gap-4 mb-3">
-          <h3 className="text-lg font-semibold text-kb-navy">{article.title}</h3>
-          {article.articleType && (
-            <span className={`shrink-0 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider ${getBadgeColor(article.articleType)}`}>
+    <Link href={`/articles/${article.slug}`} className="article-card-link">
+      <div className="article-card">
+        {/* Type Badge Row */}
+        {typeStyle && article.articleType && (
+          <div className="article-card-badge-row">
+            <span
+              className="article-card-badge"
+              style={{ background: typeStyle.bg, color: typeStyle.text }}
+            >
+              <span className="badge-dot" style={{ background: typeStyle.dot }} />
               {article.articleType}
             </span>
-          )}
-        </div>
-
-        <p className="text-kb-muted text-sm mb-4 line-clamp-2">
-          {article.description}
-        </p>
-
-        <div className="flex flex-wrap gap-2 mb-3">
-          <span className="text-xs bg-kb-pale text-kb-navy px-2 py-1 rounded">
-            {article.category}
-          </span>
-        </div>
-
-        {(article.hardware?.length || article.platforms?.length || article.deviceType?.length || article.platformCategory) ? (
-          <div className="flex flex-wrap gap-1">
-            {[
-              ...(article.hardware || []),
-              ...(article.platforms || []),
-              ...(article.deviceType || []),
-              ...(article.platformCategory ? [article.platformCategory] : [])
-            ].slice(0, 3).map((item, idx) => (
-              <span key={idx} className="text-xs text-kb-muted bg-kb-bg px-2 py-0.5 rounded">
-                {item}
-              </span>
-            ))}
-            {([
-              ...(article.hardware || []),
-              ...(article.platforms || []),
-              ...(article.deviceType || []),
-              ...(article.platformCategory ? [article.platformCategory] : [])
-            ].length) > 3 && (
-                <span className="text-xs text-kb-muted bg-kb-bg px-2 py-0.5 rounded">
-                  +{[
-                    ...(article.hardware || []),
-                    ...(article.platforms || []),
-                    ...(article.deviceType || []),
-                    ...(article.platformCategory ? [article.platformCategory] : [])
-                  ].length - 3} more
-                </span>
-              )}
           </div>
-        ) : null}
+        )}
+
+        {/* Title */}
+        <h3 className="article-card-title">{article.title}</h3>
+
+        {/* Description */}
+        {article.description && (
+          <p className="article-card-desc">{article.description}</p>
+        )}
+
+        {/* Category + Tags */}
+        <div className="article-card-footer">
+          <span className="article-card-category">{article.category}</span>
+          {tags.map((tag, idx) => (
+            <span key={idx} className="article-card-tag">{tag}</span>
+          ))}
+        </div>
+
+        {/* Read arrow */}
+        <div className="article-card-read">
+          Read article
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </div>
       </div>
     </Link>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 
 interface DeviceSlide {
@@ -21,104 +21,90 @@ const slides: DeviceSlide[] = [
 ]
 
 export default function DeviceSlider() {
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const [slidesPerView, setSlidesPerView] = useState(3)
-    const [isPaused, setIsPaused] = useState(false)
-    const trackRef = useRef<HTMLDivElement>(null)
-    const totalSlides = slides.length
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const [isHovered, setIsHovered] = useState(false)
+    const animationRef = useRef<number>()
+    const scrollAmount = useRef<number>(0)
 
-    const updateSlidesPerView = useCallback(() => {
-        const width = window.innerWidth
-        if (width < 768) setSlidesPerView(1.2)
-        else if (width < 1024) setSlidesPerView(2.2)
-        else if (width < 1440) setSlidesPerView(2.8)
-        else if (width < 1920) setSlidesPerView(3.8)
-        else setSlidesPerView(4.8)
-    }, [])
-
+    // A smooth continuous scrolling implementation
     useEffect(() => {
-        updateSlidesPerView()
-        window.addEventListener('resize', updateSlidesPerView)
-        return () => window.removeEventListener('resize', updateSlidesPerView)
-    }, [updateSlidesPerView])
+        const track = scrollRef.current
+        if (!track) return
 
-    const nextSlide = useCallback(() => {
-        setCurrentIndex(prev => {
-            const next = prev + 1
-            if (next > totalSlides - Math.floor(slidesPerView)) return 0
-            return next
-        })
-    }, [totalSlides, slidesPerView])
+        const scroll = () => {
+            if (!isHovered && track) {
+                track.scrollLeft += 0.5 // Adjust this value to change speed (lower = slower)
 
-    const prevSlide = useCallback(() => {
-        setCurrentIndex(prev => {
-            const next = prev - 1
-            if (next < 0) return Math.max(0, totalSlides - Math.floor(slidesPerView))
-            return next
-        })
-    }, [totalSlides, slidesPerView])
+                // If we've scrolled past the first set of items, snap back to the start seamlessly
+                if (track.scrollLeft >= track.scrollWidth / 2) {
+                    track.scrollLeft = 0
+                }
+            }
+            animationRef.current = requestAnimationFrame(scroll)
+        }
 
-    useEffect(() => {
-        if (isPaused) return
-        const interval = setInterval(nextSlide, 5000)
-        return () => clearInterval(interval)
-    }, [nextSlide, isPaused])
+        animationRef.current = requestAnimationFrame(scroll)
 
-    const slideWidth = 100 / slidesPerView
-    const offset = -currentIndex * slideWidth
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current)
+        }
+    }, [isHovered])
+
+    const handleManualScroll = (direction: 'left' | 'right') => {
+        if (scrollRef.current) {
+            const scrollDistance = 320 // Width of one card
+            scrollRef.current.scrollBy({
+                left: direction === 'left' ? -scrollDistance : scrollDistance,
+                behavior: 'smooth'
+            })
+        }
+    }
+
+    // Duplicate slides for seamless loop
+    const doubledSlides = [...slides, ...slides]
 
     return (
-        <div className="section" style={{ backgroundColor: 'transparent', padding: 'var(--spacing-lg) 0' }}>
-            <div className="container relative">
-                <button
-                    onClick={prevSlide}
-                    className="slider-arrow slider-arrow-prev"
-                    aria-label="Previous device category"
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                </button>
+        <div
+            className="continuous-slider-wrapper"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+        >
+            <button
+                className="slim-arrow left-arrow"
+                onClick={() => handleManualScroll('left')}
+                aria-label="Scroll Left"
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
 
-                <div
-                    className="device-slider"
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                >
-                    <div
-                        className="slider-track"
-                        style={{
-                            transform: `translateX(${offset}%)`,
-                            transition: 'transform 0.5s ease-in-out',
-                            display: 'flex',
-                            gap: '24px' // var(--spacing-lg)
-                        }}
+            <div className="continuous-slider-track" ref={scrollRef}>
+                {doubledSlides.map((slide, idx) => (
+                    <Link
+                        key={idx}
+                        href={slide.href}
+                        className="continuous-slide"
+                        aria-label={slide.name}
                     >
-                        {slides.map((slide, idx) => (
-                            <Link
-                                key={idx}
-                                href={slide.href}
-                                className="device-slide"
-                                style={{ flex: `0 0 calc(${slideWidth}% - 24px)` }}
-                            >
-                                <div className="device-slide-card">
-                                    <img src={slide.img} alt={slide.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
-                <button
-                    onClick={nextSlide}
-                    className="slider-arrow slider-arrow-next"
-                    aria-label="Next device category"
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </button>
+                        <div className="device-slide-card">
+                            <img src={slide.img} alt={slide.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        </div>
+                    </Link>
+                ))}
             </div>
+
+            <button
+                className="slim-arrow right-arrow"
+                onClick={() => handleManualScroll('right')}
+                aria-label="Scroll Right"
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
         </div>
     )
 }

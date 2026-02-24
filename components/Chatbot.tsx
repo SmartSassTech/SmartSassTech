@@ -209,7 +209,8 @@ export default function Chatbot() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-kb-navy text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                className="bg-kb-teal text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                style={{ boxShadow: '0 4px 20px rgba(42, 157, 143, 0.4)' }}
             >
                 {isOpen ? <X size={24} /> : (
                     <>
