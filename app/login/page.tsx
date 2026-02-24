@@ -21,20 +21,33 @@ export default function LoginPage() {
         setIsLoading(true)
         setMessage(null)
 
+        // Capture redirect parameter if it exists
+        const searchParams = new URLSearchParams(window.location.search)
+        const redirectPath = searchParams.get('redirect') || '/'
+
         try {
             if (isLogin) {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password })
                 if (error) {
                     setMessage({ text: error.message, type: 'error' })
                 } else {
-                    // Update last login in profile
+                    // Update last login in profile (fail gracefully if it throws)
                     if (data.user) {
-                        await supabase
-                            .from('profiles')
-                            .upsert({ id: data.user.id, 'Last Login': new Date().toISOString() })
+                        try {
+                            await supabase
+                                .from('profiles')
+                                .upsert({ id: data.user.id, 'Last Login': new Date().toISOString() })
+                        } catch (e) {
+                            console.error('Failed to update last login:', e)
+                        }
                     }
                     setMessage({ text: 'Welcome back! Redirecting...', type: 'success' })
-                    setTimeout(() => router.push('/'), 1000)
+
+                    // Refresh Server Components cache and force a hard redirect
+                    router.refresh()
+                    setTimeout(() => {
+                        window.location.href = redirectPath
+                    }, 500)
                 }
             } else {
                 const { data, error } = await supabase.auth.signUp({

@@ -29,11 +29,11 @@ export default function Footer() {
           <div className="footer-section">
             <h3>Account</h3>
             <ul className="footer-links">
-              <li><Link href="#">Account Settings</Link></li>
-              <li><Link href="#">My Bookings</Link></li>
-              <li><Link href="#">My Subscriptions</Link></li>
-              <li><Link href="#">My Rewards</Link></li>
-              <li><Link href="#">Plans & Pricing</Link></li>
+              <li><Link href="/account">Account Settings</Link></li>
+              <li><Link href="/my-bookings">My Bookings</Link></li>
+              <li><Link href="/subscriptions">My Subscriptions</Link></li>
+              <li><Link href="/rewards">My Rewards</Link></li>
+              <li><Link href="/pricing">Plans &amp; Pricing</Link></li>
             </ul>
           </div>
 
