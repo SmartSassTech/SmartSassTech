@@ -12,39 +12,67 @@ export default function withAuth<P extends object>(
         const pathname = usePathname()
         const [isMounted, setIsMounted] = useState(false)
         const [isAuthorized, setIsAuthorized] = useState(false)
+        const [authError, setAuthError] = useState<string | null>(null)
 
         useEffect(() => {
             setIsMounted(true)
-            const checkAuth = async () => {
-                const {
-                    data: { session },
-                } = await supabase.auth.getSession()
+            let isCurrent = true
 
-                if (!session) {
-                    // If not logged in, build redirect url
-                    const redirectUrl = encodeURIComponent(pathname)
-                    // Use hard redirect to bypass any Next.js client-side freezing
-                    window.location.href = `/login?redirect=${redirectUrl}`
-                } else {
-                    setIsAuthorized(true)
+            console.log(`[withAuth] Monitoring auth state for ${pathname}...`)
+
+            // Safety timeout
+            const timeoutId = setTimeout(() => {
+                if (isCurrent && !isAuthorized) {
+                    console.warn(`[withAuth] Auth check timed out for ${pathname}`)
+                    setAuthError('Still verifying your session. This can happen on slow connections. If it persists, please refresh.')
                 }
+            }, 7000)
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+                if (!isCurrent) return
+
+                console.log(`[withAuth] Auth event: ${event}`, session ? 'User present' : 'No user')
+
+                if (session) {
+                    setIsAuthorized(true)
+                    clearTimeout(timeoutId)
+                } else if (event === 'SIGNED_OUT' || (event === 'INITIAL_SESSION' && !session)) {
+                    // Only redirect if we are confirmed unauthenticated
+                    const redirectUrl = encodeURIComponent(pathname)
+                    console.log('[withAuth] Redirecting to login...')
+                    window.location.href = `/login?redirect=${redirectUrl}`
+                }
+            })
+
+            // Double check session immediately too
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (isCurrent && session) {
+                    setIsAuthorized(true)
+                    clearTimeout(timeoutId)
+                }
+            })
+
+            return () => {
+                isCurrent = false
+                subscription.unsubscribe()
+                clearTimeout(timeoutId)
             }
+        }, [pathname])
 
-            checkAuth()
-        }, [pathname, router])
-
-        // Prevent hydration mismatch by not rendering anything until mounted
+        // Prevent hydration mismatch
         if (!isMounted) {
             return null
         }
 
         if (!isAuthorized) {
-            // Return a full screen branded loader so there is no flicker of the protected content
             return (
                 <div className="bg-kb-bg min-h-screen flex flex-col items-center justify-center p-4">
                     <div className="text-center space-y-4">
                         <div className="w-12 h-12 border-4 border-sst-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
                         <p className="text-sst-primary font-bold animate-pulse">Verifying Access...</p>
+                        {authError && (
+                            <p className="text-sst-primary/60 text-sm mt-4 max-w-xs mx-auto">{authError}</p>
+                        )}
                     </div>
                 </div>
             )

@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import Chatbot from '@/components/Chatbot'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: 'SmartSass Tech | Tech Help | Rochester, NY',

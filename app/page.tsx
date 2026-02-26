@@ -48,7 +48,7 @@ export default async function Home() {
       {/* How It Works Section */}
       <section className="section" style={{ backgroundColor: 'var(--color-white)' }}>
         <div className="container">
-          <h2 className="text-center mb-xl">How It Works</h2>
+          <h2 className="text-title text-center mb-xl">How It Works</h2>
           <div className="steps-grid">
             <div className="step-card">
               <div className="step-number">1</div>
@@ -72,7 +72,7 @@ export default async function Home() {
       {/* Testimonials Section */}
       <section className="section">
         <div className="container">
-          <h2 className="text-center mb-xl">What Our Clients Say</h2>
+          <h2 className="text-title text-center mb-xl">What Our Clients Say</h2>
           <div className="testimonials-grid">
             <div className="testimonial-card">
               <p className="testimonial-text">"SmartSass Tech made me feel so comfortable. I finally understand how to use FaceTime with my grandkids! I'm no longer afraid of my tablet."</p>
@@ -96,7 +96,7 @@ export default async function Home() {
       {/* CTA Section */}
       <section className="cta-section section">
         <div className="container">
-          <h2 className="mb-xl">Need a Hand? We're Here For You!</h2>
+          <h2 className="text-title mb-xl">Need a Hand? We're Here For You!</h2>
           <p className="cta-text">
             If you're stuck, don't worry -- you don't have to figure it out alone.
             We'll walk you through any issue with patience and clear instructions.

@@ -27,27 +27,35 @@ export default function LoginPage() {
 
         try {
             if (isLogin) {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-                if (error) {
-                    setMessage({ text: error.message, type: 'error' })
-                } else {
-                    // Update last login in profile (fail gracefully if it throws)
-                    if (data.user) {
-                        try {
-                            await supabase
-                                .from('profiles')
-                                .upsert({ id: data.user.id, 'Last Login': new Date().toISOString() })
-                        } catch (e) {
-                            console.error('Failed to update last login:', e)
-                        }
-                    }
-                    setMessage({ text: 'Welcome back! Redirecting...', type: 'success' })
+                console.log('[Login] Attempting sign in for:', email)
 
-                    // Refresh Server Components cache and force a hard redirect
-                    router.refresh()
-                    setTimeout(() => {
-                        window.location.href = redirectPath
-                    }, 500)
+                // Add a timeout for the authentication attempt
+                const loginPromise = supabase.auth.signInWithPassword({ email, password })
+                const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) =>
+                    setTimeout(() => reject(new Error('Login attempt timed out. Please check your connection.')), 15000)
+                )
+
+                try {
+                    const { data, error } = await Promise.race([loginPromise, timeoutPromise])
+
+                    if (error) {
+                        console.error('[Login] Sign in error:', error)
+                        setMessage({ text: error.message, type: 'error' })
+                    } else {
+                        console.log('[Login] Sign in successful for:', data.user?.email)
+                        setMessage({ text: 'Welcome back! Redirecting...', type: 'success' })
+
+                        // The database trigger "handle_user_login" on auth.users already updates the profiles table.
+                        // We don't need to do it here anymore, which avoids potential race conditions.
+
+                        setTimeout(() => {
+                            console.log('[Login] Executing hard redirect to:', redirectPath)
+                            window.location.href = redirectPath
+                        }, 500)
+                    }
+                } catch (err: any) {
+                    console.error('[Login] Exception during login:', err)
+                    setMessage({ text: err.message || 'An unexpected error occurred during login.', type: 'error' })
                 }
             } else {
                 const { data, error } = await supabase.auth.signUp({
