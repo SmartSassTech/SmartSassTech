@@ -184,7 +184,7 @@ export default function BookingPage() {
                     <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
                         <Check size={48} />
                     </div>
-                    <h1 className="text-4xl font-heading font-medium text-sst-primary mb-6 tracking-tight">Booking Confirmed!</h1>
+                    <h1 className="text-title mb-6">Booking Confirmed!</h1>
                     <p className="text-xl text-kb-dark mb-8">
                         Thank you, <strong>{formData.name}</strong>! Your session for <strong>{selectedService?.name}</strong> is scheduled for <strong>{selectedDate?.toLocaleDateString()}</strong> at <strong>{selectedTime}</strong>.
                     </p>
@@ -204,14 +204,14 @@ export default function BookingPage() {
     return (
         <div className="bg-kb-bg min-h-screen py-16 md:py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl md:text-5xl font-heading font-medium text-sst-primary text-center mb-16 tracking-tight">
+                <h1 className="text-title text-center mb-16">
                     Book Your Tech Support
                 </h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     {/* Left: Service Selection */}
                     <div className="lg:col-span-4 space-y-6">
-                        <h2 className="text-2xl font-bold text-sst-primary mb-6">1. Select a Service</h2>
+                        <h2 className="mb-6">1. Select a Service</h2>
                         {['Standard Support', 'Monthly Memberships', 'Session Packs'].map(category => (
                             <div key={category} className="space-y-4">
                                 <h3 className="text-sm font-bold text-kb-muted uppercase tracking-widest">{category}</h3>
@@ -246,7 +246,7 @@ export default function BookingPage() {
                             <div className="space-y-12">
                                 {/* Step 2: Calendar */}
                                 <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl">
-                                    <h2 className="text-2xl font-bold text-sst-primary mb-8">2. Choose Date & Time</h2>
+                                    <h2 className="mb-8">2. Choose Date & Time</h2>
 
                                     <div className="flex items-center justify-between mb-8">
                                         <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))} className="p-2 hover:bg-kb-bg rounded-full transition-all">
@@ -290,11 +290,11 @@ export default function BookingPage() {
                                 {/* Step 3: Details & Payment */}
                                 {selectedTime && (
                                     <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl">
-                                        <h2 className="text-2xl font-bold text-sst-primary mb-8">3. Your Information</h2>
+                                        <h2 className="mb-8">3. Your Information</h2>
                                         {showReview ? (
                                             <div className="space-y-8">
                                                 <div className="bg-kb-bg/50 p-8 rounded-3xl space-y-4">
-                                                    <h3 className="text-xl font-bold text-sst-primary mb-4">Review Your Booking</h3>
+                                                    <h3 className="mb-4">Review Your Booking</h3>
                                                     <div className="grid grid-cols-2 gap-4 text-sm">
                                                         <span className="text-kb-muted">Service:</span> <span className="font-bold">{selectedService.name}</span>
                                                         <span className="text-kb-muted">Date:</span> <span className="font-bold">{selectedDate?.toLocaleDateString()}</span>

@@ -12,7 +12,7 @@ function MyRewards() {
                     <div className="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
                         <Award size={40} />
                     </div>
-                    <h1 className="text-4xl font-heading font-medium text-sst-primary tracking-tight mb-2">SmartSass Rewards</h1>
+                    <h1 className="text-title mb-2">SmartSass Rewards</h1>
                     <p className="text-kb-dark text-lg">Earn points for every session and referring friends.</p>
                 </div>
 
@@ -42,7 +42,7 @@ function MyRewards() {
                         <div className="w-12 h-12 bg-kb-navy/10 text-kb-navy rounded-xl flex items-center justify-center mb-6">
                             <Star size={24} />
                         </div>
-                        <h3 className="text-xl font-bold text-sst-primary mb-2">How to Earn</h3>
+                        <h3 className="mb-2">How to Earn</h3>
                         <p className="text-kb-muted text-sm leading-relaxed mb-6">
                             Earn 100 points for every completed support session. Leave a review to earn an extra 50 points!
                         </p>
@@ -55,7 +55,7 @@ function MyRewards() {
                         <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6">
                             <Gift size={24} />
                         </div>
-                        <h3 className="text-xl font-bold text-sst-primary mb-2">Refer a Friend</h3>
+                        <h3 className="mb-2">Refer a Friend</h3>
                         <p className="text-kb-muted text-sm leading-relaxed mb-6">
                             Give a friend 20% off their first session. When they book, you get 500 bonus points!
                         </p>

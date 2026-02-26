@@ -14,7 +14,7 @@ export default function Footer() {
             />
           </div>
           <div className="footer-business-details">
-            <h3>SMARTSASS TECH</h3>
+            <h3 className="text-white mb-2">SMARTSASS TECH</h3>
             <p>Serving the Rochester, NY area</p>
             <p><strong>(585) 210-9758</strong></p>
             <p><a href="mailto:smartsasstech@gmail.com" className="footer-email">smartsasstech@gmail.com</a></p>
@@ -27,7 +27,7 @@ export default function Footer() {
         <div className="footer-content">
           {/* Account Links */}
           <div className="footer-section">
-            <h3>Account</h3>
+            <h3 className="text-white mb-4">Account</h3>
             <ul className="footer-links">
               <li><Link href="/account">Account Settings</Link></li>
               <li><Link href="/my-bookings">My Bookings</Link></li>
@@ -39,7 +39,7 @@ export default function Footer() {
 
           {/* Quizzes */}
           <div className="footer-section">
-            <h3>Quizzes</h3>
+            <h3 className="text-white mb-4">Quizzes</h3>
             <ul className="footer-links">
               <li><Link href="/quizes/computer-quiz.html">Computer Quiz</Link></li>
               <li><Link href="/quizes/smartwatch-quiz.html">Wearable Quiz</Link></li>
@@ -54,7 +54,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="footer-section">
-            <h3>Quick Links</h3>
+            <h3 className="text-white mb-4">Quick Links</h3>
             <ul className="footer-links">
               <li><Link href="/">Home</Link></li>
               <li><Link href="/articles">Resources</Link></li>

@@ -14,7 +14,7 @@ function AccountSettings() {
                             <User size={40} />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-heading font-medium tracking-tight mb-2">Account Settings</h1>
+                            <h1 className="text-title text-white mb-2">Account Settings</h1>
                             <p className="text-white/80">Manage your personal information and security preferences.</p>
                         </div>
                     </div>
@@ -22,7 +22,7 @@ function AccountSettings() {
                     <div className="p-8 md:p-12 space-y-8">
                         {/* Profile Info Section */}
                         <div className="space-y-6">
-                            <h2 className="text-xl font-bold text-sst-primary flex items-center gap-2 border-b border-kb-cream pb-4">
+                            <h2 className="flex items-center gap-2 border-b border-kb-cream pb-4">
                                 <User size={20} className="text-kb-muted" />
                                 Personal Information
                             </h2>
@@ -42,7 +42,7 @@ function AccountSettings() {
 
                         {/* Security Section */}
                         <div className="space-y-6">
-                            <h2 className="text-xl font-bold text-sst-primary flex items-center gap-2 border-b border-kb-cream pb-4">
+                            <h2 className="flex items-center gap-2 border-b border-kb-cream pb-4">
                                 <Shield size={20} className="text-kb-muted" />
                                 Security Details
                             </h2>

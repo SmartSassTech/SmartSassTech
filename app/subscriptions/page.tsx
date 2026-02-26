@@ -9,7 +9,7 @@ function MySubscriptions() {
         <div className="bg-kb-bg min-h-screen py-16 md:py-24">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-10">
-                    <h1 className="text-4xl font-heading font-medium text-sst-primary tracking-tight mb-2">My Subscriptions</h1>
+                    <h1 className="text-title mb-2">My Subscriptions</h1>
                     <p className="text-kb-dark text-lg">Manage your monthly tech support plans and billing.</p>
                 </div>
 
@@ -22,7 +22,7 @@ function MySubscriptions() {
                             <div className="flex justify-between items-start mb-6">
                                 <div>
                                     <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full mb-3">Active</span>
-                                    <h2 className="text-2xl font-bold text-sst-primary mb-1">Standard Support Pack</h2>
+                                    <h2 className="mb-1">Standard Support Pack</h2>
                                     <p className="text-kb-muted flex items-center gap-2 text-sm"><Clock size={16} /> Renews Oct 15, 2026</p>
                                 </div>
                                 <div className="text-right">
@@ -51,7 +51,7 @@ function MySubscriptions() {
 
                         {/* Order History */}
                         <div className="bg-white rounded-[2rem] shadow-xl p-8 border border-kb-cream">
-                            <h2 className="text-xl font-bold text-sst-primary mb-6">Billing History</h2>
+                            <h2 className="mb-6">Billing History</h2>
                             <div className="space-y-4">
                                 {/* Placeholder Invoice Row */}
                                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
@@ -71,7 +71,7 @@ function MySubscriptions() {
                     {/* Right Sidebar */}
                     <div className="space-y-8">
                         <div className="bg-kb-navy text-white rounded-[2rem] shadow-xl p-8">
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                            <h3 className="text-white mb-6 flex items-center gap-2">
                                 <CreditCard size={20} /> Payment Method
                             </h3>
                             <div className="bg-white/10 rounded-2xl p-6 mb-6 backdrop-blur-sm border border-white/20">

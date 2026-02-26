@@ -71,7 +71,7 @@ export default function ChatInterface({
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-sm">{title}</h3>
+                            <h3 className="font-semibold text-sm m-0">{title}</h3>
                             {isAdminView && <span className="bg-amber-400 text-kb-navy text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Agent Mode</span>}
                         </div>
                         <div className="flex items-center gap-1.5">

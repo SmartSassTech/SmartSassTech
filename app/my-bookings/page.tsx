@@ -10,7 +10,7 @@ function MyBookings() {
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
                     <div>
-                        <h1 className="text-4xl font-heading font-medium text-sst-primary tracking-tight mb-2">My Bookings</h1>
+                        <h1 className="text-title mb-2">My Bookings</h1>
                         <p className="text-kb-dark text-lg">Manage your upcoming tech sessions and view past appointments.</p>
                     </div>
                     <a href="/booking" className="px-6 py-3 bg-sst-primary text-white font-bold rounded-xl hover:bg-sst-secondary transition-all shadow-md flex items-center gap-2">
@@ -33,7 +33,7 @@ function MyBookings() {
                             <div className="w-16 h-16 bg-kb-navy/5 text-kb-navy rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Search size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-sst-primary mb-2">No upcoming sessions</h3>
+                            <h3 className="mb-2">No upcoming sessions</h3>
                             <p className="text-kb-muted mb-6 max-w-md mx-auto">You don't have any appointments scheduled right now. Ready to learn something new?</p>
                             <a href="/booking" className="inline-flex px-8 py-3 bg-white border-2 border-sst-primary text-sst-primary font-bold rounded-xl hover:bg-gray-50 transition-all">
                                 Explore Services

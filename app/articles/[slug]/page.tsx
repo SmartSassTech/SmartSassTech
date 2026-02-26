@@ -94,7 +94,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <Link href="/articles" className="inline-flex items-center text-kb-cream hover:text-white mb-6 text-sm font-medium">
             ← Back to Articles
           </Link>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight">{article.title}</h1>
+          <h1 className="text-title text-white mb-4">{article.title}</h1>
           <p className="text-lg text-kb-cream mb-6 leading-relaxed">{article.description}</p>
           <div className="flex flex-wrap gap-3 items-center">
             <span className="px-3 py-1 bg-kb-slate rounded-full text-sm font-medium">
@@ -133,7 +133,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-kb-navy">
-          <h3 className="text-lg font-bold text-kb-navy mb-4">Article Information</h3>
+          <h3 className="mb-4">Article Information</h3>
 
           {(article.hardware || article.platforms) && (article.hardware?.length || 0) + (article.platforms?.length || 0) > 0 && (
             <div className="mb-4">

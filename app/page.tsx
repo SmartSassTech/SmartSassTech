@@ -16,7 +16,7 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="hero section">
         <div className="container">
-          <h1 className="hero-title">Support for Every Device You Use</h1>
+          <h1 className="text-title text-center">Support for Every Device You Use</h1>
         </div>
 
         {/* Device Category Slider (full-width) */}
@@ -29,7 +29,7 @@ export default async function Home() {
           <div className="container">
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
               <div>
-                <h2 className="mb-2" style={{ fontSize: 'var(--font-size-subhero)' }}>Featured Guides</h2>
+                <h2 className="mb-2 text-h1">Featured Guides</h2>
                 <p className="text-kb-muted text-xl max-w-xl">Step-by-step instructions for your most common tech questions.</p>
               </div>
               <Link href="/articles" className="text-sst-primary font-bold border-b-2 border-sst-primary pb-1 hover:text-sst-secondary hover:border-sst-secondary transition-all">

@@ -123,7 +123,7 @@ export default function FilterBar({
       <div className="lg:col-span-1">
         <div className="bg-white rounded-lg shadow-md sticky top-20 flex flex-col h-[calc(100vh-80px)]">
           <div className="p-6 border-b border-kb-pale">
-            <h2 className="text-xl font-bold text-kb-navy">Filters</h2>
+            <h2 className="mb-0">Filters</h2>
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-kb-pale scrollbar-track-transparent">

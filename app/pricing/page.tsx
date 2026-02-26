@@ -36,7 +36,7 @@ function PricingPlans() {
         <div className="bg-kb-bg min-h-screen py-16 md:py-24">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-heading font-medium text-sst-primary tracking-tight mb-4">Plans & Pricing</h1>
+                    <h1 className="text-title mb-4">Plans & Pricing</h1>
                     <p className="text-kb-dark text-xl max-w-2xl mx-auto">Straightforward pricing. No hidden fees. Just patient, reliable tech support when you need it.</p>
                 </div>
 
@@ -49,7 +49,7 @@ function PricingPlans() {
                                 </div>
                             )}
 
-                            <h3 className="text-2xl font-bold text-sst-primary mb-2">{plan.name}</h3>
+                            <h3 className="mb-2">{plan.name}</h3>
                             <p className="text-kb-muted min-h-[48px] mb-6">{plan.description}</p>
 
                             <div className="mb-8">
@@ -69,8 +69,8 @@ function PricingPlans() {
                             </ul>
 
                             <a href="/booking" className={`w-full py-4 text-center font-bold rounded-2xl transition-all shadow-md ${plan.recommended
-                                    ? 'bg-sst-primary text-white hover:bg-sst-secondary'
-                                    : 'bg-gray-100 text-sst-primary hover:bg-gray-200'
+                                ? 'bg-sst-primary text-white hover:bg-sst-secondary'
+                                : 'bg-gray-100 text-sst-primary hover:bg-gray-200'
                                 }`}>
                                 Choose Plan
                             </a>

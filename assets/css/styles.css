@@ -112,37 +112,115 @@ body {
 }
 
 /* ==========================================
-   Typography
+   Typography & Unified Scale
    ========================================== */
+
+/* 
+  Unified Typography Classes 
+  - .text-title: Hero & Main Page Headings (64px)
+  - .text-subtitle: Subheadings below titles (40px, lighter weight)
+  - .text-h1 / h1: Major section headers (40px)
+  - .text-h2 / h2: Block sections (30px)
+  - .text-h3 / h3: Card titles / small sections (22px)
+  - .text-body / p: Standard text (18px)
+*/
+
 h1,
+.text-h1 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-subhero);
+  line-height: var(--line-height-heading);
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.01em;
+}
+
 h2,
+.text-h2 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xlarge);
+  line-height: var(--line-height-heading);
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
 h3,
+.text-h3 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-large);
+  line-height: var(--line-height-heading);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
 h4,
 h5,
 h6 {
   font-family: var(--font-family-heading);
-  line-height: var(--line-height-heading);
-  font-weight: 500;
-  /* Headings on site are not super bold */
+  font-size: var(--font-size-base);
+  font-weight: 600;
   color: var(--color-primary);
-  /* Ensure headings are dark blue */
 }
 
-h1 {
+p,
+.text-body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Base Body margin reset for generic text */
+p:last-child {
+  margin-bottom: 0;
+}
+
+.text-title {
+  font-family: var(--font-family-heading);
   font-size: var(--font-size-hero);
+  line-height: 1.1;
   font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.02em;
 }
 
-h2 {
+.text-subtitle {
+  font-family: var(--font-family);
   font-size: var(--font-size-subhero);
+  line-height: var(--line-height-heading);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
 }
 
-h3 {
-  font-size: var(--font-size-xlarge);
-}
+@media (max-width: 768px) {
+  .text-title {
+    font-size: 48px;
+  }
 
-h4 {
-  font-size: var(--font-size-large);
+  .text-subtitle {
+    font-size: 32px;
+  }
+
+  h1,
+  .text-h1 {
+    font-size: 32px;
+  }
+
+  h2,
+  .text-h2 {
+    font-size: 26px;
+  }
+
+  h3,
+  .text-h3 {
+    font-size: 20px;
+  }
 }
 
 a {
