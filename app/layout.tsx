@@ -35,6 +35,7 @@ export default function RootLayout({
 
         <Footer />
         <Chatbot />
+        <SpeedInsights />
       </body>
     </html>
   )
