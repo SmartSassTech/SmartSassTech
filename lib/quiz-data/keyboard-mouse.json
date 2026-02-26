@@ -1,0 +1,280 @@
+{
+    "id": "keyboard-mouse",
+    "title": "Find Your Perfect Keyboard & Mouse",
+    "description": "Let us help you choose the right keyboard and mouse for comfortable computing",
+    "questions": [
+        {
+            "id": 1,
+            "question": "What type of computer do you use?",
+            "options": [
+                {
+                    "text": "Laptop - and the built-in keyboard/trackpad are fine",
+                    "value": "laptop-only"
+                },
+                {
+                    "text": "Laptop - but I want better keyboard/mouse for my desk",
+                    "value": "laptop-upgrade"
+                },
+                {
+                    "text": "Desktop computer (needs external keyboard & mouse)",
+                    "value": "desktop"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "question": "How much do you type in a typical day?",
+            "options": [
+                {
+                    "text": "Just a little - some emails and browsing",
+                    "value": "light"
+                },
+                {
+                    "text": "A moderate amount - a few hours",
+                    "value": "moderate"
+                },
+                {
+                    "text": "A lot - I work at my computer all day",
+                    "value": "heavy"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Do you experience any discomfort when typing?",
+            "options": [
+                {
+                    "text": "Yes - wrist pain or strain",
+                    "value": "wrist"
+                },
+                {
+                    "text": "Yes - hand or finger discomfort",
+                    "value": "hand"
+                },
+                {
+                    "text": "Yes - shoulder or arm fatigue",
+                    "value": "shoulder"
+                },
+                {
+                    "text": "No - I feel comfortable",
+                    "value": "none"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "question": "What's your preference for controlling the cursor?",
+            "options": [
+                {
+                    "text": "Regular mouse - I'm used to it",
+                    "value": "mouse"
+                },
+                {
+                    "text": "Trackpad - I prefer touch gestures",
+                    "value": "trackpad"
+                },
+                {
+                    "text": "Ergonomic mouse - hand comfort is important",
+                    "value": "ergonomic"
+                },
+                {
+                    "text": "Trackball - less hand movement",
+                    "value": "trackball"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "question": "What's your budget for keyboard and mouse?",
+            "options": [
+                {
+                    "text": "Under $50 - basic and affordable",
+                    "value": "budget"
+                },
+                {
+                    "text": "$50 - $100 - good quality",
+                    "value": "moderate"
+                },
+                {
+                    "text": "$100 - $200 - comfortable and reliable",
+                    "value": "premium"
+                },
+                {
+                    "text": "Over $200 - I want the best ergonomics",
+                    "value": "top"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "question": "What's most important to you?",
+            "options": [
+                {
+                    "text": "Maximum comfort for long hours",
+                    "value": "comfort"
+                },
+                {
+                    "text": "Wireless - no cables on my desk",
+                    "value": "wireless"
+                },
+                {
+                    "text": "Quiet typing - I share my space",
+                    "value": "quiet"
+                },
+                {
+                    "text": "Compact size - save desk space",
+                    "value": "compact"
+                },
+                {
+                    "text": "Simple and easy to use",
+                    "value": "simple"
+                }
+            ]
+        }
+    ],
+    "recommendations": {
+        "Ergonomic Keyboard & Mouse": {
+            "title": "Ergonomic Keyboard & Mouse",
+            "reasons": [
+                "Ergonomic keyboards and mice reduce strain and prevent long-term injury",
+                "Split keyboard design keeps your shoulders and wrists in natural positions",
+                "Ergonomic mouse keeps your hand in a natural handshake position"
+            ],
+            "products": [
+                {
+                    "name": "Logitech Ergo K860 + Lift Mouse",
+                    "price": "$179 (combo)",
+                    "specs": [
+                        "Split curved keyboard reduces wrist strain",
+                        "Cushioned wrist rest with memory foam",
+                        "Lift vertical mouse in natural handshake position",
+                        "Reduces forearm twisting and discomfort",
+                        "Wireless - Bluetooth or USB receiver",
+                        "Certified by ergonomics experts"
+                    ],
+                    "why": "The ultimate setup for comfort. The split keyboard and vertical mouse work together to keep your body in a natural position, significantly reducing pain during long computing sessions.",
+                    "link": "https://www.amazon.com/Logitech-Wireless-Ergonomic-Keyboard-Bluetooth/dp/B0B688M8MW"
+                },
+                {
+                    "name": "Microsoft Ergonomic Keyboard",
+                    "price": "$59",
+                    "specs": [
+                        "Affordable ergonomic keyboard",
+                        "Split key design with natural arc layout",
+                        "Cushioned palm rest for wrist support",
+                        "Wired connection (very reliable)",
+                        "Simple plug-and-play setup"
+                    ],
+                    "why": "A great, budget-friendly way to move into ergonomic typing. It provides excellent wrist support and a more natural typing angle without a high price tag.",
+                    "link": "https://www.amazon.com/Microsoft-Ergonomic-Keyboard/dp/B07XKC28V9"
+                }
+            ]
+        },
+        "Standard Keyboard & Mouse": {
+            "title": "Standard Keyboard & Mouse",
+            "reasons": [
+                "Comfortable keyboard and mouse for everyday use",
+                "Reliable wireless connection keeps your desk clean",
+                "Familiar layout that is easy to get used to"
+            ],
+            "products": [
+                {
+                    "name": "Logitech MK345 Combo",
+                    "price": "$49.99",
+                    "specs": [
+                        "Full-size keyboard with number pad",
+                        "Contoured wireless mouse for right-handed use",
+                        "Built-in palm rest for extra comfort",
+                        "Quiet typing experience",
+                        "Spill-resistant and very durable",
+                        "3-year keyboard battery life"
+                    ],
+                    "why": "A step above basic combos, the MK345 adds a palm rest and better mouse ergonomics. It's the perfect daily workhorse for most home users.",
+                    "link": "https://www.amazon.com/Logitech-MK345-Wireless-Combo-Right-Handed/dp/B00QX29B1E"
+                }
+            ]
+        },
+        "Basic Keyboard & Mouse": {
+            "title": "Basic Keyboard & Mouse",
+            "reasons": [
+                "Simple, reliable keyboard and mouse that get the job done",
+                "Very affordable and easy to replace",
+                "Simple setup - just plug in the tiny USB receiver"
+            ],
+            "products": [
+                {
+                    "name": "Logitech MK270 Wireless Combo",
+                    "price": "$29.99",
+                    "features": [
+                        "Best-selling wireless combo in the world",
+                        "Full-size keyboard with shortcut keys",
+                        "Compact mouse for home or travel",
+                        "Single USB receiver for both devices",
+                        "Very reliable wireless connection"
+                    ],
+                    "why": "The gold standard for simple computing. It's affordable, reliable, and does exactly what you need without any complicated features.",
+                    "link": "https://www.amazon.com/Logitech-MK270-Wireless-Keyboard-Mouse/dp/B079JLY5M5"
+                }
+            ]
+        },
+        "Compact Keyboard & Mouse": {
+            "title": "Compact Keyboard & Mouse",
+            "reasons": [
+                "Space-saving design perfect for smaller desks",
+                "Ultra-compact and portable for travel",
+                "Modern, minimalist design looks great"
+            ],
+            "products": [
+                {
+                    "name": "Logitech K380 + M350 Pebble",
+                    "price": "$69.98",
+                    "features": [
+                        "Ultra-compact and very lightweight",
+                        "Bluetooth switches between 3 devices (computer, tablet, phone)",
+                        "Whisper-quiet typing and clicking",
+                        "Mouse is slim enough to fit in a pocket",
+                        "Beautiful minimalist aesthetic"
+                    ],
+                    "why": "Perfect for small desks or anyone who likes to move around with their computer. The keyboard is surprisingly comfortable despite its small size.",
+                    "link": "https://www.logitech.com/en-us/products/keyboards/k380-multi-device.html"
+                },
+                {
+                    "name": "Logitech MK470 Slim Combo",
+                    "price": "$49.99",
+                    "features": [
+                        "Modern, ultra-thin design",
+                        "Whisper-quiet typing and clicking",
+                        "Compact layout saves desk space",
+                        "Reliable wireless connection",
+                        "Looks great with modern laptops"
+                    ],
+                    "why": "If you want your desk to look clean and modern, this is the best combo. It's incredibly quiet, making it great for shared living spaces.",
+                    "link": "https://www.logitech.com/en-us/products/combos/mk470-slim-wireless-keyboard-mouse.html"
+                }
+            ]
+        },
+        "Laptop Accessories & Upgrades": {
+            "title": "Laptop Accessories & Upgrades",
+            "reasons": [
+                "Enhance your laptop experience with helpful additions",
+                "Raising your screen reduces neck and back pain",
+                "External mouse is much more precise than a trackpad"
+            ],
+            "products": [
+                {
+                    "name": "Laptop Stand + External Mouse",
+                    "price": "$40-60",
+                    "features": [
+                        "Adjustable stand raises screen to eye level",
+                        "Reduces neck strain from hunching over",
+                        "Wireless mouse for better hand comfort",
+                        "Transforms laptop into a small desktop",
+                        "Easy to pack away when not in use"
+                    ],
+                    "why": "The best improvement for any laptop user. Raising the screen to eye level will instantly make your neck and shoulders feel better during long sessions.",
+                    "link": "https://www.amazon.com/laptop-stand/s?k=laptop+stand"
+                }
+            ]
+        }
+    }
+}

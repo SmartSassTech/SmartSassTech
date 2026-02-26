@@ -1,0 +1,224 @@
+{
+    "id": "phone",
+    "title": "Find Your Perfect Phone",
+    "description": "Let us help you choose the right smartphone or flip phone",
+    "questions": [
+        {
+            "id": "phoneType",
+            "title": "What type of phone appeals to you most?",
+            "options": [
+                {
+                    "label": "Something very simple - just calling and texting",
+                    "value": "simple"
+                },
+                {
+                    "label": "A smartphone, but one that's easy to use",
+                    "value": "smartphone-easy"
+                },
+                {
+                    "label": "A full-featured smartphone with all the bells and whistles",
+                    "value": "smartphone-full"
+                }
+            ]
+        },
+        {
+            "id": "ecosystem",
+            "title": "Do you currently use an iPhone or prefer Apple products?",
+            "options": [
+                {
+                    "label": "Yes, I use iPhone or other Apple devices",
+                    "value": "yes"
+                },
+                {
+                    "label": "No, I use Android or other brands",
+                    "value": "no"
+                },
+                {
+                    "label": "I'm open to either - just want what's best",
+                    "value": "either"
+                }
+            ]
+        },
+        {
+            "id": "primaryUse",
+            "title": "What will you mainly use your phone for?",
+            "options": [
+                {
+                    "label": "Mostly just phone calls",
+                    "value": "calls"
+                },
+                {
+                    "label": "Calls and texting",
+                    "value": "calls-text"
+                },
+                {
+                    "label": "Calls, texts, and taking lots of photos",
+                    "value": "photos"
+                },
+                {
+                    "label": "Everything - photos, videos, apps, internet",
+                    "value": "everything"
+                }
+            ]
+        },
+        {
+            "id": "specialNeeds",
+            "title": "Do any of these apply to you?",
+            "options": [
+                {
+                    "label": "I use a hearing aid",
+                    "value": "hearing"
+                },
+                {
+                    "label": "I need larger text and buttons",
+                    "value": "vision"
+                },
+                {
+                    "label": "I want easy access to emergency services",
+                    "value": "emergency"
+                },
+                {
+                    "label": "None of these apply",
+                    "value": "none"
+                }
+            ]
+        },
+        {
+            "id": "budget",
+            "title": "What's your budget for a new phone?",
+            "options": [
+                {
+                    "label": "Under $100",
+                    "value": "under100"
+                },
+                {
+                    "label": "$100 - $300",
+                    "value": "100-300"
+                },
+                {
+                    "label": "$300 - $500",
+                    "value": "300-500"
+                },
+                {
+                    "label": "Over $500",
+                    "value": "over500"
+                }
+            ]
+        },
+        {
+            "id": "screenSize",
+            "title": "How important is a larger screen to you?",
+            "options": [
+                {
+                    "label": "Very important - I want a big, easy-to-read screen",
+                    "value": "very"
+                },
+                {
+                    "label": "Moderately important",
+                    "value": "moderate"
+                },
+                {
+                    "label": "I prefer something small and compact",
+                    "value": "compact"
+                }
+            ]
+        }
+    ],
+    "products": {
+        "flip": {
+            "flip": {
+                "under100": [
+                    {
+                        "name": "Consumer Cellular IRIS Easy Flip",
+                        "price": "$59",
+                        "specs": [
+                            "Large, backlit buttons - easy to see and press",
+                            "Simple menu with big text",
+                            "Emergency SOS button",
+                            "Hearing aid compatible (M4/T4 rating)",
+                            "Built-in flashlight and magnifier"
+                        ],
+                        "why": "The IRIS Easy Flip is the best value flip phone for seniors. It has everything you need - big buttons, loud speakers, and an emergency button - without any complicated features.",
+                        "link": "https://www.consumercellular.com/shopping/iris-easy-flip"
+                    }
+                ],
+                "100-300": [
+                    {
+                        "name": "Jitterbug Flip2",
+                        "price": "$79.99",
+                        "specs": [
+                            "Very large buttons and text",
+                            "List-based menu - super simple",
+                            "Urgent Response button connects to 24/7 help",
+                            "Amazon Alexa built-in for voice commands"
+                        ],
+                        "why": "The Jitterbug Flip2 is designed specifically for seniors. The Urgent Response button connects you to trained operators 24/7 who can send help if needed.",
+                        "link": "https://www.lively.com/phones/jitterbug-flip2/"
+                    }
+                ]
+            }
+        },
+        "smartphone": {
+            "iphone": {
+                "300-500": [
+                    {
+                        "name": "iPhone SE (3rd Generation)",
+                        "price": "$429",
+                        "specs": [
+                            "Compact 4.7-inch screen with Home button",
+                            "Touch ID fingerprint sensor - secure and easy",
+                            "Fast A15 processor",
+                            "Great camera for photos and videos"
+                        ],
+                        "why": "The iPhone SE is Apple's most affordable iPhone. It has the familiar Home button, a fast processor, and all the features you'd expect from an iPhone at a great price.",
+                        "link": "https://www.apple.com/shop/buy-iphone/iphone-se"
+                    }
+                ],
+                "over500": [
+                    {
+                        "name": "iPhone 15",
+                        "price": "$729",
+                        "specs": [
+                            "Beautiful 6.1-inch Super Retina display",
+                            "A16 Bionic chip - very fast",
+                            "48MP main camera - stunning photos",
+                            "Face ID for security"
+                        ],
+                        "why": "The iPhone 15 offers premium features with a gorgeous screen and incredible camera. Perfect if you want to take beautiful photos of family.",
+                        "link": "https://www.apple.com/shop/buy-iphone/iphone-15"
+                    }
+                ]
+            },
+            "android": {
+                "100-300": [
+                    {
+                        "name": "Samsung Galaxy A15 5G",
+                        "price": "$199",
+                        "specs": [
+                            "Large 6.5-inch Super AMOLED display",
+                            "Easy Mode for simplified interface",
+                            "Good camera for photos and videos",
+                            "5G for fast internet"
+                        ],
+                        "why": "Samsung's affordable smartphone with a beautiful screen. 'Easy Mode' simplifies everything with larger icons and text, perfect for first-time smartphone users.",
+                        "link": "https://www.samsung.com/us/smartphones/galaxy-a-series/"
+                    }
+                ],
+                "300-500": [
+                    {
+                        "name": "Google Pixel 9a",
+                        "price": "$499",
+                        "specs": [
+                            "Clean, simple Android interface",
+                            "Excellent camera with AI features",
+                            "Fast Google Tensor processor",
+                            "Great voice commands"
+                        ],
+                        "why": "Google's own phone with the cleanest, simplest Android experience. Fantastic camera that takes great photos automatically.",
+                        "link": "https://store.google.com/product/pixel_9a"
+                    }
+                ]
+            }
+        }
+    }
+}

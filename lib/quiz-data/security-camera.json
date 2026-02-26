@@ -1,0 +1,305 @@
+{
+    "id": "security-camera",
+    "title": "Find Your Perfect Security Camera",
+    "description": "Let us help you choose the right security camera for your home",
+    "questions": [
+        {
+            "id": 1,
+            "question": "Where do you want to place your cameras?",
+            "options": [
+                {
+                    "text": "Indoors only (inside my home)",
+                    "value": "indoor"
+                },
+                {
+                    "text": "Outdoors only (yard, driveway, entrance)",
+                    "value": "outdoor"
+                },
+                {
+                    "text": "Both indoors and outdoors",
+                    "value": "both"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "question": "How do you prefer to power your cameras?",
+            "options": [
+                {
+                    "text": "Battery-powered - no wires or outlets needed",
+                    "value": "battery"
+                },
+                {
+                    "text": "Plugged in - reliable power, no battery changes",
+                    "value": "wired"
+                },
+                {
+                    "text": "Either is fine with me",
+                    "value": "either"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "question": "How do you want to store your recorded videos?",
+            "options": [
+                {
+                    "text": "Cloud storage - videos saved online, accessible anywhere",
+                    "value": "cloud"
+                },
+                {
+                    "text": "Local storage - videos saved on a memory card or device",
+                    "value": "local"
+                },
+                {
+                    "text": "Both cloud and local options",
+                    "value": "both"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "question": "Are you willing to pay a monthly subscription for extra features?",
+            "options": [
+                {
+                    "text": "No - I want no monthly fees",
+                    "value": "no"
+                },
+                {
+                    "text": "Maybe - if it's under $5/month",
+                    "value": "small"
+                },
+                {
+                    "text": "Yes - I want the best features",
+                    "value": "yes"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "question": "What's your budget per camera?",
+            "options": [
+                {
+                    "text": "Under $50",
+                    "value": "under50"
+                },
+                {
+                    "text": "$50 - $100",
+                    "value": "50-100"
+                },
+                {
+                    "text": "$100 - $200",
+                    "value": "100-200"
+                },
+                {
+                    "text": "Over $200",
+                    "value": "over200"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "question": "What features are most important to you?",
+            "options": [
+                {
+                    "text": "Best video quality - see every detail",
+                    "value": "quality"
+                },
+                {
+                    "text": "Great night vision - see clearly in the dark",
+                    "value": "night"
+                },
+                {
+                    "text": "Long battery life - fewer recharges",
+                    "value": "battery"
+                },
+                {
+                    "text": "Smart features - person detection, alerts, etc.",
+                    "value": "smart"
+                },
+                {
+                    "text": "Easy to set up and use",
+                    "value": "simple"
+                }
+            ]
+        }
+    ],
+    "recommendations": {
+        "no-subscription": {
+            "title": "No Subscription Security Cameras",
+            "reasons": [
+                "These cameras have no monthly fees - all features included",
+                "Local storage on SD card means your videos stay private"
+            ],
+            "products": [
+                {
+                    "name": "Wyze Cam v4",
+                    "price": "$35.99",
+                    "specs": [
+                        "2.5K video quality - very sharp and clear",
+                        "Color night vision - see in full color at night",
+                        "Works indoors and outdoors",
+                        "Local storage on SD card (up to 512GB)",
+                        "Free 14-day cloud storage included",
+                        "Person, pet, and package detection",
+                        "Two-way audio to speak through the camera",
+                        "Plugs into outlet (power cord included)"
+                    ],
+                    "why": "The Wyze Cam v4 is the best value in security cameras. You get amazing 2.5K video quality, color night vision, and smart detection features with no monthly fees required. Local storage on an SD card means your videos stay private. Perfect for anyone who wants professional features without subscriptions.",
+                    "link": "https://www.amazon.com/dp/B0BXBBK6V8"
+                },
+                {
+                    "name": "Eufy Indoor Cam C120",
+                    "price": "$39.99",
+                    "specs": [
+                        "2K video quality",
+                        "Works indoors",
+                        "Pan and tilt - move camera remotely",
+                        "Local storage on SD card (up to 128GB)",
+                        "No monthly fees ever",
+                        "AI person detection",
+                        "Two-way audio",
+                        "Plugs into outlet"
+                    ],
+                    "why": "Eufy cameras never require subscriptions. The C120 has pan and tilt, so you can move the camera view from your phone. Great for keeping an eye on a whole room without multiple cameras.",
+                    "link": "https://www.amazon.com/dp/B0CHKTYSW2"
+                },
+                {
+                    "name": "Eufy SoloCam S340 (Outdoor Solar)",
+                    "price": "$199.99",
+                    "specs": [
+                        "3K video quality with 8x zoom",
+                        "Completely wireless with built-in solar panel",
+                        "Never needs charging in sunlight",
+                        "8GB built-in storage - no SD card needed",
+                        "No monthly fees",
+                        "Dual cameras for wide and close-up views",
+                        "Weatherproof for all seasons",
+                        "Smart AI detection"
+                    ],
+                    "why": "This camera charges itself with sunlight, so you never need to plug it in or change batteries. Built-in storage means no SD cards to manage. Perfect for outdoor spots far from outlets.",
+                    "link": "https://www.amazon.com/dp/B0C7PT8Q3N"
+                }
+            ]
+        },
+        "budget": {
+            "title": "Budget-Friendly Security Cameras",
+            "reasons": [
+                "Excellent value - great features at an affordable price"
+            ],
+            "products": [
+                {
+                    "name": "Wyze Cam v4",
+                    "price": "$35.99",
+                    "specs": [
+                        "2.5K video - better than 1080p",
+                        "Color night vision",
+                        "Indoor/outdoor use",
+                        "Free 14-day cloud storage",
+                        "Local SD card storage option",
+                        "AI person, pet, package detection",
+                        "Two-way talk",
+                        "Requires outlet power"
+                    ],
+                    "why": "Under $40 and packed with features that cost much more on other cameras. The 2.5K video is incredibly sharp, and color night vision helps you see details at night. Best budget camera available.",
+                    "link": "https://www.amazon.com/dp/B0BXBBK6V8"
+                },
+                {
+                    "name": "Blink Outdoor 4",
+                    "price": "$79.99",
+                    "features": [
+                        "1080p HD video",
+                        "Battery-powered (2 AA batteries included)",
+                        "Up to 2 years battery life",
+                        "Weatherproof for outdoor use",
+                        "Infrared night vision",
+                        "Two-way audio",
+                        "Works with Alexa",
+                        "Optional cloud storage $3/month"
+                    ],
+                    "why": "Blink cameras have the longest battery life - up to 2 years on just two AA batteries! Completely wireless so you can mount them anywhere. Great for outdoor spots without power outlets.",
+                    "link": "https://www.amazon.com/dp/B0B1NKHZ9C"
+                },
+                {
+                    "name": "Blink Mini 2",
+                    "price": "$39.99",
+                    "features": [
+                        "1080p HD video",
+                        "Indoor/outdoor capable",
+                        "Color night vision with built-in spotlight",
+                        "Person detection",
+                        "Two-way audio",
+                        "Plugs into outlet",
+                        "Works with Alexa",
+                        "Optional cloud storage $3/month"
+                    ],
+                    "why": "The most affordable camera that works both indoors and outdoors. Tiny size makes it easy to place anywhere. The built-in spotlight helps with night vision.",
+                    "link": "https://www.amazon.com/dp/B0BKP9ZYQS"
+                }
+            ]
+        },
+        "mid-range": {
+            "title": "Mid-Range Security Cameras",
+            "reasons": [
+                "Perfect balance of features and affordability"
+            ],
+            "products": [
+                {
+                    "name": "Eufy Indoor Cam E30",
+                    "price": "$99.99",
+                    "features": [
+                        "4K video quality - incredible detail",
+                        "Pan, tilt, and zoom remotely",
+                        "Color night vision with spotlight",
+                        "Auto-tracking follows people",
+                        "Local SD card storage (no fees)",
+                        "Person, pet, and sound detection",
+                        "Two-way audio with built-in siren",
+                        "Works with Alexa and Google"
+                    ],
+                    "why": "4K video means you can zoom in and still see clearly. Auto-tracking follows people as they move. No monthly fees required, but cloud storage available if wanted.",
+                    "link": "https://www.amazon.com/dp/B0D1MNVQSF"
+                },
+                {
+                    "name": "TP-Link Tapo C120",
+                    "price": "$49.99",
+                    "features": [
+                        "2K video quality",
+                        "Works indoors",
+                        "Local SD card storage",
+                        "Person detection",
+                        "Two-way audio",
+                        "Privacy mode (shutter)",
+                        "Works with Alexa and Google",
+                        "Easy setup"
+                    ],
+                    "why": "Great mid-range indoor camera with a privacy shutter you can close when home. Local storage means no monthly fees. Very reliable.",
+                    "link": "https://www.amazon.com/dp/B09XFSBC7D"
+                }
+            ]
+        },
+        "premium": {
+            "title": "Premium Security Cameras",
+            "reasons": [
+                "Top-tier video quality and advanced features"
+            ],
+            "products": [
+                {
+                    "name": "Arlo Pro 5S 2K",
+                    "price": "$249.99",
+                    "features": [
+                        "2K HDR video with amazing clarity",
+                        "Wire-free with rechargeable battery",
+                        "160-degree wide field of view",
+                        "Integrated spotlight and siren",
+                        "Color night vision",
+                        "Smart AI object detection",
+                        "Works with everything: HomeKit, Alexa, Google"
+                    ],
+                    "why": "Arlo Pro 5S is the pinnacle of battery-powered cameras. The 2K HDR video is professional grade, and the wide view sees more of your yard. It's the most polished, premium experience available.",
+                    "link": "https://www.amazon.com/Arlo-Pro-5S-2K-Wire-Free/dp/B0BGNBCF6F"
+                }
+            ]
+        }
+    }
+}

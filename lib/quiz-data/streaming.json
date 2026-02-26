@@ -1,0 +1,291 @@
+{
+    "id": "streaming",
+    "title": "Find Your Perfect Streaming Service",
+    "description": "Let us help you choose the right streaming service for your viewing preferences",
+    "questions": [
+        {
+            "id": 1,
+            "question": "What type of content do you enjoy most?",
+            "options": [
+                {
+                    "text": "Dramas & Serious Shows",
+                    "value": "drama"
+                },
+                {
+                    "text": "Comedies & Light Entertainment",
+                    "value": "comedy"
+                },
+                {
+                    "text": "Action, Thrillers & Crime Shows",
+                    "value": "action"
+                },
+                {
+                    "text": "Family & Kids Programming",
+                    "value": "family"
+                },
+                {
+                    "text": "Sci-Fi, Fantasy & Supernatural",
+                    "value": "scifi"
+                },
+                {
+                    "text": "Reality TV & Documentaries",
+                    "value": "reality"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "question": "Which of these shows or types of content interests you most?",
+            "options": [
+                {
+                    "text": "Netflix Originals: Stranger Things, Wednesday, Squid Game",
+                    "value": "netflix"
+                },
+                {
+                    "text": "HBO Prestige Dramas: House of the Dragon, The Last of Us, Succession",
+                    "value": "hbo"
+                },
+                {
+                    "text": "Disney, Marvel, & Star Wars: The Mandalorian, Loki, Disney Classics",
+                    "value": "disney"
+                },
+                {
+                    "text": "Amazon Prime Exclusives: The Boys, Jack Ryan, Lord of the Rings",
+                    "value": "prime"
+                },
+                {
+                    "text": "Apple TV+ Originals: Ted Lasso, Severance, The Morning Show",
+                    "value": "apple"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Are you interested in live sports or news?",
+            "options": [
+                {
+                    "text": "Yes, live sports are important to me",
+                    "value": "yes"
+                },
+                {
+                    "text": "Occasionally, but not a dealbreaker",
+                    "value": "sometimes"
+                },
+                {
+                    "text": "No, I mainly watch shows and movies",
+                    "value": "no"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "question": "How do you feel about commercials?",
+            "options": [
+                {
+                    "text": "I hate ads - I want commercial-free viewing",
+                    "value": "no-ads"
+                },
+                {
+                    "text": "A few ads are okay if it saves money",
+                    "value": "ok-ads"
+                },
+                {
+                    "text": "I'll watch ads to get the lowest price",
+                    "value": "save-money"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "question": "What's your monthly budget for streaming?",
+            "options": [
+                {
+                    "text": "Under $10/month",
+                    "value": "under10"
+                },
+                {
+                    "text": "$10-$15/month",
+                    "value": "10-15"
+                },
+                {
+                    "text": "$15-$20/month",
+                    "value": "15-20"
+                },
+                {
+                    "text": "Over $20/month - I want the best experience",
+                    "value": "over20"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "question": "Are you open to subscribing to multiple services or a bundle?",
+            "options": [
+                {
+                    "text": "Just one - keep it simple",
+                    "value": "one"
+                },
+                {
+                    "text": "Yes, if I can get a bundle deal",
+                    "value": "bundle"
+                },
+                {
+                    "text": "Yes, I'm open to having 2-3 services",
+                    "value": "multiple"
+                }
+            ]
+        }
+    ],
+    "recommendations": {
+        "Netflix": {
+            "title": "Netflix",
+            "reasons": [
+                "Netflix has the largest variety of content and the most original shows",
+                "Award-winning originals like Stranger Things, Wednesday, and Squid Game",
+                "Simple, easy-to-use app that works on almost any device"
+            ],
+            "products": [
+                {
+                    "name": "Netflix (With Ads)",
+                    "price": "$7.99/month",
+                    "specs": [
+                        "Thousands of movies and TV shows",
+                        "Netflix Originals: Stranger Things, Wednesday, Squid Game",
+                        "New content added regularly",
+                        "Watch on any device in HD",
+                        "Best value for accessing the full library"
+                    ],
+                    "why": "The most affordable way to access the world's most popular streaming service. You get the same great shows as the higher plans, just with a few short commercials.",
+                    "link": "https://www.netflix.com/signup"
+                },
+                {
+                    "name": "Netflix Standard (No Ads)",
+                    "price": "$15.49/month",
+                    "specs": [
+                        "Everything in the ad plan",
+                        "No commercials - uninterrupted viewing",
+                        "Watch on 2 screens at once",
+                        "Full HD (1080p) quality",
+                        "Can download shows to watch offline"
+                    ],
+                    "why": "Perfect if you hate commercials and want to download shows for when you're traveling or without internet.",
+                    "link": "https://www.netflix.com/signup"
+                }
+            ]
+        },
+        "HBO Max": {
+            "title": "HBO Max (Max)",
+            "reasons": [
+                "The gold standard for high-quality prestige dramas",
+                "Home to House of the Dragon, The Last of Us, and Succession",
+                "Includes Warner Bros movies and DC superhero content"
+            ],
+            "products": [
+                {
+                    "name": "Max (With Ads)",
+                    "price": "$9.99/month",
+                    "specs": [
+                        "All Max content including HBO originals",
+                        "2k streaming quality",
+                        "Watch on 2 devices at once",
+                        "Great selection of movies"
+                    ],
+                    "why": "The most affordable way to watch award-winning HBO shows. Excellent value if you're looking for high-quality storytelling.",
+                    "link": "https://www.max.com"
+                },
+                {
+                    "name": "Max (No Ads)",
+                    "price": "$16.99/month",
+                    "specs": [
+                        "No commercials",
+                        "Download up to 30 shows to watch offline",
+                        "Full HD quality",
+                        "Uninterrupted prestige TV"
+                    ],
+                    "why": "For the best viewing experience without any interruptions. Perfect for serious TV fans.",
+                    "link": "https://www.max.com"
+                }
+            ]
+        },
+        "Disney+": {
+            "title": "Disney+",
+            "reasons": [
+                "Unbeatable selection for families and kids",
+                "Home to Marvel, Star Wars, Pixar, and Disney classics",
+                "National Geographic provides excellent documentaries"
+            ],
+            "products": [
+                {
+                    "name": "Disney+ (With Ads)",
+                    "price": "$7.99/month",
+                    "features": [
+                        "All Disney, Marvel, Star Wars content",
+                        "Includes National Geographic and Pixar",
+                        "HD streaming quality",
+                        "Excellent family protection features"
+                    ],
+                    "why": "A great value for families who want access to all their favorite movie franchises without paying a lot.",
+                    "link": "https://www.disneyplus.com"
+                },
+                {
+                    "name": "Disney Bundle (Disney, Hulu, ESPN+)",
+                    "price": "$14.99/month",
+                    "features": [
+                        "Three services for one low price",
+                        "Includes live sports through ESPN+",
+                        "Hulu adds a huge library of TV shows",
+                        "Best overall value for variety"
+                    ],
+                    "why": "The ultimate bundle. It covers families, sports fans, and people who want the latest TV shows all in one package.",
+                    "link": "https://www.disneyplus.com/welcome/disney-hulu-espn-bundle"
+                }
+            ]
+        },
+        "Amazon Prime Video": {
+            "title": "Amazon Prime Video",
+            "reasons": [
+                "Often already included if you have Amazon Prime shipping",
+                "Great original shows like The Boys and Jack Ryan",
+                "Ability to rent or buy movies directly in the app"
+            ],
+            "products": [
+                {
+                    "name": "Amazon Prime (includes Video)",
+                    "price": "$14.99/month",
+                    "features": [
+                        "Free 2-day shipping on Amazon orders",
+                        "Huge library of movies and TV shows",
+                        "Prime Music and Prime Reading included",
+                        "Originals: Lord of the Rings, Reacher",
+                        "X-Ray feature gives info about actors in scenes"
+                    ],
+                    "why": "If you already shop on Amazon, you probably already have this! It's one of the best values because of the combined shipping and video benefits.",
+                    "link": "https://www.amazon.com/prime"
+                }
+            ]
+        },
+        "Apple TV+": {
+            "title": "Apple TV+",
+            "reasons": [
+                "Award-winning originals with very high production quality",
+                "Ted Lasso, Severance, and The Morning Show",
+                "No ads on any of their shows"
+            ],
+            "products": [
+                {
+                    "name": "Apple TV+",
+                    "price": "$9.99/month",
+                    "features": [
+                        "Only original content - no library of old shows",
+                        "Stunning 4K quality included",
+                        "Completely commercial-free",
+                        "Share with up to 5 family members",
+                        "Best looking shows on any service"
+                    ],
+                    "why": "Apple focuses on quality over quantity. Every show they make is high-budget and usually excellent. Perfect if you want something new and impressive to watch.",
+                    "link": "https://tv.apple.com"
+                }
+            ]
+        }
+    }
+}

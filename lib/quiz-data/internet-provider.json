@@ -1,0 +1,182 @@
+{
+    "id": "internet-provider",
+    "title": "Find Your Perfect Internet Plan",
+    "description": "Rochester, NY Internet Provider Recommendations",
+    "questions": [
+        {
+            "id": "usage",
+            "title": "What do you mainly use the internet for?",
+            "options": [
+                {
+                    "label": "Basic browsing and email",
+                    "value": "basic"
+                },
+                {
+                    "label": "Streaming TV shows and movies",
+                    "value": "streaming"
+                },
+                {
+                    "label": "Online gaming or 4K streaming",
+                    "value": "gaming"
+                },
+                {
+                    "label": "Working from home with video calls",
+                    "value": "work"
+                },
+                {
+                    "label": "Heavy use - multiple people streaming, gaming, and working",
+                    "value": "heavy"
+                }
+            ]
+        },
+        {
+            "id": "devices",
+            "title": "How many devices connect to the internet in your home?",
+            "options": [
+                {
+                    "label": "1-3 devices (phone, tablet, computer)",
+                    "value": "1-3"
+                },
+                {
+                    "label": "4-7 devices",
+                    "value": "4-7"
+                },
+                {
+                    "label": "8-12 devices",
+                    "value": "8-12"
+                },
+                {
+                    "label": "More than 12 devices",
+                    "value": "12+"
+                }
+            ]
+        },
+        {
+            "id": "users",
+            "title": "How many people use the internet at the same time?",
+            "options": [
+                {
+                    "label": "Just me",
+                    "value": "1"
+                },
+                {
+                    "label": "2 people",
+                    "value": "2"
+                },
+                {
+                    "label": "3-4 people",
+                    "value": "3-4"
+                },
+                {
+                    "label": "5 or more people",
+                    "value": "5+"
+                }
+            ]
+        },
+        {
+            "id": "houseSize",
+            "title": "What's the size of your home?",
+            "options": [
+                {
+                    "label": "Small (apartment or 1-2 bedrooms)",
+                    "value": "small"
+                },
+                {
+                    "label": "Medium (3 bedrooms, single floor)",
+                    "value": "medium"
+                },
+                {
+                    "label": "Large (4+ bedrooms or multi-floor)",
+                    "value": "large"
+                }
+            ]
+        },
+        {
+            "id": "budget",
+            "title": "What's your monthly budget for internet?",
+            "options": [
+                {
+                    "label": "Under $50/month - I want the lowest price",
+                    "value": "budget"
+                },
+                {
+                    "label": "$50-$75/month - Good value",
+                    "value": "moderate"
+                },
+                {
+                    "label": "$75-$100/month - Best performance",
+                    "value": "premium"
+                },
+                {
+                    "label": "Over $100/month - I want the fastest speeds",
+                    "value": "unlimited"
+                }
+            ]
+        },
+        {
+            "id": "priority",
+            "title": "What's most important to you?",
+            "options": [
+                {
+                    "label": "Lowest monthly price",
+                    "value": "price"
+                },
+                {
+                    "label": "Most reliable service",
+                    "value": "reliability"
+                },
+                {
+                    "label": "Fastest speeds available",
+                    "value": "speed"
+                },
+                {
+                    "label": "Local company with great customer service",
+                    "value": "local"
+                }
+            ]
+        }
+    ],
+    "products": {
+        "greenlight": [
+            {
+                "name": "Greenlight 500 Mbps",
+                "price": "$55/month",
+                "specs": [
+                    "500 Mbps download AND upload (symmetrical)",
+                    "Perfect for 4K streaming and video calls",
+                    "No data caps - use as much as you want",
+                    "No contracts - cancel anytime",
+                    "No hidden fees or price increases"
+                ],
+                "why": "Greenlight's 500 Mbps plan is perfect for most families. With symmetrical speeds, you get smooth video calls and reliable streaming on multiple devices. Rated #1 in US by Consumer Reports.",
+                "link": "https://www.greenlightnetworks.com/rochester-ny/"
+            },
+            {
+                "name": "Greenlight 1 Gig",
+                "price": "$75/month",
+                "specs": [
+                    "1,000 Mbps download AND upload",
+                    "Handles 10+ devices simultaneously",
+                    "Perfect for gaming and large file transfers",
+                    "No data caps, no contracts"
+                ],
+                "why": "Ideal for tech-savvy households or families with many connected devices. You'll never experience slowdowns, even with everyone online at once.",
+                "link": "https://www.greenlightnetworks.com/rochester-ny/"
+            }
+        ],
+        "spectrum": [
+            {
+                "name": "Spectrum Internet",
+                "price": "$30/month",
+                "specs": [
+                    "Up to 300 Mbps download speed",
+                    "Up to 10 Mbps upload speed",
+                    "Widely available in Rochester",
+                    "No data caps, no contracts"
+                ],
+                "why": "Very affordable and works well for basic internet needs. Good for 1-2 people who mainly browse and stream. Note: Upload speeds are slower than fiber.",
+                "link": "https://www.spectrum.com"
+            }
+        ]
+    }
+}

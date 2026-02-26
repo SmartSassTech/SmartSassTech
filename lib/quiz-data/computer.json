@@ -1,0 +1,353 @@
+{
+    "id": "computer",
+    "title": "Find Your Perfect Computer",
+    "description": "Let us help you choose the right computer for your needs",
+    "questions": [
+        {
+            "id": "primaryUse",
+            "title": "What will you mainly use this computer for?",
+            "options": [
+                {
+                    "label": "Staying in touch with family (email, video calls)",
+                    "value": "family"
+                },
+                {
+                    "label": "Browsing the web & watching videos",
+                    "value": "browsing"
+                },
+                {
+                    "label": "Managing photos & documents",
+                    "value": "photos"
+                },
+                {
+                    "label": "Online banking & shopping",
+                    "value": "banking"
+                },
+                {
+                    "label": "All of the above",
+                    "value": "all"
+                }
+            ]
+        },
+        {
+            "id": "portability",
+            "title": "Where will you use your computer most?",
+            "options": [
+                {
+                    "label": "Mainly at home in one spot",
+                    "value": "home"
+                },
+                {
+                    "label": "Move it around the house",
+                    "value": "around"
+                },
+                {
+                    "label": "Take it outside the home regularly",
+                    "value": "travel"
+                }
+            ]
+        },
+        {
+            "id": "comfort",
+            "title": "Which best describes you?",
+            "options": [
+                {
+                    "label": "New to computers / want something very simple",
+                    "value": "new"
+                },
+                {
+                    "label": "Comfortable with basics, want easy to use",
+                    "value": "basics"
+                },
+                {
+                    "label": "Pretty confident with technology",
+                    "value": "confident"
+                }
+            ]
+        },
+        {
+            "id": "apple",
+            "title": "Do you currently use any Apple devices?",
+            "options": [
+                {
+                    "label": "Yes, I have an iPhone or iPad",
+                    "value": "yes"
+                },
+                {
+                    "label": "No, I use Android or don't have a smartphone",
+                    "value": "no"
+                },
+                {
+                    "label": "I'm open to either",
+                    "value": "either"
+                }
+            ]
+        },
+        {
+            "id": "budget",
+            "title": "What's your comfortable budget range?",
+            "options": [
+                {
+                    "label": "Under $500",
+                    "value": "under500"
+                },
+                {
+                    "label": "$500 - $800",
+                    "value": "500-800"
+                },
+                {
+                    "label": "$800 - $1,200",
+                    "value": "800-1200"
+                },
+                {
+                    "label": "Over $1,200",
+                    "value": "over1200"
+                }
+            ]
+        },
+        {
+            "id": "screenSize",
+            "title": "How important is a larger screen?",
+            "options": [
+                {
+                    "label": "Very important - I want a big, easy-to-read screen",
+                    "value": "very"
+                },
+                {
+                    "label": "Moderately important",
+                    "value": "moderate"
+                },
+                {
+                    "label": "Not important - compact is fine",
+                    "value": "not"
+                }
+            ]
+        }
+    ],
+    "products": {
+        "laptop": {
+            "apple": {
+                "under500": [],
+                "500-800": [
+                    {
+                        "name": "MacBook Air M3 (13-inch, Refurbished)",
+                        "price": "$699",
+                        "specs": [
+                            "13.6-inch Retina display - crystal clear and easy to read",
+                            "All-day battery life (up to 18 hours)",
+                            "Very lightweight at just 2.7 pounds",
+                            "Works perfectly with your iPhone and iPad"
+                        ],
+                        "why": "This is an excellent value for a MacBook. While it's a previous generation (M3 instead of M4), it's still incredibly fast, easy to use, and will last for many years. Perfect for video calls, web browsing, and staying connected.",
+                        "link": "https://www.bestbuy.com/site/macbooks/macbook-air/pcmcat378600050008.c?id=pcmcat378600050008"
+                    }
+                ],
+                "800-1200": [
+                    {
+                        "name": "MacBook Air M3 (13-inch, 16GB RAM)",
+                        "price": "$1,099",
+                        "specs": [
+                            "13.6-inch Retina display with brilliant colors",
+                            "M3 chip - fast and efficient",
+                            "16GB memory for smooth multitasking",
+                            "512GB storage for all your photos and files",
+                            "All-day battery life"
+                        ],
+                        "why": "This is the sweet spot for a MacBook Air. The upgraded memory ensures it will stay fast for years, and the larger storage means plenty of room for photos, videos, and documents. Integrates beautifully with iPhone and iPad.",
+                        "link": "https://www.bestbuy.com/site/apple-macbook-air-13-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8JKLK/6594447.p?skuId=6594447"
+                    },
+                    {
+                        "name": "MacBook Air M3 (15-inch)",
+                        "price": "$1,099",
+                        "specs": [
+                            "15.3-inch Retina display - larger screen, easier to see",
+                            "M3 chip for excellent performance",
+                            "16GB memory",
+                            "256GB storage",
+                            "Still thin and portable"
+                        ],
+                        "why": "If you want the bigger screen for easier reading and viewing, this 15-inch model is perfect. It's still lightweight enough to carry around but gives you much more comfortable screen space.",
+                        "link": "https://www.bestbuy.com/site/apple-macbook-air-15-inch-laptop-m3-chip-built-for-apple-intelligence-16gb-memory-512gb-ssd-midnight/JJGCQ8J5P9/6594448.p?skuId=6594448"
+                    }
+                ],
+                "over1200": [
+                    {
+                        "name": "MacBook Air M4 (13-inch)",
+                        "price": "$1,299",
+                        "specs": [
+                            "13.6-inch Retina display",
+                            "Latest M4 chip - fastest ever",
+                            "16GB memory",
+                            "256GB storage",
+                            "All-day battery life",
+                            "Latest Apple technology"
+                        ],
+                        "why": "This is the newest MacBook Air with Apple's latest M4 chip. It's incredibly fast, will last for many years, and includes all of Apple's newest features. The best choice if you want the latest technology.",
+                        "link": "https://www.apple.com/shop/buy-mac/macbook-air/13-inch-m4"
+                    }
+                ]
+            },
+            "windows": {
+                "under500": [
+                    {
+                        "name": "HP Pavilion 15.6\" Laptop",
+                        "price": "$449",
+                        "specs": [
+                            "15.6-inch Full HD screen",
+                            "Intel Core i3 processor",
+                            "16GB memory",
+                            "512GB storage",
+                            "Windows 11",
+                            "Backlit keyboard"
+                        ],
+                        "why": "Excellent value with a big screen and plenty of memory for multitasking. The large keyboard makes typing easy, and it has more than enough power for video calls, web browsing, and everyday tasks.",
+                        "link": "https://www.amazon.com/HP-Pavilion-Computer-Fingerprint-Microsoft/dp/B0FPXT5L4T"
+                    }
+                ],
+                "500-800": [
+                    {
+                        "name": "HP Pavilion 15.6\" Touchscreen Laptop",
+                        "price": "$599",
+                        "specs": [
+                            "15.6-inch Full HD touchscreen",
+                            "Intel Core i7 processor",
+                            "16GB memory",
+                            "512GB storage",
+                            "Windows 11 Pro",
+                            "Backlit keyboard for easy nighttime use"
+                        ],
+                        "why": "This laptop offers exceptional value with a powerful processor, touchscreen capability, and plenty of memory. The large screen is easy to read, and Windows 11 Pro includes extra features for security and productivity.",
+                        "link": "https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0G4V9NQC4"
+                    }
+                ],
+                "800-1200": [
+                    {
+                        "name": "HP Pavilion 15.6\" (Premium Config)",
+                        "price": "$899",
+                        "specs": [
+                            "15.6-inch Full HD touchscreen",
+                            "Intel Core i7 processor",
+                            "32GB memory - very fast multitasking",
+                            "1TB storage - tons of space",
+                            "Windows 11 Pro",
+                            "Long battery life"
+                        ],
+                        "why": "This premium configuration has double the memory and storage of most laptops. It will stay fast for many years and has plenty of room for all your photos, videos, and documents. Excellent long-term investment.",
+                        "link": "https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0G4HYM1MV"
+                    }
+                ],
+                "over1200": [
+                    {
+                        "name": "HP Pavilion 15.6\" (Max Config)",
+                        "price": "$1,299",
+                        "specs": [
+                            "15.6-inch Full HD touchscreen",
+                            "Intel Core i7 processor",
+                            "64GB memory - maximum performance",
+                            "2TB storage - massive space",
+                            "Windows 11 Pro",
+                            "Premium build quality"
+                        ],
+                        "why": "This is the ultimate configuration with maximum memory and storage. Perfect if you want a laptop that will stay fast for many years and never worry about running out of space.",
+                        "link": "https://www.amazon.com/HP-Pavilion-Touchscreen-Lifetime-Microsoft/dp/B0FMQN6P6N"
+                    }
+                ]
+            }
+        },
+        "desktop": {
+            "apple": {
+                "under500": [],
+                "500-800": [],
+                "800-1200": [],
+                "over1200": [
+                    {
+                        "name": "iMac 24\" M4 (Base Model)",
+                        "price": "$1,299",
+                        "specs": [
+                            "24-inch 4.5K Retina display - stunning clarity",
+                            "Apple M4 chip - latest generation",
+                            "16GB memory",
+                            "256GB storage",
+                            "Built-in 12MP camera for video calls",
+                            "All-in-one design - no messy cables",
+                            "Wireless keyboard and mouse included"
+                        ],
+                        "why": "The iMac is Apple's all-in-one desktop with a gorgeous 24-inch display that makes everything crystal clear. Perfect if you have an iPhone or iPad - everything works together seamlessly. Very easy to set up and use.",
+                        "link": "https://www.bestbuy.com/site/apple-imac-24-inch-all-in-one-m4-chip-built-for-apple-intelligence-8-core-cpu-8-core-gpu-16gb-memory-256gb-ssd-silver/JJGCQ3F4SG/6594442.p?skuId=6594442"
+                    }
+                ]
+            },
+            "windows": {
+                "under500": [
+                    {
+                        "name": "HP All-in-One Desktop 24\"",
+                        "price": "$499",
+                        "specs": [
+                            "24-inch Full HD display",
+                            "Intel processor",
+                            "8GB memory",
+                            "256GB storage",
+                            "Windows 11",
+                            "Wireless keyboard and mouse included",
+                            "Built-in webcam and speakers"
+                        ],
+                        "why": "An excellent budget all-in-one desktop with a nice big screen. Everything is included - just plug it in and you're ready to go. No complicated setup or cables to deal with.",
+                        "link": "https://www.bestbuy.com/site/computers-for-seniors/pcmcat1587576358464.c?id=pcmcat1587576358464"
+                    }
+                ],
+                "500-800": [
+                    {
+                        "name": "Dell Inspiron 24 All-in-One",
+                        "price": "$749",
+                        "specs": [
+                            "23.8-inch Full HD anti-glare display",
+                            "Intel Core i5 processor",
+                            "16GB memory",
+                            "1TB storage - lots of space",
+                            "Windows 11 Home",
+                            "1080p HD camera for video calls",
+                            "Wireless keyboard and mouse",
+                            "Clean, clutter-free design"
+                        ],
+                        "why": "Dell makes reliable, easy-to-use computers. This all-in-one has a large screen that's easy on the eyes, plenty of storage for photos and documents, and excellent support if you need help.",
+                        "link": "https://www.amazon.com/Dell-Inspiron-Desktop-10-Core-Graphics/dp/B0DZCHJ8KC"
+                    }
+                ],
+                "800-1200": [
+                    {
+                        "name": "Dell Inspiron 24 (Premium Config)",
+                        "price": "$999",
+                        "specs": [
+                            "23.8-inch Full HD touchscreen",
+                            "Intel Core i7 processor - very fast",
+                            "32GB memory - maximum multitasking",
+                            "1TB storage",
+                            "Windows 11 Pro",
+                            "Premium build quality",
+                            "Excellent warranty and support"
+                        ],
+                        "why": "This premium configuration will stay fast for many years. The powerful processor and lots of memory mean you can have many programs and browser tabs open without any slowdown.",
+                        "link": "https://www.amazon.com/Dell-Inspiron-Computer-Ultra-Quiet-Wireless/dp/B0DYK8JKX9"
+                    }
+                ],
+                "over1200": [
+                    {
+                        "name": "Dell Inspiron 24 (Ultimate Config)",
+                        "price": "$1,299",
+                        "specs": [
+                            "24-inch Full HD touchscreen",
+                            "Latest Intel Core i7 processor",
+                            "64GB memory - maximum performance",
+                            "2TB storage - massive space",
+                            "Windows 11 Pro",
+                            "Premium warranty",
+                            "Top-tier build quality"
+                        ],
+                        "why": "The ultimate Windows all-in-one desktop. This has maximum memory and storage, ensuring it will stay fast and have plenty of space for many years to come.",
+                        "link": "https://www.amazon.com/Dell-Inspiron-Computer-Ultra-Quiet-I5-1334U/dp/B0FLW6QLVD"
+                    }
+                ]
+            }
+        }
+    }
+}

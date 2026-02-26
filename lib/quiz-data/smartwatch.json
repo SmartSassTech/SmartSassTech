@@ -1,0 +1,263 @@
+{
+    "id": "smartwatch",
+    "title": "Find Your Perfect Smartwatch",
+    "description": "Let us help you choose the right smartwatch or fitness tracker",
+    "questions": [
+        {
+            "id": 1,
+            "question": "What's your main goal for wearing a smartwatch or fitness tracker?",
+            "options": [
+                {
+                    "text": "Track my health (heart rate, steps, sleep)",
+                    "value": "health"
+                },
+                {
+                    "text": "Stay safe (emergency calls, fall detection)",
+                    "value": "safety"
+                },
+                {
+                    "text": "Monitor my fitness and workouts",
+                    "value": "fitness"
+                },
+                {
+                    "text": "Get phone notifications on my wrist",
+                    "value": "notifications"
+                },
+                {
+                    "text": "All of the above",
+                    "value": "all"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "question": "What type of phone do you have?",
+            "options": [
+                {
+                    "text": "iPhone",
+                    "value": "iphone"
+                },
+                {
+                    "text": "Android (Samsung, Google, etc.)",
+                    "value": "android"
+                },
+                {
+                    "text": "I don't have a smartphone",
+                    "value": "none"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "question": "How comfortable are you with technology?",
+            "options": [
+                {
+                    "text": "I want something very simple and easy",
+                    "value": "simple"
+                },
+                {
+                    "text": "I'm okay with some features",
+                    "value": "moderate"
+                },
+                {
+                    "text": "I like having lots of features to explore",
+                    "value": "advanced"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "question": "How active are you?",
+            "options": [
+                {
+                    "text": "Light activity (walking, everyday tasks)",
+                    "value": "light"
+                },
+                {
+                    "text": "Moderately active (regular walks, some exercise)",
+                    "value": "moderate"
+                },
+                {
+                    "text": "Very active (regular workouts, running, sports)",
+                    "value": "very"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "question": "What's your budget?",
+            "options": [
+                {
+                    "text": "Under $100",
+                    "value": "under100"
+                },
+                {
+                    "text": "$100 - $200",
+                    "value": "100-200"
+                },
+                {
+                    "text": "$200 - $300",
+                    "value": "200-300"
+                },
+                {
+                    "text": "Over $300",
+                    "value": "over300"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "question": "How important is long battery life to you?",
+            "options": [
+                {
+                    "text": "Very important - I don't want to charge often",
+                    "value": "very"
+                },
+                {
+                    "text": "Moderately important",
+                    "value": "moderate"
+                },
+                {
+                    "text": "Not important - daily charging is fine",
+                    "value": "not"
+                }
+            ]
+        }
+    ],
+    "recommendations": {
+        "Apple Watch": {
+            "title": "Apple Watch",
+            "reasons": [
+                "Since you have an iPhone, an Apple Watch works seamlessly with your phone",
+                "Provides comprehensive features for all your needs"
+            ],
+            "products": [
+                {
+                    "name": "Apple Watch SE 3 (GPS, 40mm)",
+                    "price": "$249",
+                    "specs": [
+                        "Easy-to-read display with always-on option",
+                        "Heart rate monitoring and fall detection",
+                        "Activity tracking and workout modes",
+                        "Up to 18 hours battery life",
+                        "Water resistant for swimming",
+                        "Seamless integration with iPhone"
+                    ],
+                    "why": "The Apple Watch SE 3 is Apple's most affordable smartwatch, offering all the essential health and safety features at a great price. It's easy to use, works perfectly with your iPhone, and includes important features like fall detection.",
+                    "link": "https://www.bestbuy.com/site/apple-watch-se-3-gps-40mm-starlight-aluminum-case-with-starlight-sport-band-s-m-starlight-2025/6572694.p"
+                },
+                {
+                    "name": "Apple Watch Series 10 (GPS, 42mm)",
+                    "price": "$399",
+                    "specs": [
+                        "Largest, brightest display yet",
+                        "Advanced health features: ECG, blood oxygen",
+                        "Temperature sensing for health insights",
+                        "Fall detection and crash detection",
+                        "Up to 18 hours battery, fast charging",
+                        "All-day fitness and activity tracking"
+                    ],
+                    "why": "The latest Apple Watch with the most advanced health monitoring features. Perfect if you want the absolute best technology and most comprehensive health tracking Apple offers.",
+                    "link": "https://www.apple.com/shop/buy-watch/apple-watch"
+                }
+            ]
+        },
+        "Android Smartwatch": {
+            "title": "Android Smartwatch",
+            "reasons": [
+                "Android-compatible options work perfectly with your phone",
+                "Great for keeping track of your daily steps and basic health metrics"
+            ],
+            "products": [
+                {
+                    "name": "Samsung Galaxy Watch6 (40mm)",
+                    "price": "$299",
+                    "specs": [
+                        "Beautiful, large Super AMOLED display",
+                        "Advanced sleep coaching and tracking",
+                        "Heart rate, ECG, and body composition",
+                        "40+ hour battery life",
+                        "Personalized heart rate zones",
+                        "Works best with Samsung phones"
+                    ],
+                    "why": "Samsung's flagship smartwatch with beautiful design and comprehensive health features. Especially great if you have a Samsung phone, but works with other Android devices too.",
+                    "link": "https://www.samsung.com/us/watches/galaxy-watch6/"
+                },
+                {
+                    "name": "Fitbit Sense 2",
+                    "price": "$249",
+                    "specs": [
+                        "Advanced health tracking with ECG",
+                        "Stress management and body response tracking",
+                        "Sleep tracking with sleep score",
+                        "6+ days of battery life",
+                        "Built-in GPS and heart rate zones",
+                        "Large, bright AMOLED display"
+                    ],
+                    "why": "The most advanced Fitbit smartwatch with comprehensive health monitoring. Includes stress tracking, ECG, and exceptional battery life. Perfect for serious health monitoring with easy-to-understand insights.",
+                    "link": "https://www.amazon.com/Fitbit-Advanced-Smartwatch-Management-Tracking/dp/B0B4NLWP57"
+                }
+            ]
+        },
+        "Fitness Tracker": {
+            "title": "Fitness Tracker",
+            "reasons": [
+                "A fitness tracker is simple to use and focuses on health tracking without overwhelming features",
+                "These options are designed to be easy to use and understand"
+            ],
+            "products": [
+                {
+                    "name": "Fitbit Charge 6",
+                    "price": "$159",
+                    "features": [
+                        "Slim, lightweight design",
+                        "Heart rate, sleep, and stress tracking",
+                        "7-day battery life",
+                        "Built-in GPS for walks and runs",
+                        "Google Maps and Wallet integration",
+                        "Large, vibrant color touchscreen"
+                    ],
+                    "why": "The best fitness tracker for most people. It's small, comfortable, and has a battery that lasts all week. Perfect for tracking health and fitness simply.",
+                    "link": "https://www.fitbit.com/global/us/products/trackers/charge6"
+                },
+                {
+                    "name": "Fitbit Inspire 3",
+                    "price": "$99",
+                    "features": [
+                        "Most affordable Fitbit",
+                        "Up to 10 days of battery life",
+                        "Always-on health tracking",
+                        "Stress management score",
+                        "Vibrant color display",
+                        "Very thin and light"
+                    ],
+                    "why": "If you want something simple that you only have to charge once every 10 days, this is it. It tracks all the basics like steps, heart rate, and sleep in a very small package.",
+                    "link": "https://www.fitbit.com/global/us/products/trackers/inspire3"
+                }
+            ]
+        },
+        "Standalone Smartwatch": {
+            "title": "Standalone Smartwatch",
+            "reasons": [
+                "We'll recommend options that can work without needing a smartphone",
+                "A smartwatch offers important safety features like emergency calling and fall detection"
+            ],
+            "products": [
+                {
+                    "name": "Apple Watch SE 3 (Cellular, 40mm)",
+                    "price": "$299",
+                    "features": [
+                        "Make calls without your phone nearby",
+                        "Emergency SOS even without iPhone",
+                        "All SE 3 health and safety features",
+                        "Stream music on the go",
+                        "Perfect for walks without your phone",
+                        "Monthly cellular plan required"
+                    ],
+                    "why": "The cellular version lets you leave your iPhone at home while still being able to make calls, get notifications, and call for help in emergencies. Great for independence and peace of mind.",
+                    "link": "https://www.apple.com/shop/buy-watch/apple-watch-se"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,278 @@
+{
+    "id": "printer",
+    "title": "Find Your Perfect Printer",
+    "description": "Let us help you choose the right printer for your home or office",
+    "questions": [
+        {
+            "id": 1,
+            "question": "What will you be printing most often?",
+            "options": [
+                {
+                    "text": "Mostly black and white documents (emails, recipes, tickets)",
+                    "value": "black-white"
+                },
+                {
+                    "text": "A mix of documents and color photos",
+                    "value": "mixed"
+                },
+                {
+                    "text": "High-quality color photos",
+                    "value": "photos"
+                },
+                {
+                    "text": "Business documents and brochures",
+                    "value": "business"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "question": "How many pages do you print in a typical month?",
+            "options": [
+                {
+                    "text": "Very little (occasionally, 1-20 pages)",
+                    "value": "low"
+                },
+                {
+                    "text": "A moderate amount (20-100 pages)",
+                    "value": "moderate"
+                },
+                {
+                    "text": "A lot (over 100 pages per month)",
+                    "value": "high"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "question": "Do you need to scan, copy, or fax documents?",
+            "options": [
+                {
+                    "text": "No, I just need to print",
+                    "value": "no"
+                },
+                {
+                    "text": "Yes, I need to scan and copy",
+                    "value": "yes"
+                },
+                {
+                    "text": "Yes, I need everything including faxing",
+                    "value": "all"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "question": "How important is the cost of ink or toner to you?",
+            "options": [
+                {
+                    "text": "Very important - I want the lowest ongoing costs",
+                    "value": "very"
+                },
+                {
+                    "text": "Somewhat important",
+                    "value": "somewhat"
+                },
+                {
+                    "text": "Not very important - I just want good quality",
+                    "value": "low"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "question": "Do you want to print from your smartphone or tablet?",
+            "options": [
+                {
+                    "text": "Yes, that's a must-have feature",
+                    "value": "yes"
+                },
+                {
+                    "text": "Maybe occasionally",
+                    "value": "maybe"
+                },
+                {
+                    "text": "No, I'll only print from my computer",
+                    "value": "no"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "question": "What is your budget for the printer itself?",
+            "options": [
+                {
+                    "text": "Under $100",
+                    "value": "under100"
+                },
+                {
+                    "text": "$100 - $250",
+                    "value": "100-250"
+                },
+                {
+                    "text": "Over $250",
+                    "value": "over250"
+                }
+            ]
+        }
+    ],
+    "recommendations": {
+        "laser": {
+            "title": "Laser Printer",
+            "reasons": [
+                "Perfect for printing crisp black and white documents",
+                "Toner doesn't dry out if you don't print for a while",
+                "Fastest printing speeds for large documents",
+                "Lower cost per page than most inkjet printers"
+            ],
+            "products": [
+                {
+                    "name": "Brother HL-L2350DW",
+                    "price": "$119",
+                    "specs": [
+                        "Fast printing - up to 32 pages per minute",
+                        "Automatic two-sided printing",
+                        "Wireless printing from computer and phone",
+                        "Simple and very reliable",
+                        "Compact design fits on small desks"
+                    ],
+                    "why": "The Brother HL-L2350DW is our favorite basic printer. It's fast, reliable, and the toner lasts a long time. Perfect for seniors who mostly print text and don't want to deal with dried-out ink cartridges.",
+                    "link": "https://www.amazon.com/dp/B0763WDSYZ"
+                },
+                {
+                    "name": "HP LaserJet M110we",
+                    "price": "$99",
+                    "specs": [
+                        "World's smallest laser printer in its class",
+                        "Very simple to use with HP Smart app",
+                        "Fast printing for its size",
+                        "Includes 6 months of toner through HP Instant Ink",
+                        "Reliable HP quality"
+                    ],
+                    "why": "If space is limited, the M110we is the perfect choice. It's tiny but performs well for daily black-and-white printing. The HP Instant Ink for toner means you never have to shop for toner again.",
+                    "link": "https://www.amazon.com/dp/B09923N6R6"
+                }
+            ]
+        },
+        "tank": {
+            "title": "Ink Tank Printer",
+            "reasons": [
+                "Extremely low ongoing ink costs",
+                "Comes with enough ink for thousands of pages",
+                "Better for the environment (less plastic waste)",
+                "Great for high-volume color printing"
+            ],
+            "products": [
+                {
+                    "name": "Epson EcoTank ET-2800",
+                    "price": "$199",
+                    "features": [
+                        "Cartridge-free printing with big ink tanks",
+                        "Includes enough ink for up to 2 years",
+                        "Save up to 90% on replacement ink bottles",
+                        "Print, scan, and copy",
+                        "Wireless printing from any device"
+                    ],
+                    "why": "The ET-2800 is the most affordable way to stop buying expensive ink cartridges. You just pour ink from bottles into the tanks. It's perfect if you print a lot of color documents or photos and hate overpaying for ink.",
+                    "link": "https://www.amazon.com/dp/B0963R9P7V"
+                },
+                {
+                    "name": "Canon MegaTank G3270",
+                    "price": "$179",
+                    "features": [
+                        "High-volume, low-cost printing",
+                        "Clear, easy-to-read 1.35\" LCD screen",
+                        "Fast printing speeds",
+                        "Excellent photo quality",
+                        "Each set of bottles equals 30 traditional cartridge sets"
+                    ],
+                    "why": "The Canon G3270 offers better photo quality than most ink tank printers. It's easy to set up and the front-facing tanks make it simple to see when you're running low. A great value for both home and office.",
+                    "link": "https://www.amazon.com/dp/B0BQ9PMRM9"
+                }
+            ]
+        },
+        "basic": {
+            "title": "Basic Inkjet Printer",
+            "reasons": [
+                "Lowest upfront cost",
+                "Compact and simple design",
+                "Easy to set up and use occasionally",
+                "Good for basic color printing"
+            ],
+            "products": [
+                {
+                    "name": "HP DeskJet 2755e",
+                    "price": "$59.99",
+                    "features": [
+                        "Very affordable all-in-one",
+                        "Print, scan, and copy",
+                        "Wireless printing",
+                        "Works with Alexa and Google Assistant",
+                        "HP Smart app for easy setup",
+                        "Compact and simple",
+                        "Includes 6 months of HP Instant Ink free"
+                    ],
+                    "why": "The most affordable wireless all-in-one from a trusted brand. Perfect if you print very little and want something simple. The HP Instant Ink subscription can save money if you print regularly.",
+                    "link": "https://www.amazon.com/dp/B08MXQY6N5"
+                }
+            ]
+        },
+        "all-in-one": {
+            "title": "All-in-One Inkjet Printer",
+            "reasons": [
+                "Highly versatile - does everything you need",
+                "Automatic document feeders for easy copying/scanning",
+                "Great for both documents and high-quality photos",
+                "Reliable performance for home offices"
+            ],
+            "products": [
+                {
+                    "name": "Brother MFC-J995DW",
+                    "price": "$199",
+                    "features": [
+                        "All-in-one: print, scan, copy, and fax",
+                        "Comes with ink for up to 2 years!",
+                        "Very low cost per page (1.4¢ black, 6.7¢ color)",
+                        "Automatic document feeder (20 sheets)",
+                        "Wireless printing",
+                        "Two-sided printing",
+                        "Fast and reliable"
+                    ],
+                    "why": "The Brother MFC-J995DW is the best all-around printer for most people. It includes enough ink to last up to 2 years, has low ongoing costs, and includes all the features you need. Excellent value and very reliable.",
+                    "link": "https://www.amazon.com/dp/B07D5RGWHG"
+                },
+                {
+                    "name": "HP OfficeJet Pro 9125e",
+                    "price": "$299",
+                    "features": [
+                        "Professional all-in-one for home offices",
+                        "Very fast - 24 pages per minute",
+                        "Print, scan, copy, and fax",
+                        "Automatic two-sided scanning",
+                        "Large paper capacity (250 sheets)",
+                        "35-sheet automatic document feeder",
+                        "Color touchscreen display",
+                        "6 months HP+ (ink delivery service) included"
+                    ],
+                    "why": "The OfficeJet Pro 9125e is built for productivity. Fast printing, automatic duplex scanning, and professional quality make it perfect for busy home offices. The HP+ service delivers ink before you run out.",
+                    "link": "https://www.amazon.com/dp/B09RMKX64T"
+                },
+                {
+                    "name": "Canon PIXMA TR8620a",
+                    "price": "$199",
+                    "features": [
+                        "Versatile all-in-one with great photo quality",
+                        "Print, scan, copy, and fax",
+                        "20-sheet automatic document feeder",
+                        "Wireless and Ethernet connectivity",
+                        "5 individual ink tanks",
+                        "Large color touchscreen",
+                        "Prints on CDs/DVDs too"
+                    ],
+                    "why": "The TR8620a balances great document printing with excellent photo quality. The 5-ink system produces vibrant photos, and it has all the features you need for home office work.",
+                    "link": "https://www.amazon.com/dp/B07PLHFLH4"
+                }
+            ]
+        }
+    }
+}
