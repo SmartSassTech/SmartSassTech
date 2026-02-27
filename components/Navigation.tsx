@@ -53,9 +53,9 @@ export default function Navigation() {
     })
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        await loadProfile(session.user.id, session.user.email ?? '')
+        loadProfile(session.user.id, session.user.email ?? '')
       } else {
         setUser(null)
       }
@@ -131,12 +131,14 @@ export default function Navigation() {
 
                   {menuOpen && (
                     <div className="user-dropdown" role="menu">
-                      <div className="user-dropdown-email">{user.email}</div>
-                      <Link href="/admin" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                        My Account
+                      <Link href="/account" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">👤</span> Manage My Account
+                      </Link>
+                      <Link href="/account?tab=sessions" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">💻</span> My Sessions
                       </Link>
                       <button className="user-dropdown-item user-dropdown-logout" role="menuitem" onClick={handleLogout}>
-                        Log Out
+                        <span className="menu-icon">🚪</span> Log Out
                       </button>
                     </div>
                   )}

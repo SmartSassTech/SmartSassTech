@@ -28,7 +28,7 @@ export default function withAuth<P extends object>(
                 }
             }, 7000)
 
-            const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
                 if (!isCurrent) return
 
                 console.log(`[withAuth] Auth event: ${event}`, session ? 'User present' : 'No user')

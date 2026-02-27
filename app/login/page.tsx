@@ -32,7 +32,7 @@ export default function LoginPage() {
                 // Add a timeout for the authentication attempt
                 const loginPromise = supabase.auth.signInWithPassword({ email, password })
                 const timeoutPromise = new Promise<{ data: any, error: any }>((_, reject) =>
-                    setTimeout(() => reject(new Error('Login attempt timed out. Please check your connection.')), 15000)
+                    setTimeout(() => reject(new Error('Login attempt timed out. Please check your connection.')), 30000)
                 )
 
                 try {
