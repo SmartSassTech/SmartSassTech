@@ -13,7 +13,7 @@ function MyRewards() {
                         <Award size={40} />
                     </div>
                     <h1 className="text-title mb-2">SmartSass Rewards</h1>
-                    <p className="text-kb-dark text-lg">Earn points for every session and referring friends.</p>
+                    <p className="text-kb-dark text-[1.1rem]">Earn points for every session and referring friends.</p>
                 </div>
 
                 <div className="bg-white rounded-[2rem] shadow-xl p-8 md:p-12 border border-kb-cream text-center mb-8 relative overflow-hidden">
@@ -24,7 +24,7 @@ function MyRewards() {
                     <h2 className="text-kb-muted uppercase font-bold tracking-widest text-sm mb-4">Current Balance</h2>
                     <div className="flex items-center justify-center gap-4 mb-8">
                         <span className="text-6xl font-heading font-bold text-sst-primary">250</span>
-                        <span className="text-xl font-bold text-kb-muted mt-4">Points</span>
+                        <span className="text-[1.1rem] font-bold text-kb-muted mt-4">Points</span>
                     </div>
 
                     <div className="w-full bg-gray-100 rounded-full h-4 mb-4 overflow-hidden shadow-inner">

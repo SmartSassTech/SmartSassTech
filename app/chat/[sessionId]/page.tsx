@@ -223,7 +223,7 @@ export default function SessionPage() {
                     {isAdmin && (
                         <div className="w-full lg:w-80 space-y-6">
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                                <h2 className="text-xl font-bold text-kb-navy mb-4 flex items-center gap-2">
+                                <h2 className="text-h3 font-bold text-kb-navy mb-4 flex items-center gap-2">
                                     <Clock size={20} className="text-kb-navy/40" />
                                     Client Info
                                 </h2>

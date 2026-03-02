@@ -36,7 +36,7 @@ export default function ContactPage() {
                                 <span className="text-3xl">📞</span>
                                 <div>
                                     <h3 className="mb-1">Phone</h3>
-                                    <a href="tel:5852109758" className="text-2xl text-sst-primary font-semibold hover:text-sst-secondary transition-colors">
+                                    <a href="tel:5852109758" className="text-h3 text-sst-primary font-semibold hover:text-sst-secondary transition-colors">
                                         (585) 210-9758
                                     </a>
                                 </div>
@@ -46,7 +46,7 @@ export default function ContactPage() {
                                 <span className="text-3xl">✉️</span>
                                 <div>
                                     <h3 className="mb-1">Email</h3>
-                                    <a href="mailto:smartsasstech@gmail.com" className="text-2xl text-sst-primary font-semibold hover:text-sst-secondary transition-colors underline">
+                                    <a href="mailto:smartsasstech@gmail.com" className="text-h3 text-sst-primary font-semibold hover:text-sst-secondary transition-colors underline">
                                         smartsasstech@gmail.com
                                     </a>
                                 </div>
@@ -56,7 +56,7 @@ export default function ContactPage() {
                                 <span className="text-3xl">📍</span>
                                 <div>
                                     <h3 className="mb-1">Service Area</h3>
-                                    <p className="text-xl text-kb-dark">
+                                    <p className="text-kb-dark text-[1.1rem]">
                                         Rochester, NY and surrounding areas
                                     </p>
                                 </div>

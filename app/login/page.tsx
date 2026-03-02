@@ -106,7 +106,7 @@ export default function LoginPage() {
                             />
                         </Link>
                     </div>
-                    <h1 className="text-3xl font-heading font-medium text-sst-primary tracking-tight">
+                    <h1 className="text-h1 mb-2">
                         {isLogin ? 'Welcome Back' : 'Create an Account'}
                     </h1>
                     <p className="text-kb-muted">

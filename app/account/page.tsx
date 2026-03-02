@@ -185,7 +185,7 @@ function AccountSettingsContent() {
                             <User size={40} />
                         </div>
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-heading text-white mb-2">Account Settings</h1>
+                            <h1 className="text-h1 text-white mb-2">Account Settings</h1>
                             <p className="text-white/70">Manage your profile and security preferences.</p>
                         </div>
                     </div>
@@ -194,7 +194,7 @@ function AccountSettingsContent() {
 
                         {/* ── Personal Information ── */}
                         <div className="space-y-6">
-                            <h2 className="flex items-center gap-3 text-2xl font-heading text-kb-navy border-b border-gray-100 pb-4">
+                            <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
                                 <User size={24} className="text-sst-primary" />
                                 Personal Information
                             </h2>
@@ -286,7 +286,7 @@ function AccountSettingsContent() {
 
                         {/* ── Security ── */}
                         <div className="space-y-6">
-                            <h2 className="flex items-center gap-3 text-2xl font-heading text-kb-navy border-b border-gray-100 pb-4">
+                            <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
                                 <Shield size={24} className="text-sst-primary" />
                                 Security Details
                             </h2>
@@ -366,7 +366,7 @@ function AccountSettingsContent() {
 
                         {/* ── My Bookings ── */}
                         <div className="space-y-6">
-                            <h2 className="flex items-center gap-3 text-2xl font-heading text-kb-navy border-b border-gray-100 pb-4">
+                            <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
                                 <Calendar size={24} className="text-sst-primary" />
                                 My Bookings
                             </h2>

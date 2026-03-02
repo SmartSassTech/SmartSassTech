@@ -59,14 +59,13 @@ export default function Footer() {
               <li><Link href="/">Home</Link></li>
               <li><Link href="/articles">Resources</Link></li>
               <li><Link href="/contact">Contact</Link></li>
-              <li><Link href="/booking">Services</Link></li>
               <li><Link href="/booking">Booking Calendar</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} SmartSass Tech. All rights reserved.</p>
+          <p className="text-white">&copy; {new Date().getFullYear()} SmartSass Tech. All rights reserved.</p>
         </div>
       </div>
     </footer>

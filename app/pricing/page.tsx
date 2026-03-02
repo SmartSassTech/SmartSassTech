@@ -37,7 +37,7 @@ function PricingPlans() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h1 className="text-title mb-4">Plans & Pricing</h1>
-                    <p className="text-kb-dark text-xl max-w-2xl mx-auto">Straightforward pricing. No hidden fees. Just patient, reliable tech support when you need it.</p>
+                    <p className="text-kb-dark max-w-2xl mx-auto">Straightforward pricing. No hidden fees. Just patient, reliable tech support when you need it.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -49,11 +49,11 @@ function PricingPlans() {
                                 </div>
                             )}
 
-                            <h3 className="mb-2">{plan.name}</h3>
+                            <h3 className="text-h3 mb-2">{plan.name}</h3>
                             <p className="text-kb-muted min-h-[48px] mb-6">{plan.description}</p>
 
                             <div className="mb-8">
-                                <span className="text-5xl font-heading font-medium text-sst-primary">${plan.price}</span>
+                                <span className="text-title font-medium text-sst-primary">${plan.price}</span>
                                 <span className="text-kb-muted font-bold ml-2">/{plan.duration}</span>
                             </div>
 

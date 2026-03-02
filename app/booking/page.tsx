@@ -185,7 +185,7 @@ export default function BookingPage() {
                         <Check size={48} />
                     </div>
                     <h1 className="text-title mb-6">Booking Confirmed!</h1>
-                    <p className="text-xl text-kb-dark mb-8">
+                    <p className="text-kb-dark text-[1.1rem] mb-8">
                         Thank you, <strong>{formData.name}</strong>! Your session for <strong>{selectedService?.name}</strong> is scheduled for <strong>{selectedDate?.toLocaleDateString()}</strong> at <strong>{selectedTime}</strong>.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -240,7 +240,7 @@ export default function BookingPage() {
                     <div className="lg:col-span-8">
                         {!selectedService ? (
                             <div className="h-full flex items-center justify-center bg-white/50 rounded-3xl border-2 border-dashed border-kb-cream p-12 text-center">
-                                <p className="text-xl text-kb-muted">Please select a service to start booking.</p>
+                                <p className="text-kb-muted text-[1.1rem]">Please select a service to start booking.</p>
                             </div>
                         ) : (
                             <div className="space-y-12">
@@ -252,7 +252,7 @@ export default function BookingPage() {
                                         <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))} className="p-2 hover:bg-kb-bg rounded-full transition-all">
                                             <ChevronLeft size={24} />
                                         </button>
-                                        <h3 className="text-xl font-bold text-sst-primary">
+                                        <h3 className="text-h3 font-bold text-sst-primary">
                                             {currentMonth.toLocaleDateString('default', { month: 'long', year: 'numeric' })}
                                         </h3>
                                         <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))} className="p-2 hover:bg-kb-bg rounded-full transition-all">

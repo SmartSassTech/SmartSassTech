@@ -79,7 +79,7 @@ export default function AdminDashboard() {
                         <div className="bg-white/10 p-2 rounded-xl">
                             <LifeBuoy size={24} />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">Support Command Center</h1>
+                        <h1 className="text-h3 font-bold tracking-tight">Support Command Center</h1>
                     </div>
                     <div className="flex items-center gap-4 text-sm bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase">Awaiting Help</p>
-                            <p className="text-2xl font-bold text-kb-navy">
+                            <p className="text-h2 text-kb-navy">
                                 {sessions.filter(s => s.status === 'open').length}
                             </p>
                         </div>
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase">Active Chats</p>
-                            <p className="text-2xl font-bold text-kb-navy">
+                            <p className="text-h2 text-kb-navy">
                                 {sessions.filter(s => s.status === 'in_progress').length}
                             </p>
                         </div>
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase">Resolved Today</p>
-                            <p className="text-2xl font-bold text-kb-navy">
+                            <p className="text-h2 text-kb-navy">
                                 {sessions.filter(s => s.status === 'resolved').length}
                             </p>
                         </div>

@@ -10,7 +10,7 @@ export default function AboutPage() {
 
                 <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl leading-relaxed">
                     <h2 className="mb-6">Patient, Jargon-Free Support</h2>
-                    <p className="text-xl text-kb-dark mb-8">
+                    <p className="text-kb-dark mb-8">
                         At SmartSass Tech, we believe technology should empower you, not frustrate you.
                         That's why we specialize in patient, jargon-free technology support designed specifically
                         for older adults and beginners in the Rochester, NY area.
@@ -65,7 +65,7 @@ export default function AboutPage() {
 
                     <div className="text-center pt-12 border-t border-kb-cream">
                         <h2 className="mb-4">Ready to Get Started?</h2>
-                        <p className="text-lg text-kb-dark mb-8">
+                        <p className="text-kb-dark mb-8">
                             Book a session today and experience the difference patient, personalized tech support can make.
                         </p>
                         <Link href="/booking">

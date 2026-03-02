@@ -30,7 +30,7 @@ export default async function Home() {
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
               <div>
                 <h2 className="mb-2 text-h1">Featured Guides</h2>
-                <p className="text-kb-muted text-xl max-w-xl">Step-by-step instructions for your most common tech questions.</p>
+                <p className="text-kb-muted text-[1.1rem] max-w-xl">Step-by-step instructions for your most common tech questions.</p>
               </div>
               <Link href="/articles" className="text-sst-primary font-bold border-b-2 border-sst-primary pb-1 hover:text-sst-secondary hover:border-sst-secondary transition-all">
                 View All Resources

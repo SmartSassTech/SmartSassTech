@@ -6,19 +6,28 @@
 
 /* Markdown content styling for dynamic articles */
 .article-content h1 {
-  @apply text-4xl font-bold mb-6 mt-8 text-kb-navy;
+  @apply mb-6 mt-8 text-kb-navy;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-hero);
+  font-weight: 500;
 }
 
 .article-content h2 {
-  @apply text-3xl font-bold mb-4 mt-6 text-kb-navy;
+  @apply mb-4 mt-6 text-kb-navy;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xlarge);
+  font-weight: 500;
 }
 
 .article-content h3 {
-  @apply text-2xl font-semibold mb-3 mt-4 text-kb-slate;
+  @apply mb-3 mt-4 text-kb-slate;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-large);
+  font-weight: 500;
 }
 
 .article-content p {
-  @apply mb-6 leading-relaxed text-lg;
+  @apply mb-6 leading-relaxed;
 }
 
 .article-content ul,

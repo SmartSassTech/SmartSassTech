@@ -97,7 +97,7 @@ function MySubscriptions() {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-10">
                     <h1 className="text-title mb-2">My Subscriptions</h1>
-                    <p className="text-kb-dark text-lg">Manage your monthly tech support plan and billing.</p>
+                    <p className="text-kb-dark">Manage your monthly tech support plan and billing.</p>
                 </div>
 
                 {subscription ? (
@@ -172,7 +172,7 @@ function MySubscriptions() {
 
                         {/* Plan Started Info */}
                         <div className="bg-white rounded-[2rem] shadow-xl p-8 border border-kb-cream">
-                            <h2 className="mb-6 text-xl font-heading text-kb-navy">Plan Details</h2>
+                            <h2 className="mb-6 text-h3 text-kb-navy">Plan Details</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
                                     <p className="text-xs font-bold text-kb-muted uppercase tracking-widest mb-1">Plan</p>
@@ -199,7 +199,7 @@ function MySubscriptions() {
                         <div className="w-20 h-20 bg-kb-bg rounded-full flex items-center justify-center mx-auto mb-6">
                             <CreditCard size={36} className="text-kb-muted" />
                         </div>
-                        <h2 className="text-2xl font-heading text-kb-navy mb-3">No Active Plan</h2>
+                        <h2 className="text-h2 text-kb-navy mb-3">No Active Plan</h2>
                         <p className="text-kb-muted max-w-md mx-auto mb-8 text-base leading-relaxed">
                             You don&apos;t have an active subscription yet. Explore our plans to get priority support, remote sessions, and more.
                         </p>

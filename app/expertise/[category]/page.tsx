@@ -205,7 +205,7 @@ export default async function ExpertisePage({ params }: { params: Promise<{ cate
                         {data.heroTitle}
                     </h1>
                     <Link href={data.quizLink}>
-                        <button className="px-10 py-4 bg-sst-primary text-white font-bold rounded-full hover:bg-sst-secondary transition-all text-xl shadow-lg">
+                        <button className="px-10 py-4 bg-sst-primary text-white font-bold rounded-full hover:bg-sst-secondary transition-all shadow-lg text-[1.1rem]">
                             Take {data.quizName}
                         </button>
                     </Link>
@@ -223,19 +223,19 @@ export default async function ExpertisePage({ params }: { params: Promise<{ cate
                         {data.comparison.cards.map((card, idx) => (
                             <div key={idx} className="bg-kb-bg/30 p-10 rounded-3xl border border-kb-cream">
                                 <h3 className="mb-4">{card.title}</h3>
-                                <p className="text-kb-dark text-lg leading-relaxed">{card.description}</p>
+                                <p className="text-kb-dark leading-relaxed">{card.description}</p>
                             </div>
                         ))}
                     </div>
 
                     <div className="bg-sst-beige/30 p-12 rounded-[3rem] text-center border-2 border-dashed border-sst-beige">
-                        <p className="text-xl text-sst-primary mb-10 leading-relaxed max-w-3xl mx-auto">
+                        <p className="text-[1.1rem] text-sst-primary mb-10 leading-relaxed max-w-3xl mx-auto">
                             <strong>TIP:</strong> {data.tip}
                         </p>
                         <h2 className="mb-4">{data.matchTitle}</h2>
-                        <p className="text-lg text-kb-dark mb-10">{data.matchDescription}</p>
+                        <p className="text-kb-dark mb-10">{data.matchDescription}</p>
                         <Link href={data.quizLink}>
-                            <button className="px-10 py-4 bg-sst-primary text-white font-bold rounded-full hover:bg-sst-secondary transition-all text-xl">
+                            <button className="px-10 py-4 bg-sst-primary text-white font-bold rounded-full hover:bg-sst-secondary transition-all text-[1.1rem]">
                                 Take Quiz
                             </button>
                         </Link>
@@ -267,7 +267,7 @@ export default async function ExpertisePage({ params }: { params: Promise<{ cate
                     <h2 className="mb-4 text-center">
                         Official Support &amp; Resources
                     </h2>
-                    <p className="text-center text-kb-muted mb-14 text-lg">
+                    <p className="text-center text-kb-muted mb-14 text-[1.1rem]">
                         Links to manufacturer support pages for quick help
                     </p>
                     <div className="resources-grid">
@@ -299,13 +299,13 @@ export default async function ExpertisePage({ params }: { params: Promise<{ cate
             <section className="py-24 bg-sst-beige text-sst-primary text-center">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-title mb-8">Need a Hand? We're Here For You!</h2>
-                    <p className="text-xl md:text-2xl text-sst-primary/80 font-light mb-12 leading-relaxed">
+                    <p className="text-h3 text-sst-primary/80 font-light mb-12 leading-relaxed">
                         If you're stuck, don't worry—you don't have to figure it out alone.
                         We'll walk you through any issue with patience and clear instructions.
                         Whether it's a simple setup or frustrating error, we've got your back.
                     </p>
                     <Link href="/booking">
-                        <button className="px-12 py-5 bg-sst-primary text-white font-bold rounded-full hover:bg-sst-secondary transition-all text-2xl shadow-2xl">
+                        <button className="px-12 py-5 bg-sst-primary text-white font-bold rounded-full hover:bg-sst-secondary transition-all text-h3 shadow-2xl">
                             Book a Personal Session
                         </button>
                     </Link>

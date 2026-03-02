@@ -81,7 +81,7 @@ export default function ChatPage() {
 
             <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-bold text-kb-navy mb-2">Get Help Now</h1>
+                    <h1 className="text-h2 text-kb-navy mb-2">Get Help Now</h1>
                     <p className="text-gray-600">Start with our AI assistant or speak with a live expert if needed.</p>
                 </div>
 
@@ -131,7 +131,7 @@ export default function ChatPage() {
                                         <div className="w-16 h-16 bg-kb-navy/10 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <Users className="text-kb-navy" size={32} />
                                         </div>
-                                        <h2 className="text-2xl font-bold text-kb-navy">Talk to an Expert</h2>
+                                        <h2 className="text-h3 text-kb-navy">Talk to an Expert</h2>
                                         <p className="text-gray-500 text-sm mt-2">Briefly tell us what's happening and we'll connect you.</p>
                                     </div>
 
@@ -196,7 +196,7 @@ export default function ChatPage() {
                                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                         <CheckCircle2 className="text-green-600" size={40} />
                                     </div>
-                                    <h2 className="text-3xl font-bold text-kb-navy mb-4">Connecting...</h2>
+                                    <h2 className="text-h2 text-kb-navy mb-4">Connecting...</h2>
                                     <p className="text-gray-600 mb-8 max-w-md mx-auto">
                                         We've notified our support team. You can join the secure chat room now using the button below.
                                     </p>
