@@ -83,8 +83,14 @@ export async function fetchArticleBySlugFromNotion(slug: string): Promise<Articl
     if (!article || !article.id) return null
 
     try {
-        // Fetch content specifically for this article
-        const mdblocks = await n2m.pageToMarkdown(article.id)
+        // Fetch content with a 15s timeout to prevent hanging requests
+        const timeoutPromise = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Notion fetch timed out after 15s')), 15000)
+        )
+        const mdblocks = await Promise.race([
+            n2m.pageToMarkdown(article.id),
+            timeoutPromise,
+        ])
         const mdString = n2m.toMarkdownString(mdblocks)
 
         return {

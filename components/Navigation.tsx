@@ -143,9 +143,6 @@ export default function Navigation() {
                       <Link href="/rewards" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">🏆</span> My Rewards
                       </Link>
-                      <Link href="/account?tab=sessions" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                        <span className="menu-icon">💻</span> My Sessions
-                      </Link>
                       <button className="user-dropdown-item user-dropdown-logout" role="menuitem" onClick={handleLogout}>
                         <span className="menu-icon">🚪</span> Log Out
                       </button>

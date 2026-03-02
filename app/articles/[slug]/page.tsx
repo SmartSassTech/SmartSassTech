@@ -1,9 +1,13 @@
-import { getArticleBySlug, getArticles } from '@/lib/articles'
+import { getArticleBySlug } from '@/lib/articles'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import ArticleTOC from '@/components/ArticleTOC'
+
+// Render article pages on-demand (SSR) instead of at build time.
+// This prevents slow Notion API responses from timing out the build.
+export const dynamic = 'force-dynamic'
 
 interface ArticlePageProps {
   params: Promise<{
@@ -11,12 +15,7 @@ interface ArticlePageProps {
   }>
 }
 
-export async function generateStaticParams() {
-  const articles = await getArticles()
-  return articles.map(article => ({
-    slug: article.slug,
-  }))
-}
+
 
 // Simple slug function to generate stable IDs from text
 function slugifyText(text: string): string {
