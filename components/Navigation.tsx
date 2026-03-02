@@ -134,6 +134,15 @@ export default function Navigation() {
                       <Link href="/account" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">👤</span> Manage My Account
                       </Link>
+                      <Link href="/my-bookings" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">📅</span> My Bookings
+                      </Link>
+                      <Link href="/subscriptions" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">✨</span> My Subscriptions
+                      </Link>
+                      <Link href="/rewards" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">🏆</span> My Rewards
+                      </Link>
                       <Link href="/account?tab=sessions" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">💻</span> My Sessions
                       </Link>
