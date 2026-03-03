@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, MapPin, Loader2 } from 'lucide-react'
 
 // Define types for booking
 interface Service {
@@ -43,9 +43,64 @@ export default function BookingPage() {
         address: '',
         notes: ''
     })
+
+    // Address Autocomplete State
+    const [addressQuery, setAddressQuery] = useState('')
+    const [addressSuggestions, setAddressSuggestions] = useState<any[]>([])
+    const [isSearchingAddress, setIsSearchingAddress] = useState(false)
+    const [showSuggestions, setShowSuggestions] = useState(false)
+    const autocompleteRef = useRef<HTMLDivElement>(null)
+
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
     const [showReview, setShowReview] = useState(false)
+
+    // Handle click outside for autocomplete dropdown
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (autocompleteRef.current && !autocompleteRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+
+    // Debounced Address Search
+    useEffect(() => {
+        if (!addressQuery || addressQuery.length < 3) {
+            setAddressSuggestions([])
+            return
+        }
+
+        const fetchAddresses = async () => {
+            setIsSearchingAddress(true)
+            try {
+                // Nominatim API: https://nominatim.org/release-docs/develop/api/Search/
+                // We use addressdetails=1 and format=json. 
+                // Using countrycodes=us limits to US, remove or change if needed.
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&addressdetails=1&limit=5&countrycodes=us`,
+                    {
+                        headers: {
+                            'Accept-Language': 'en-US,en;q=0.9',
+                            // It's good practice to provide a User-Agent identifying your app
+                            'User-Agent': 'SmartSassTech-BookingApp/1.0'
+                        }
+                    }
+                )
+                const data = await response.json()
+                setAddressSuggestions(data)
+            } catch (error) {
+                console.error("Error fetching addresses:", error)
+            } finally {
+                setIsSearchingAddress(false)
+            }
+        }
+
+        const timeoutId = setTimeout(fetchAddresses, 500) // 500ms debounce
+        return () => clearTimeout(timeoutId)
+    }, [addressQuery])
 
     // Load PayPal SDK dynamically
     useEffect(() => {
@@ -271,17 +326,36 @@ export default function BookingPage() {
                                         <div className="pt-8 border-t border-kb-cream">
                                             <h3 className="font-bold text-sst-primary mb-6">Available Times for {selectedDate.toLocaleDateString()}</h3>
                                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                                                {TIME_SLOTS.map(time => (
-                                                    <button
-                                                        key={time}
-                                                        onClick={() => setSelectedTime(time)}
-                                                        className={`py-3 rounded-xl font-bold transition-all border-2
-                              ${selectedTime === time ? 'bg-sst-primary text-white border-sst-primary shadow-lg' : 'bg-white text-sst-primary border-kb-cream hover:border-sst-primary/50'}
-                            `}
-                                                    >
-                                                        {time}
-                                                    </button>
-                                                ))}
+                                                {TIME_SLOTS.map(time => {
+                                                    // Parse the time slot string (e.g., "9:00 AM") into a Date object for today
+                                                    const [timePart, modifier] = time.split(' ');
+                                                    let [hours, minutes] = timePart.split(':').map(Number);
+                                                    if (hours === 12 && modifier === 'AM') hours = 0;
+                                                    if (hours < 12 && modifier === 'PM') hours += 12;
+
+                                                    const slotDate = new Date(selectedDate);
+                                                    slotDate.setHours(hours, minutes, 0, 0);
+
+                                                    const now = new Date();
+                                                    // Add a 1-hour buffer (optional: if you want them to book at least 1 hour in advance)
+                                                    // now.setHours(now.getHours() + 1); 
+
+                                                    const isPast = slotDate < now;
+
+                                                    return (
+                                                        <button
+                                                            key={time}
+                                                            disabled={isPast}
+                                                            onClick={() => setSelectedTime(time)}
+                                                            className={`py-3 rounded-xl font-bold transition-all border-2
+                                                                ${isPast ? 'text-kb-muted bg-gray-50 border-gray-200 cursor-not-allowed opacity-50' :
+                                                                    selectedTime === time ? 'bg-sst-primary text-white border-sst-primary shadow-lg' : 'bg-white text-sst-primary border-kb-cream hover:border-sst-primary/50'}
+                                                            `}
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}
@@ -332,9 +406,57 @@ export default function BookingPage() {
                                                     </select>
                                                 </div>
                                                 {formData.location === 'home' && (
-                                                    <div>
+                                                    <div className="relative" ref={autocompleteRef}>
                                                         <label className="block text-sst-primary font-bold mb-2">Address *</label>
-                                                        <input required type="text" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all" />
+                                                        <div className="relative">
+                                                            <input
+                                                                required
+                                                                type="text"
+                                                                value={addressQuery}
+                                                                onChange={e => {
+                                                                    setAddressQuery(e.target.value)
+                                                                    setFormData({ ...formData, address: e.target.value })
+                                                                    setShowSuggestions(true)
+                                                                }}
+                                                                onFocus={() => setShowSuggestions(true)}
+                                                                className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all pr-12"
+                                                                placeholder="Start typing your address..."
+                                                                autoComplete="off"
+                                                            />
+                                                            {isSearchingAddress && (
+                                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sst-primary">
+                                                                    <Loader2 className="animate-spin" size={20} />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Autocomplete Dropdown */}
+                                                        {showSuggestions && addressSuggestions.length > 0 && (
+                                                            <div className="absolute z-50 w-full mt-2 bg-white border border-kb-cream rounded-2xl shadow-xl max-h-60 overflow-y-auto">
+                                                                {addressSuggestions.map((place: any) => (
+                                                                    <button
+                                                                        key={place.place_id}
+                                                                        type="button"
+                                                                        className="w-full text-left px-5 py-3 hover:bg-kb-bg transition-colors flex items-start gap-3 border-b border-kb-cream last:border-none"
+                                                                        onClick={() => {
+                                                                            const formattedAddress = place.display_name;
+                                                                            setAddressQuery(formattedAddress)
+                                                                            setFormData({ ...formData, address: formattedAddress })
+                                                                            setShowSuggestions(false)
+                                                                        }}
+                                                                    >
+                                                                        <MapPin className="text-sst-primary shrink-0 mt-0.5" size={18} />
+                                                                        <div>
+                                                                            <span className="text-kb-dark font-medium block">{place.address?.road || place.name} {place.address?.house_number}</span>
+                                                                            <span className="text-xs text-kb-muted">{place.address?.city || place.address?.town}, {place.address?.state} {place.address?.postcode}</span>
+                                                                        </div>
+                                                                    </button>
+                                                                ))}
+                                                                <div className="px-5 py-2 text-[10px] text-right text-kb-muted bg-gray-50 rounded-b-2xl border-t border-kb-cream">
+                                                                    Results by OpenStreetMap
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                                 <div>

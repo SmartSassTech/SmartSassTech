@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { Search } from 'lucide-react'
 
 interface UserProfile {
   firstName: string
@@ -23,6 +24,7 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -82,14 +84,35 @@ export default function Navigation() {
     router.push('/')
   }
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
   return (
     <>
       <header className="header">
         <div className="container">
           <div className="header-top">
-            <div className="search-container">
-              <input type="search" className="search-input" placeholder="Search" aria-label="Search" />
-            </div>
+            <form onSubmit={handleSearchSubmit} className="search-container relative w-full max-w-xs">
+              <input
+                type="search"
+                className="search-input w-full pr-10"
+                placeholder="Search..."
+                aria-label="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-kb-muted hover:text-sst-primary transition-colors focus:outline-none"
+                aria-label="Submit search"
+              >
+                <Search size={18} />
+              </button>
+            </form>
 
             <div className="logo-container">
               <Link href="/" aria-label="SmartSass Tech Home">

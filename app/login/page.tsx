@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true)
@@ -14,7 +15,17 @@ export default function LoginPage() {
     const [phone, setPhone] = useState('')
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const [rememberMe, setRememberMe] = useState(false)
     const router = useRouter()
+
+    useEffect(() => {
+        const savedEmail = localStorage.getItem('sst_saved_email')
+        if (savedEmail) {
+            setEmail(savedEmail)
+            setRememberMe(true)
+        }
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -44,6 +55,12 @@ export default function LoginPage() {
                     } else {
                         console.log('[Login] Sign in successful for:', data.user?.email)
                         setMessage({ text: 'Welcome back! Redirecting...', type: 'success' })
+
+                        if (rememberMe) {
+                            localStorage.setItem('sst_saved_email', email)
+                        } else {
+                            localStorage.removeItem('sst_saved_email')
+                        }
 
                         // The database trigger "handle_user_login" on auth.users already updates the profiles table.
                         // We don't need to do it here anymore, which avoids potential race conditions.
@@ -173,15 +190,39 @@ export default function LoginPage() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-sst-primary ml-1">Password</label>
-                        <input
-                            required
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
-                            placeholder="••••••••"
-                        />
+                        <div className="relative">
+                            <input
+                                required
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all pr-12"
+                                placeholder="••••••••"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-sst-primary hover:text-sst-secondary transition-colors focus:outline-none"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                     </div>
+
+                    {isLogin && (
+                        <div className="flex items-center space-x-2 ml-1">
+                            <input
+                                type="checkbox"
+                                id="rememberMe"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                className="w-4 h-4 text-sst-primary rounded focus:ring-sst-primary bg-kb-bg border-sst-primary"
+                            />
+                            <label htmlFor="rememberMe" className="text-sm font-medium text-sst-primary cursor-pointer select-none">
+                                Remember my email
+                            </label>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
