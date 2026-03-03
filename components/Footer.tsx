@@ -41,14 +41,14 @@ export default function Footer() {
           <div className="footer-section">
             <h3 className="text-white mb-4">Quizzes</h3>
             <ul className="footer-links">
-              <li><Link href="/quizes/computer-quiz.html">Computer Quiz</Link></li>
-              <li><Link href="/quizes/smartwatch-quiz.html">Wearable Quiz</Link></li>
-              <li><Link href="/quizes/phone-quiz.html">Phone Quiz</Link></li>
-              <li><Link href="/quizes/streaming-quiz.html">Streaming Quiz</Link></li>
-              <li><Link href="/quizes/security-camera-quiz.html">Security Cam Quiz</Link></li>
-              <li><Link href="/quizes/printer-quiz.html">Printer Quiz</Link></li>
-              <li><Link href="/quizes/internet-provider-quiz.html">Internet Quiz</Link></li>
-              <li><Link href="/quizes/keyboard-mouse-quiz.html">Keyboard Quiz</Link></li>
+              <li><Link href="/quizzes/computer">Computer Quiz</Link></li>
+              <li><Link href="/quizzes/smartwatch">Wearable Quiz</Link></li>
+              <li><Link href="/quizzes/phone">Phone Quiz</Link></li>
+              <li><Link href="/quizzes/streaming">Streaming Quiz</Link></li>
+              <li><Link href="/quizzes/security-camera">Security Cam Quiz</Link></li>
+              <li><Link href="/quizzes/printer">Printer Quiz</Link></li>
+              <li><Link href="/quizzes/internet-provider">Internet Quiz</Link></li>
+              <li><Link href="/quizzes/keyboard-mouse">Keyboard Quiz</Link></li>
             </ul>
           </div>
 

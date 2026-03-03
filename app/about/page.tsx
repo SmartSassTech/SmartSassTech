@@ -63,6 +63,28 @@ export default function AboutPage() {
                         ))}
                     </div>
 
+                    {/* Testimonials Section */}
+                    <div className="section mt-12 pt-12 border-t border-kb-cream">
+                        <h2 className="text-title text-center mb-12">What Our Clients Say</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-kb-bg p-8 rounded-2xl shadow-sm italic relative">
+                                <p className="text-kb-dark mb-4 group">"SmartSass Tech made me feel so comfortable. I finally understand how to use FaceTime with my grandkids! I'm no longer afraid of my tablet."</p>
+                                <p className="font-bold text-sst-primary not-italic">Mary J.</p>
+                                <p className="text-sm text-kb-muted not-italic">Pittsford, NY</p>
+                            </div>
+                            <div className="bg-kb-bg p-8 rounded-2xl shadow-sm italic relative">
+                                <p className="text-kb-dark mb-4">"Patient, professional, and genuinely kind. They fixed my printer issues and set up a secure password system for me. Highly recommend!"</p>
+                                <p className="font-bold text-sst-primary not-italic">Robert L.</p>
+                                <p className="text-sm text-kb-muted not-italic">Brighton, NY</p>
+                            </div>
+                            <div className="bg-kb-bg p-8 rounded-2xl shadow-sm italic relative md:col-span-2">
+                                <p className="text-kb-dark mb-4">"The jargon-free approach is exactly what I needed. They didn't talk down to me once. I feel so much more tech-savvy now."</p>
+                                <p className="font-bold text-sst-primary not-italic">Helen S.</p>
+                                <p className="text-sm text-kb-muted not-italic">Rochester, NY</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="text-center pt-12 border-t border-kb-cream">
                         <h2 className="mb-4">Ready to Get Started?</h2>
                         <p className="text-kb-dark mb-8">

@@ -69,11 +69,12 @@ export default function Navigation() {
   async function loadProfile(userId: string, email: string) {
     const { data } = await supabase
       .from('profiles')
-      .select('"First Name", email')
+      .select('first_name, email')
       .eq('id', userId)
       .single()
 
-    const firstName = (data as any)?.['First Name'] || email.split('@')[0]
+    const nameFromProfile = (data as any)?.first_name
+    const firstName = (nameFromProfile || email.split('@')[0]).split(' ')[0]
     setUser({ firstName, email })
   }
 
@@ -157,6 +158,9 @@ export default function Navigation() {
                       <Link href="/account" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">👤</span> Manage My Account
                       </Link>
+                      <Link href="/my-devices" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">📱</span> My Devices
+                      </Link>
                       <Link href="/my-bookings" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">📅</span> My Bookings
                       </Link>
@@ -194,6 +198,9 @@ export default function Navigation() {
             </li>
             <li className={`nav-tab ${pathname.startsWith('/articles') || pathname.startsWith('/expertise') ? 'active' : ''}`}>
               <Link href="/articles">Resources</Link>
+            </li>
+            <li className={`nav-tab ${pathname === '/scam-prevention' ? 'active' : ''}`}>
+              <Link href="/scam-prevention">Scam Prevention</Link>
             </li>
             <li className={`nav-tab ${pathname === '/about' ? 'active' : ''}`}>
               <Link href="/about">About</Link>

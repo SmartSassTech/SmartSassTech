@@ -37,7 +37,17 @@
                     "label": "I'm open to either - just want what's best",
                     "value": "either"
                 }
-            ]
+            ],
+            "autoAnswerRule": {
+                "dependsOnDeviceBrand": [
+                    "Apple",
+                    "Mac",
+                    "MacBook",
+                    "iPhone",
+                    "iPad"
+                ],
+                "answerValue": "yes"
+            }
         },
         {
             "id": "primaryUse",

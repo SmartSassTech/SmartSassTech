@@ -364,6 +364,26 @@ function AccountSettingsContent() {
                             </div>
                         </div>
 
+                        {/* ── My Devices ── */}
+                        <div className="space-y-6">
+                            <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
+                                <span className="text-sst-primary">📱</span>
+                                My Devices
+                            </h2>
+                            <div className="p-8 bg-gray-50/50 rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                <div>
+                                    <p className="font-bold text-kb-navy mb-1">Manage your tech</p>
+                                    <p className="text-sm text-kb-muted">View devices you own and see personalized tech recommendations.</p>
+                                </div>
+                                <Link
+                                    href="/my-devices"
+                                    className="flex-shrink-0 px-8 py-3 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-md active:scale-95"
+                                >
+                                    Go to My Devices →
+                                </Link>
+                            </div>
+                        </div>
+
                         {/* ── My Bookings ── */}
                         <div className="space-y-6">
                             <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">

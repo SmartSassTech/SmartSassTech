@@ -18,7 +18,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'laptops-desktops': {
         title: 'Laptops & Desktops',
         heroTitle: 'Laptop & Desktop Computers',
-        quizLink: '/quizes/computer-quiz.html',
+        quizLink: '/quizzes/computer',
         quizName: 'Computer Match Quiz',
         comparison: {
             title: "What's the Difference Between a Laptop & Desktop?",
@@ -49,7 +49,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'tablets-phones': {
         title: 'Tablets & Phones',
         heroTitle: 'Tablets & Phones',
-        quizLink: '/quizes/phone-quiz.html',
+        quizLink: '/quizzes/phone',
         quizName: 'Phone Match Quiz',
         comparison: {
             title: "What's the Difference Between a Tablet & Phone?",
@@ -80,7 +80,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'watches-wearables': {
         title: 'Watches & Wearables',
         heroTitle: 'Smartwatches & Wearables',
-        quizLink: '/quizes/smartwatch-quiz.html',
+        quizLink: '/quizzes/smartwatch',
         quizName: 'Wearable Match Quiz',
         comparison: {
             title: "What's the Difference Between a Fitness Tracker & Smartwatch?",
@@ -108,7 +108,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'tv-streaming': {
         title: 'TV & Streaming',
         heroTitle: 'TV & Streaming Support',
-        quizLink: '/quizes/streaming-quiz.html',
+        quizLink: '/quizzes/streaming',
         quizName: 'Streaming Match Quiz',
         comparison: {
             title: "What's the Difference Between a Smart TV & Streaming Device?",
@@ -136,7 +136,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'smart-home-security': {
         title: 'Smart Home & Security',
         heroTitle: 'Smart Home & Security',
-        quizLink: '/quizes/security-camera-quiz.html',
+        quizLink: '/quizzes/security-camera',
         quizName: 'Security Cam Quiz',
         comparison: {
             title: "What's the Difference Between a Smart Hub & Standing Speaker?",
@@ -164,7 +164,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'printers-scanners': {
         title: 'Printers & Scanners',
         heroTitle: 'Printers, Scanners & Copiers',
-        quizLink: '/quizes/printer-quiz.html',
+        quizLink: '/quizzes/printer',
         quizName: 'Printer Match Quiz',
         comparison: {
             title: "What's the Difference Between Inkjet & Laser Printers?",
@@ -192,7 +192,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'wifi-networking': {
         title: 'WiFi & Networking',
         heroTitle: 'Internet & WiFi Support',
-        quizLink: '/quizes/internet-provider-quiz.html',
+        quizLink: '/quizzes/internet-provider',
         quizName: 'Internet Provider Quiz',
         comparison: {
             title: "What's the Difference Between a Modem & Router?",
@@ -220,7 +220,7 @@ export const EXPERTISE_DATA: Record<string, ExpertisePageData> = {
     'accessories-peripherals': {
         title: 'Accessories',
         heroTitle: 'Accessories & Peripherals',
-        quizLink: '/quizes/keyboard-mouse-quiz.html',
+        quizLink: '/quizzes/keyboard-mouse',
         quizName: 'Keyboard & Mouse Quiz',
         comparison: {
             title: "What's the Difference Between Wired & Wireless?",

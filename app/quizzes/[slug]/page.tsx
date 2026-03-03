@@ -4,13 +4,27 @@ import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 
 interface PageProps {
-    params: {
+    params: Promise<{
         slug: string
-    }
+    }>
+}
+
+export function generateStaticParams() {
+    return [
+        { slug: 'computer' },
+        { slug: 'phone' },
+        { slug: 'internet-provider' },
+        { slug: 'printer' },
+        { slug: 'security-camera' },
+        { slug: 'smartwatch' },
+        { slug: 'streaming' },
+        { slug: 'keyboard-mouse' },
+    ]
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const quiz = getQuizData(params.slug)
+    const resolvedParams = await params;
+    const quiz = getQuizData(resolvedParams.slug)
     if (!quiz) return { title: 'Quiz Not Found' }
 
     return {
@@ -19,8 +33,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 }
 
-export default function QuizPage({ params }: PageProps) {
-    const quiz = getQuizData(params.slug)
+export default async function QuizPage({ params }: PageProps) {
+    const resolvedParams = await params;
+    const quiz = getQuizData(resolvedParams.slug)
 
     if (!quiz) {
         notFound()

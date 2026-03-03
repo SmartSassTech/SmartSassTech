@@ -1,18 +1,27 @@
 export interface QuizOption {
-    label: string;
+    text?: string;
+    label?: string;
     value: string;
+}
+
+export interface AutoAnswerRule {
+    dependsOnDeviceBrand: string[];
+    answerValue: string;
 }
 
 export interface QuizQuestion {
     id: string;
-    title: string;
+    question?: string;
+    title?: string;
     options: QuizOption[];
+    autoAnswerRule?: AutoAnswerRule;
 }
 
 export interface Product {
     name: string;
     price: string;
-    specs: string[];
+    specs?: string[];
+    features?: string[];
     why: string;
     link: string;
 }

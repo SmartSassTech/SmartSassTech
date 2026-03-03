@@ -23,28 +23,6 @@ export default async function Home() {
         <DeviceSlider />
       </section>
 
-      {/* Featured Articles Section - Replaces the static "Resources" from original if desired, or appended */}
-      {featured.length > 0 && (
-        <section className="section" style={{ backgroundColor: 'var(--color-bg-alt)', padding: 'var(--spacing-xxl) 0' }}>
-          <div className="container">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <div>
-                <h2 className="mb-2 text-h1">Featured Guides</h2>
-                <p className="text-kb-muted text-[1.1rem] max-w-xl">Step-by-step instructions for your most common tech questions.</p>
-              </div>
-              <Link href="/articles" className="text-sst-primary font-bold border-b-2 border-sst-primary pb-1 hover:text-sst-secondary hover:border-sst-secondary transition-all">
-                View All Resources
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featured.map(article => (
-                <ArticleCard key={article.slug} article={article} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* How It Works Section */}
       <section className="section" style={{ backgroundColor: 'var(--color-white)' }}>
         <div className="container">
@@ -69,29 +47,28 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="section">
-        <div className="container">
-          <h2 className="text-title text-center mb-xl">What Our Clients Say</h2>
-          <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <p className="testimonial-text">"SmartSass Tech made me feel so comfortable. I finally understand how to use FaceTime with my grandkids! I'm no longer afraid of my tablet."</p>
-              <p className="testimonial-author">Mary J.</p>
-              <p className="testimonial-location">Pittsford, NY</p>
+      {/* Featured Articles Section - Replaces the static "Resources" from original if desired, or appended */}
+      {featured.length > 0 && (
+        <section className="section" style={{ backgroundColor: 'var(--color-bg-alt)', padding: 'var(--spacing-xxl) 0' }}>
+          <div className="container">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+              <div>
+                <h2 className="mb-2 text-h1">Featured Guides</h2>
+                <p className="text-kb-muted text-[1.1rem] max-w-xl">Step-by-step instructions for your most common tech questions.</p>
+              </div>
+              <Link href="/articles" className="text-sst-primary font-bold border-b-2 border-sst-primary pb-1 hover:text-sst-secondary hover:border-sst-secondary transition-all">
+                View All Resources
+              </Link>
             </div>
-            <div className="testimonial-card">
-              <p className="testimonial-text">"Patient, professional, and genuinely kind. They fixed my printer issues and set up a secure password system for me. Highly recommend!"</p>
-              <p className="testimonial-author">Robert L.</p>
-              <p className="testimonial-location">Brighton, NY</p>
-            </div>
-            <div className="testimonial-card">
-              <p className="testimonial-text">"The jargon-free approach is exactly what I needed. They didn't talk down to me once. I feel so much more tech-savvy now."</p>
-              <p className="testimonial-author">Helen S.</p>
-              <p className="testimonial-location">Rochester, NY</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featured.map(article => (
+                <ArticleCard key={article.slug} article={article} />
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
 
       {/* CTA Section */}
       <section className="cta-section section">
