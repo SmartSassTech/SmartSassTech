@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { ChevronLeft, ChevronRight, Check, MapPin, Loader2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, MapPin, Loader2, Ticket, XCircle } from 'lucide-react'
 
 // Define types for booking
 interface Service {
@@ -44,6 +44,13 @@ export default function BookingPage() {
         notes: ''
     })
 
+    // Auth & Rewards State
+    const [userId, setUserId] = useState<string | null>(null)
+    const [discountCode, setDiscountCode] = useState('')
+    const [appliedDiscount, setAppliedDiscount] = useState<{ id: string, code: string, percent: number } | null>(null)
+    const [isValidatingDiscount, setIsValidatingDiscount] = useState(false)
+    const [discountError, setDiscountError] = useState<string | null>(null)
+
     // Address Autocomplete State
     const [addressQuery, setAddressQuery] = useState('')
     const [addressSuggestions, setAddressSuggestions] = useState<any[]>([])
@@ -54,6 +61,33 @@ export default function BookingPage() {
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
     const [showReview, setShowReview] = useState(false)
+
+    // Check for auth session
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                setUserId(session.user.id)
+                // Pre-fill some form data if user is logged in
+                setFormData(prev => ({
+                    ...prev,
+                    email: session.user.email || '',
+                }))
+
+                // Fetch profile to get name
+                supabase.from('profiles').select('first_name, last_name, address, Phone').eq('id', session.user.id).single().then(({ data }) => {
+                    if (data) {
+                        setFormData(prev => ({
+                            ...prev,
+                            name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
+                            phone: data.Phone || '',
+                            address: data.address || ''
+                        }))
+                        if (data.address) setAddressQuery(data.address)
+                    }
+                })
+            }
+        })
+    }, [])
 
     // Handle click outside for autocomplete dropdown
     useEffect(() => {
@@ -76,15 +110,11 @@ export default function BookingPage() {
         const fetchAddresses = async () => {
             setIsSearchingAddress(true)
             try {
-                // Nominatim API: https://nominatim.org/release-docs/develop/api/Search/
-                // We use addressdetails=1 and format=json. 
-                // Using countrycodes=us limits to US, remove or change if needed.
                 const response = await fetch(
                     `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&addressdetails=1&limit=5&countrycodes=us`,
                     {
                         headers: {
                             'Accept-Language': 'en-US,en;q=0.9',
-                            // It's good practice to provide a User-Agent identifying your app
                             'User-Agent': 'SmartSassTech-BookingApp/1.0'
                         }
                     }
@@ -98,7 +128,7 @@ export default function BookingPage() {
             }
         }
 
-        const timeoutId = setTimeout(fetchAddresses, 500) // 500ms debounce
+        const timeoutId = setTimeout(fetchAddresses, 500)
         return () => clearTimeout(timeoutId)
     }, [addressQuery])
 
@@ -117,10 +147,52 @@ export default function BookingPage() {
         }
     }, [showReview])
 
+    const handleApplyDiscount = async () => {
+        if (!discountCode || !userId) return
+
+        setIsValidatingDiscount(true)
+        setDiscountError(null)
+
+        try {
+            const { data, error } = await supabase
+                .from('discounts')
+                .select('*')
+                .eq('code', discountCode)
+                .eq('user_id', userId)
+                .eq('is_used', false)
+                .single()
+
+            if (error || !data) {
+                setDiscountError('Invalid or expired discount code.')
+                setAppliedDiscount(null)
+            } else {
+                setAppliedDiscount({
+                    id: data.id,
+                    code: data.code,
+                    percent: data.percent_off
+                })
+            }
+        } catch (err) {
+            console.error('Discount validation error:', err)
+            setDiscountError('Error validating discount.')
+        } finally {
+            setIsValidatingDiscount(false)
+        }
+    }
+
+    const calculateFinalPrice = () => {
+        if (!selectedService) return 0
+        const basePrice = selectedService.price
+        if (appliedDiscount) {
+            return parseFloat((basePrice * (1 - appliedDiscount.percent / 100)).toFixed(2))
+        }
+        return basePrice
+    }
+
     const renderPayPalButton = () => {
         if (!(window as any).paypal || !selectedService) return
 
-        // Clear previous button if any
+        const finalPrice = calculateFinalPrice()
         const container = document.getElementById('paypal-button-container')
         if (container) container.innerHTML = '';
 
@@ -128,8 +200,8 @@ export default function BookingPage() {
             createOrder: (data: any, actions: any) => {
                 return actions.order.create({
                     purchase_units: [{
-                        amount: { value: selectedService.price.toString() },
-                        description: `${selectedService.name} - SmartSass Tech`
+                        amount: { value: finalPrice.toString() },
+                        description: `${selectedService.name} - SmartSass Tech ${appliedDiscount ? '(Discount Applied)' : ''}`
                     }]
                 })
             },
@@ -147,8 +219,12 @@ export default function BookingPage() {
 
     const finalizeBooking = async (orderId: string) => {
         setIsProcessing(true)
+        const finalPrice = calculateFinalPrice()
+        const pointsAwarded = Math.floor(finalPrice)
+
         try {
-            const { error } = await supabase
+            // 1. Insert booking
+            const { error: bookingError } = await supabase
                 .from('bookings')
                 .insert([{
                     customer_name: formData.name,
@@ -160,15 +236,41 @@ export default function BookingPage() {
                     booking_date: selectedDate?.toISOString().split('T')[0],
                     booking_time: selectedTime,
                     duration: selectedService?.duration,
-                    price: selectedService?.price,
+                    price: finalPrice,
                     notes: formData.notes,
                     payment_status: 'completed',
-                    paypal_order_id: orderId
+                    paypal_order_id: orderId,
+                    user_id: userId
                 }])
 
-            if (error) throw error
+            if (bookingError) throw bookingError
 
-            // Trigger notification (Optional: in a real app, use a server component or Edge function)
+            // 2. If discount used, mark it as used
+            if (appliedDiscount && userId) {
+                await supabase
+                    .from('discounts')
+                    .update({ is_used: true })
+                    .eq('id', appliedDiscount.id)
+            }
+
+            // 3. Award points to user profile
+            if (userId) {
+                // Get current points
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('reward_points')
+                    .eq('id', userId)
+                    .single()
+
+                const currentPoints = profile?.reward_points || 0
+
+                await supabase
+                    .from('profiles')
+                    .update({ reward_points: currentPoints + pointsAwarded })
+                    .eq('id', userId)
+            }
+
+            // 4. Trigger notification
             await fetch('https://zwfsvjvpocpflmkmptji.supabase.co/functions/v1/send-notification', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -179,7 +281,7 @@ export default function BookingPage() {
                     date: selectedDate?.toLocaleDateString(),
                     time: selectedTime,
                     duration: selectedService?.duration,
-                    price: `$${selectedService?.price}`,
+                    price: `$${finalPrice}`,
                     paypalOrderId: orderId
                 })
             })
@@ -202,11 +304,9 @@ export default function BookingPage() {
         today.setHours(0, 0, 0, 0)
 
         const days = []
-        // Empty cells
         for (let i = 0; i < firstDay; i++) {
             days.push(<div key={`empty-${i}`} className="aspect-square"></div>)
         }
-        // Month days
         for (let d = 1; d <= daysInMonth; d++) {
             const date = new Date(year, month, d)
             const isDisabled = date < today
@@ -243,6 +343,11 @@ export default function BookingPage() {
                     <p className="text-kb-dark text-[1.1rem] mb-8">
                         Thank you, <strong>{formData.name}</strong>! Your session for <strong>{selectedService?.name}</strong> is scheduled for <strong>{selectedDate?.toLocaleDateString()}</strong> at <strong>{selectedTime}</strong>.
                     </p>
+                    {userId && (
+                        <p className="text-sst-primary font-bold mb-8">
+                            You've earned {Math.floor(calculateFinalPrice())} reward points from this booking!
+                        </p>
+                    )}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/" className="px-8 py-4 bg-sst-primary text-white rounded-full font-bold hover:bg-sst-secondary transition-all">
                             Return Home
@@ -327,7 +432,6 @@ export default function BookingPage() {
                                             <h3 className="font-bold text-sst-primary mb-6">Available Times for {selectedDate.toLocaleDateString()}</h3>
                                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                                                 {TIME_SLOTS.map(time => {
-                                                    // Parse the time slot string (e.g., "9:00 AM") into a Date object for today
                                                     const [timePart, modifier] = time.split(' ');
                                                     let [hours, minutes] = timePart.split(':').map(Number);
                                                     if (hours === 12 && modifier === 'AM') hours = 0;
@@ -337,9 +441,6 @@ export default function BookingPage() {
                                                     slotDate.setHours(hours, minutes, 0, 0);
 
                                                     const now = new Date();
-                                                    // Add a 1-hour buffer (optional: if you want them to book at least 1 hour in advance)
-                                                    // now.setHours(now.getHours() + 1); 
-
                                                     const isPast = slotDate < now;
 
                                                     return (
@@ -374,7 +475,17 @@ export default function BookingPage() {
                                                         <span className="text-kb-muted">Date:</span> <span className="font-bold">{selectedDate?.toLocaleDateString()}</span>
                                                         <span className="text-kb-muted">Time:</span> <span className="font-bold">{selectedTime}</span>
                                                         <span className="text-kb-muted">Location:</span> <span className="font-bold">{formData.location}</span>
-                                                        <span className="text-kb-muted">Total:</span> <span className="text-lg font-bold text-sst-primary">${selectedService.price}</span>
+                                                        <span className="text-kb-muted">Subtotal:</span> <span className="font-bold">${selectedService.price}</span>
+                                                        {appliedDiscount && (
+                                                            <>
+                                                                <span className="text-green-600 font-bold">Discount ({appliedDiscount.percent}% off):</span>
+                                                                <span className="text-green-600 font-bold">-${(selectedService.price * appliedDiscount.percent / 100).toFixed(2)}</span>
+                                                            </>
+                                                        )}
+                                                        <span className="text-kb-muted border-t border-kb-cream pt-4 mt-2">Total:</span>
+                                                        <span className="text-xl font-bold text-sst-primary border-t border-kb-cream pt-4 mt-2">
+                                                            ${calculateFinalPrice()}
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div id="paypal-button-container" className="min-h-[150px]"></div>
@@ -396,6 +507,54 @@ export default function BookingPage() {
                                                     <label className="block text-sst-primary font-bold mb-2">Phone *</label>
                                                     <input required type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all" />
                                                 </div>
+
+                                                {/* Discount Code Section */}
+                                                {userId && (
+                                                    <div className="bg-sst-primary/5 p-6 rounded-2xl border-2 border-dashed border-sst-primary/20">
+                                                        <label className="block text-sst-primary font-bold mb-2 flex items-center gap-2">
+                                                            <Ticket size={18} /> Have a discount code?
+                                                        </label>
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={discountCode}
+                                                                onChange={e => setDiscountCode(e.target.value.toUpperCase())}
+                                                                placeholder="Enter code"
+                                                                className="flex-1 px-5 py-3 bg-white border-none rounded-xl focus:ring-2 focus:ring-sst-primary transition-all uppercase"
+                                                                disabled={!!appliedDiscount}
+                                                            />
+                                                            {appliedDiscount ? (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => { setAppliedDiscount(null); setDiscountCode('') }}
+                                                                    className="px-6 py-3 bg-sst-primary/10 text-sst-primary font-bold rounded-xl hover:bg-sst-primary/20 transition-all flex items-center gap-2"
+                                                                >
+                                                                    <XCircle size={18} /> Remove
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={handleApplyDiscount}
+                                                                    disabled={!discountCode || isValidatingDiscount}
+                                                                    className="px-6 py-3 bg-sst-primary text-white font-bold rounded-xl hover:bg-sst-secondary transition-all disabled:opacity-50"
+                                                                >
+                                                                    {isValidatingDiscount ? <Loader2 className="animate-spin" size={20} /> : 'Apply'}
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                        {appliedDiscount && (
+                                                            <p className="text-green-600 text-sm font-bold mt-2 flex items-center gap-1">
+                                                                <Check size={16} /> Code applied: {appliedDiscount.percent}% off your session!
+                                                            </p>
+                                                        )}
+                                                        {discountError && (
+                                                            <p className="text-red-500 text-sm font-bold mt-2 flex items-center gap-1">
+                                                                <XCircle size={16} /> {discountError}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+
                                                 <div>
                                                     <label className="block text-sst-primary font-bold mb-2">Location Preference *</label>
                                                     <select required value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all">
@@ -430,7 +589,6 @@ export default function BookingPage() {
                                                             )}
                                                         </div>
 
-                                                        {/* Autocomplete Dropdown */}
                                                         {showSuggestions && addressSuggestions.length > 0 && (
                                                             <div className="absolute z-50 w-full mt-2 bg-white border border-kb-cream rounded-2xl shadow-xl max-h-60 overflow-y-auto">
                                                                 {addressSuggestions.map((place: any) => (
@@ -452,9 +610,6 @@ export default function BookingPage() {
                                                                         </div>
                                                                     </button>
                                                                 ))}
-                                                                <div className="px-5 py-2 text-[10px] text-right text-kb-muted bg-gray-50 rounded-b-2xl border-t border-kb-cream">
-                                                                    Results by OpenStreetMap
-                                                                </div>
                                                             </div>
                                                         )}
                                                     </div>

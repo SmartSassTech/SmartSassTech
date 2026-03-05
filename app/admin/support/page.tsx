@@ -167,17 +167,20 @@ export default function AdminDashboard() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-kb-navy/10 flex items-center justify-center text-kb-navy">
-                                                        <User size={14} />
+                                                <div className="flex flex-col">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-kb-navy/10 flex items-center justify-center text-kb-navy">
+                                                            <User size={14} />
+                                                        </div>
+                                                        <span className="font-semibold text-gray-800 text-sm">{session.user_name}</span>
                                                     </div>
-                                                    <span className="font-semibold text-gray-800 text-sm">{session.user_name}</span>
+                                                    <span className="text-[10px] text-gray-400 ml-11">{session.user_email || 'No email provided'}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2 text-gray-500 text-sm">
-                                                    {session.user_email?.includes('iPhone') || session.user_email?.includes('Phone') ? <Smartphone size={14} /> : <Monitor size={14} />}
-                                                    {session.user_email?.replace('device: ', '') || 'Unknown'}
+                                                    {(session.user_device?.includes('iPhone') || session.user_device?.includes('Phone')) ? <Smartphone size={14} /> : <Monitor size={14} />}
+                                                    {session.user_device || 'Unknown'}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

@@ -232,9 +232,10 @@ export default function SessionPage() {
                                         <div className="w-10 h-10 bg-kb-navy/10 rounded-full flex items-center justify-center">
                                             <User className="text-kb-navy" size={20} />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <p className="text-[10px] uppercase font-bold text-gray-400">User</p>
-                                            <p className="font-semibold text-gray-800">{sessionInfo?.user_name || 'Loading...'}</p>
+                                            <p className="font-semibold text-gray-800 truncate">{sessionInfo?.user_name || 'Loading...'}</p>
+                                            <p className="text-[10px] text-gray-500 truncate">{sessionInfo?.user_email || 'No email'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
@@ -243,11 +244,14 @@ export default function SessionPage() {
                                         </div>
                                         <div>
                                             <p className="text-[10px] uppercase font-bold text-gray-400">Device</p>
-                                            <p className="font-semibold text-gray-800">{sessionInfo?.user_email || 'Not specified'}</p>
+                                            <p className="font-semibold text-gray-800">{sessionInfo?.user_device || 'Not specified'}</p>
                                         </div>
                                     </div>
                                     <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
-                                        <p className="text-[10px] uppercase font-bold text-gray-400 mb-1">Status</p>
+                                        <div className="flex justify-between items-center mb-1">
+                                            <p className="text-[10px] uppercase font-bold text-gray-400">Status</p>
+                                            <p className="text-[10px] font-mono text-kb-navy/40">#{sessionInfo?.transcript_id}</p>
+                                        </div>
                                         <div className="flex items-center gap-2">
                                             <div className={`w-2 h-2 rounded-full ${sessionInfo?.status === 'open' ? 'bg-red-500 animate-pulse' : sessionInfo?.status === 'in_progress' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
                                             <p className="text-sm font-semibold capitalize text-kb-navy">

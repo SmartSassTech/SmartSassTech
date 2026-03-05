@@ -10,13 +10,40 @@ export default function ContactPage() {
         phone: '',
         message: ''
     })
+    const [loading, setLoading] = useState(false)
     const [status, setStatus] = useState<null | 'success' | 'error'>(null)
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // In a real app, you'd send this to an API
-        console.log('Form submitted:', formData)
-        setStatus('success')
+        setLoading(true)
+        setStatus(null)
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+
+            if (response.ok) {
+                setStatus('success')
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    message: ''
+                })
+            } else {
+                setStatus('error')
+            }
+        } catch (error) {
+            console.error('Submission error:', error)
+            setStatus('error')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -85,6 +112,11 @@ export default function ContactPage() {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                {status === 'error' && (
+                                    <div className="bg-red-100 text-red-800 p-4 rounded-xl text-center">
+                                        <p>Something went wrong. Please try again or call us directly.</p>
+                                    </div>
+                                )}
                                 <div>
                                     <label htmlFor="name" className="block text-sst-primary font-bold mb-2">Your Name *</label>
                                     <input
@@ -116,6 +148,8 @@ export default function ContactPage() {
                                     <input
                                         type="tel"
                                         id="phone"
+                                        pattern="[0-9\s\-\(\)\+]*"
+                                        title="Please enter a valid phone number (digits, spaces, -, (, ) or + only)"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                         className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
@@ -136,8 +170,12 @@ export default function ContactPage() {
                                     ></textarea>
                                 </div>
 
-                                <button type="submit" className="w-full py-5 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-lg text-lg">
-                                    Send Message
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className={`w-full py-5 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-lg text-lg ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                >
+                                    {loading ? 'Sending...' : 'Send Message'}
                                 </button>
                             </form>
                         )}

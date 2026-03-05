@@ -10,11 +10,11 @@ export default function ScamPreventionPage() {
     return (
         <main id="main-content">
             {/* Hero Section */}
-            <section className="hero section bg-kb-slate text-white pb-12 pt-20">
+            <section className="hero section bg-sst-beige text-kb-navy pb-12 pt-20">
                 <div className="container">
                     <div className="max-w-3xl mx-auto text-center">
                         <h1 className="text-4xl md:text-5xl font-bold mb-6">Scam Prevention & Protection</h1>
-                        <p className="text-xl opacity-90">
+                        <p className="text-xl text-kb-slate">
                             Stay safe online with our curated list of essential resources. Learn how to spot scams, report fraud, and protect your personal information.
                         </p>
                     </div>

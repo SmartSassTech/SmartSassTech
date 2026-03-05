@@ -233,7 +233,7 @@ export default function QuizComponent({ quiz }: QuizComponentProps) {
                 {/* Header */}
                 <div className="bg-gradient-to-br from-kb-navy to-kb-slate p-10 md:p-16 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/10 to-transparent"></div>
-                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 font-heading tracking-tight drop-shadow-sm relative z-10">{quiz.title}</h1>
+                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 font-heading tracking-tight drop-shadow-sm relative z-10 text-white">{quiz.title}</h1>
                     <p className="text-lg md:text-2xl text-white max-w-3xl mx-auto font-medium leading-relaxed relative z-10">{quiz.description}</p>
                 </div>
 

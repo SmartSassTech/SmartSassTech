@@ -12,7 +12,7 @@ export default function ChatPage() {
         { role: 'assistant', content: "Hi there! 👋 I'm here to help you with any tech questions or issues you're having. What can I help you with today?" }
     ])
     const [isAILoading, setIsAILoading] = useState(false)
-    const [formData, setFormData] = useState({ name: '', device: '', issue: '' })
+    const [formData, setFormData] = useState({ name: '', email: '', device: '', issue: '' })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [sessionId, setSessionId] = useState<string | null>(null)
 
@@ -145,6 +145,17 @@ export default function ChatPage() {
                                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-kb-navy/20 outline-none text-black"
                                                 placeholder="John Doe"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Email Address</label>
+                                            <input
+                                                required
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-kb-navy/20 outline-none text-black"
+                                                placeholder="john@example.com"
                                             />
                                         </div>
                                         <div>

@@ -5,18 +5,18 @@ import { resend } from '@/lib/resend'
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json()
-        const { name, device, issue, user_id } = body
+        const { name, email, device, issue, user_id } = body
 
-        if (!name || !device || !issue) {
+        if (!name || !email || !device || !issue) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
         }
 
         // 1. Create a session in Supabase using the secure RPC function
-        // This bypasses RLS for the creation step to allow the API (anon) to get the ID back.
         const { data: sessionId, error: supabaseError } = await supabase
             .rpc('create_chat_session', {
                 p_user_name: name,
-                p_user_email: device,
+                p_user_email: email,
+                p_user_device: device,
                 p_initial_issue: issue,
                 p_user_id: user_id
             })
@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
                 html: `
                     <h2>New Chat Request</h2>
                     <p><strong>User:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
                     <p><strong>Device:</strong> ${device}</p>
                     <p><strong>Issue:</strong> ${issue}</p>
                     <p><a href="${chatLink}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Join Chat Session</a></p>
@@ -47,7 +48,6 @@ export async function POST(req: NextRequest) {
             })
         } catch (emailError) {
             console.error('Resend email error:', emailError)
-            // Don't fail the whole request if email fails, but log it
         }
 
         return NextResponse.json({ success: true, sessionId, chatLink })
