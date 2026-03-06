@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, X, Send, Bot, User } from 'lucide-react'
+import { MessageCircle, X, Send, Bot, User, Maximize2, Minimize2 } from 'lucide-react'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 
@@ -18,6 +18,7 @@ export default function Chatbot() {
     ])
     const [input, setInput] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [isFullScreen, setIsFullScreen] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     const scrollToBottom = () => {
@@ -59,14 +60,17 @@ export default function Chatbot() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div className={`fixed ${isFullScreen ? 'inset-0 z-[9999]' : 'bottom-6 right-6 z-[2000]'} flex flex-col items-end overflow-hidden`}>
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        initial={isFullScreen ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden h-[500px]"
+                        exit={isFullScreen ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.95 }}
+                        className={`${isFullScreen
+                            ? 'w-full h-full m-0 rounded-none'
+                            : 'mb-4 w-80 sm:w-96 rounded-2xl h-[500px]'
+                            } bg-white shadow-2xl border border-gray-100 flex flex-col overflow-hidden transition-all duration-300 relative`}
                     >
                         {/* Header */}
                         <div className="bg-kb-navy p-4 flex justify-between items-center text-white">
@@ -82,12 +86,21 @@ export default function Chatbot() {
                                     </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="hover:bg-white/10 p-1.5 rounded-lg transition-colors"
-                            >
-                                <X size={20} />
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setIsFullScreen(!isFullScreen)}
+                                    className="hover:bg-white/10 p-1.5 rounded-lg transition-colors"
+                                    title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+                                >
+                                    {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                                </button>
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="hover:bg-white/10 p-1.5 rounded-lg transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Messages */}
@@ -100,7 +113,7 @@ export default function Chatbot() {
                                             {m.role === 'user' ? <User size={16} /> : <Bot size={16} />}
                                         </div>
                                         <div className={`p-3 rounded-2xl text-sm ${m.role === 'user'
-                                            ? 'bg-kb-navy text-white rounded-tr-none'
+                                            ? 'bg-kb-navy text-white rounded-tr-none [&_p]:text-white'
                                             : m.content.startsWith('Error:')
                                                 ? 'bg-red-50 text-red-700 border border-red-100 shadow-sm rounded-tl-none'
                                                 : 'bg-white text-gray-800 border border-gray-100 shadow-sm rounded-tl-none'

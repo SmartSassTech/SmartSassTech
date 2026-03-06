@@ -17,6 +17,8 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(false)
+    const [acknowledgePhone, setAcknowledgePhone] = useState(false)
+    const [phoneExists, setPhoneExists] = useState(false)
     const router = useRouter()
 
     useEffect(() => {
@@ -75,6 +77,31 @@ export default function LoginPage() {
                     setMessage({ text: err.message || 'An unexpected error occurred during login.', type: 'error' })
                 }
             } else {
+                // Pre-signup checks for existing email or phone
+                const { data: existingEmail } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('email', email)
+                    .single()
+
+                if (existingEmail) {
+                    setMessage({ text: 'An account with this email already exists. Please log in instead.', type: 'error' })
+                    setIsLoading(false)
+                    return
+                }
+
+                const { data: existingPhone } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('Phone', phone.trim())
+                    .maybeSingle()
+
+                if (existingPhone && !acknowledgePhone) {
+                    setPhoneExists(true)
+                    setIsLoading(false)
+                    return
+                }
+
                 const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
@@ -94,8 +121,8 @@ export default function LoginPage() {
                         await supabase.from('profiles').upsert({
                             id: data.user.id,
                             email,
-                            'First Name': firstName.trim(),
-                            'Last Name': lastName.trim(),
+                            'first_name': firstName.trim(),
+                            'last_name': lastName.trim(),
                             'Phone': phone.trim() || null,
                             'Last Login': new Date().toISOString(),
                         })
@@ -169,10 +196,33 @@ export default function LoginPage() {
                                 <input
                                     type="tel"
                                     value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
+                                    onChange={(e) => {
+                                        setPhone(e.target.value)
+                                        if (phoneExists) setPhoneExists(false)
+                                        if (acknowledgePhone) setAcknowledgePhone(false)
+                                    }}
+                                    className={`w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all ${phoneExists ? 'ring-2 ring-red-400' : ''}`}
                                     placeholder="(585) 555-0100"
                                 />
+                                {phoneExists && (
+                                    <div className="bg-red-50 border border-red-200 p-4 rounded-xl space-y-3 mt-2">
+                                        <p className="text-xs text-red-700 font-medium">
+                                            This phone number is already connected to an account. You may proceed, but be aware the phone number will be connected to both accounts.
+                                        </p>
+                                        <div className="flex items-center space-x-2">
+                                            <input
+                                                type="checkbox"
+                                                id="acknowledgePhone"
+                                                checked={acknowledgePhone}
+                                                onChange={(e) => setAcknowledgePhone(e.target.checked)}
+                                                className="w-4 h-4 text-red-600 rounded focus:ring-red-500 bg-white border-red-300"
+                                            />
+                                            <label htmlFor="acknowledgePhone" className="text-xs font-bold text-red-700 cursor-pointer select-none">
+                                                I want to proceed anyway
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </>
                     )}

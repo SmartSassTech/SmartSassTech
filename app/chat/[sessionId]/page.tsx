@@ -28,7 +28,7 @@ export default function SessionPage() {
             }
         }
 
-        // Fetch session info
+        // Fetch session info including messages
         const fetchSession = async () => {
             const { data, error } = await supabase
                 .from('chat_sessions')
@@ -38,8 +38,12 @@ export default function SessionPage() {
 
             if (data) {
                 setSessionInfo(data)
-                // Add initial connection message once we have session info
-                if (messages.length === 0) {
+
+                // Set messages from the session JSONB column
+                if (data.messages && Array.isArray(data.messages)) {
+                    setMessages(data.messages)
+                } else if (messages.length === 0) {
+                    // Initial connection message if no history exists
                     setMessages([{
                         role: 'system',
                         content: isAdmin ? 'Secure connection established. You are now speaking as a support representative.' : 'Connected to support. A technical expert will be with you shortly.'
@@ -48,55 +52,13 @@ export default function SessionPage() {
             }
         }
 
-        // Fetch existing messages
-        const fetchMessages = async () => {
-            const { data, error } = await supabase
-                .from('chat_messages')
-                .select('*')
-                .eq('session_id', sessionId)
-                .order('created_at', { ascending: true })
-
-            if (data && data.length > 0) {
-                const formattedMessages: Message[] = data.map((m: any) => ({
-                    role: m.sender_role === 'agent' ? 'assistant' : 'user',
-                    content: m.content
-                }))
-                setMessages(prev => [...prev.filter(m => m.role !== 'system'), ...formattedMessages])
-            }
-        }
-
         ensureAuth().then(() => {
             fetchSession()
-            fetchMessages()
         })
 
-        // Subscribe to new messages
+        // Subscribe to session updates (including new messages in JSONB)
         const channel = supabase
             .channel(`session-${sessionId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'chat_messages',
-                    filter: `session_id=eq.${sessionId}`,
-                },
-                (payload) => {
-                    const newMessage = payload.new as any
-                    // Prevent duplicate messages if already optimistically added
-                    setMessages(prev => {
-                        const exists = prev.some(m => m.content === newMessage.content && (
-                            (newMessage.sender_role === 'user' && m.role === 'user') ||
-                            (newMessage.sender_role === 'agent' && m.role === 'assistant')
-                        ))
-                        if (exists) return prev
-                        return [...prev, {
-                            role: newMessage.sender_role === 'user' ? 'user' : 'assistant',
-                            content: newMessage.content
-                        }]
-                    })
-                }
-            )
             .on(
                 'postgres_changes',
                 {
@@ -106,9 +68,19 @@ export default function SessionPage() {
                     filter: `id=eq.${sessionId}`,
                 },
                 (payload) => {
-                    setSessionInfo(payload.new)
-                    if (payload.new.status === 'resolved' || payload.new.status === 'closed') {
-                        setMessages(prev => [...prev, { role: 'system', content: 'This chat session has been closed. Thank you for using our support!' }])
+                    const updatedSession = payload.new as any
+                    setSessionInfo(updatedSession)
+
+                    if (updatedSession.messages) {
+                        setMessages(updatedSession.messages)
+                    }
+
+                    if (updatedSession.status === 'resolved' || updatedSession.status === 'closed') {
+                        setMessages(prev => {
+                            // Only add closure message if not already there
+                            if (prev.some(m => m.role === 'system' && m.content.includes('closed'))) return prev;
+                            return [...prev, { role: 'system', content: 'This chat session has been closed. Thank you for using our support!' }]
+                        })
                     }
                 }
             )
@@ -128,58 +100,64 @@ export default function SessionPage() {
             role: isAdmin ? 'assistant' : 'user',
             content
         }
-        setMessages(prev => [...prev, newMsg])
+
+        const updatedMessages = [...messages, newMsg]
+        setMessages(updatedMessages)
 
         try {
             const { data: { user } } = await supabase.auth.getUser()
 
+            // Update the session's messages JSONB column
             const { error } = await supabase
-                .from('chat_messages')
-                .insert([
-                    {
-                        session_id: sessionId,
-                        content,
-                        sender_role: isAdmin ? 'agent' : 'user',
-                        sender_id: user?.id
-                    }
-                ])
+                .from('chat_sessions')
+                .update({
+                    messages: updatedMessages,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', sessionId)
 
             if (error) {
-                console.error('Failed to send message:', error)
+                console.error('Failed to send message:', error.message, error.details, error.hint)
+                alert(`Support connection error: ${error.message}. Please try again shortly.`)
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error sending message:', err)
+            alert(`Network error: ${err.message || 'Unknown error'}`)
         } finally {
             setIsLoading(false)
         }
     }
 
     const handleCloseTicket = async () => {
-        if (!confirm('Are you sure you want to resolve this ticket and save the transcript?')) return
+        if (!confirm('Are you sure you want to resolve this ticket and save the transcript to Notion?')) return
         setIsClosing(true)
 
         try {
-            // 1. Generate Transcript
-            const transcript = messages
-                .filter(m => m.role !== 'system')
-                .map(m => `[${m.role === 'assistant' ? 'AGENT' : 'CLIENT'}]: ${m.content}`)
-                .join('\n')
-
             const { data: { user } } = await supabase.auth.getUser()
 
-            // 2. Update status and save transcript
-            const { error } = await supabase
+            // 1. Update status in Supabase
+            const { error: updateError } = await supabase
                 .from('chat_sessions')
                 .update({
                     status: 'resolved',
-                    transcript: transcript,
                     agent_id: sessionInfo?.agent_id || user?.id,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', sessionId)
 
-            if (error) throw error
-            alert('Ticket has been resolved and transcript saved.')
+            if (updateError) throw updateError
+
+            // 2. Save Transcript to Notion via our secure API
+            const response = await fetch('/api/chat/save-transcript', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId })
+            })
+
+            const result = await response.json()
+            if (!response.ok) throw new Error(result.error || 'Failed to save to Notion')
+
+            alert('Ticket has been resolved and transcript saved to Notion.')
         } catch (error: any) {
             console.error('Error closing ticket:', error)
             alert('Failed to close ticket: ' + error.message)

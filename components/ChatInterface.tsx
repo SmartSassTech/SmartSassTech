@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Bot, User, AlertCircle, ShieldCheck } from 'lucide-react'
+import { Send, Bot, User, AlertCircle, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 
@@ -32,6 +32,7 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
     const [messages, setMessages] = useState<Message[]>(initialMessages)
     const [input, setInput] = useState('')
+    const [isFullScreen, setIsFullScreen] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -62,7 +63,7 @@ export default function ChatInterface({
     }
 
     return (
-        <div className="flex flex-col h-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className={`flex flex-col transition-all duration-300 bg-white shadow-xl border border-gray-100 overflow-hidden ${isFullScreen ? 'fixed inset-0 z-[9999] rounded-none' : 'h-full rounded-2xl'}`}>
             {/* Header */}
             <div className={`${isAdminView ? 'bg-kb-dark' : 'bg-kb-navy'} p-4 flex justify-between items-center text-white transition-colors`}>
                 <div className="flex items-center gap-3">
@@ -80,6 +81,13 @@ export default function ChatInterface({
                         </div>
                     </div>
                 </div>
+                <button
+                    onClick={() => setIsFullScreen(!isFullScreen)}
+                    className="hover:bg-white/10 p-1.5 rounded-lg transition-colors text-white"
+                    title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+                >
+                    {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+                </button>
             </div>
 
             {/* Messages */}
@@ -108,7 +116,7 @@ export default function ChatInterface({
                                     {m.role === 'user' ? <User size={16} /> : <Bot size={16} />}
                                 </div>
                                 <div className={`p-3 rounded-2xl text-sm ${isSelf
-                                    ? 'bg-kb-navy text-white rounded-tr-none'
+                                    ? 'bg-kb-navy text-white rounded-tr-none [&_p]:text-white'
                                     : m.content.startsWith('Error:')
                                         ? 'bg-red-50 text-red-700 border border-red-100 shadow-sm rounded-tl-none'
                                         : 'bg-white text-gray-800 border border-gray-100 shadow-sm rounded-tl-none'
