@@ -8,7 +8,8 @@ export default function ContactPage() {
         name: '',
         email: '',
         phone: '',
-        message: ''
+        message: '',
+        website: '' // honeypot — must stay empty; bots fill it
     })
     const [loading, setLoading] = useState(false)
     const [status, setStatus] = useState<null | 'success' | 'error'>(null)
@@ -33,7 +34,8 @@ export default function ContactPage() {
                     name: '',
                     email: '',
                     phone: '',
-                    message: ''
+                    message: '',
+                    website: ''
                 })
             } else {
                 setStatus('error')
@@ -169,6 +171,17 @@ export default function ContactPage() {
                                         placeholder="How can we help you today?"
                                     ></textarea>
                                 </div>
+
+                                {/* Honeypot — hidden from humans, filled by bots */}
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={formData.website}
+                                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                                    tabIndex={-1}
+                                    aria-hidden="true"
+                                    style={{ display: 'none' }}
+                                />
 
                                 <button
                                     type="submit"

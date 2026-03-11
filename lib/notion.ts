@@ -159,9 +159,6 @@ export async function saveChatTranscript(session: any) {
                 'Agent': {
                     rich_text: [{ type: 'text', text: { content: session.agent_id ? `Agent: ${session.agent_id}` : 'Unassigned' } }]
                 },
-                'Status': {
-                    rich_text: [{ type: 'text', text: { content: session.status } }]
-                },
                 'Summary': {
                     rich_text: [{ type: 'text', text: { content: session.initial_issue || 'No issue described' } }]
                 },
@@ -170,9 +167,6 @@ export async function saveChatTranscript(session: any) {
                 },
                 'Ended at': {
                     date: { start: new Date().toISOString() }
-                },
-                'Channel': {
-                    select: { name: 'Live agent' }
                 }
             },
             children: [
@@ -190,7 +184,9 @@ export async function saveChatTranscript(session: any) {
                         rich_text: [
                             { type: 'text', text: { content: `Session ID: ${session.id}\n` }, annotations: { bold: true } },
                             { type: 'text', text: { content: `Transcript ID: ${session.transcript_id}\n` }, annotations: { bold: true } },
-                            { type: 'text', text: { content: `Device: ${session.user_device || 'Not specified'}\n` }, annotations: { bold: true } }
+                            { type: 'text', text: { content: `Device: ${session.user_device || 'Not specified'}\n` }, annotations: { bold: true } },
+                            { type: 'text', text: { content: `Status: ${session.status}\n` }, annotations: { bold: true } },
+                            { type: 'text', text: { content: `Channel: Live Agent\n` }, annotations: { bold: true } }
                         ]
                     }
                 },

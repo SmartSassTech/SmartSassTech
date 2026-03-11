@@ -1,10 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { resend } from '@/lib/resend'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+    // Rate limit: 5 submissions per 10 minutes per IP
+    const ip = getClientIp(request)
+    const { success, resetAt } = rateLimit(ip, { limit: 5, windowSeconds: 600 })
+    if (!success) {
+        return NextResponse.json(
+            { error: 'Too many submissions. Please wait a few minutes before trying again.' },
+            {
+                status: 429,
+                headers: { 'Retry-After': String(Math.ceil((resetAt - Date.now()) / 1000)) },
+            }
+        )
+    }
+
     try {
-        const { name, email, phone, message } = await request.json()
+        const { name, email, phone, message, website } = await request.json()
+
+        // Honeypot: bots fill hidden fields; real users leave this blank
+        if (website) {
+            // Return 200 to not tip off bots, but don't process the submission
+            return NextResponse.json({ success: true, message: 'Contact submission received' }, { status: 200 })
+        }
 
         // Validate input
         if (!name || !email || !message) {
@@ -59,7 +79,7 @@ export async function POST(request: NextRequest) {
             const accountNote = userId ? '<p style="color: green; font-weight: bold;">(Connected to Existing Account)</p>' : ''
 
             await resend.emails.send({
-                from: 'SmartSassTech <notifications@resend.dev>', // Resend default for testing, should be updated to a verified domain if available
+                from: 'SmartSassTech <notifications@resend.dev>',
                 to: 'smartsasstech@gmail.com',
                 subject: `New Contact Form Submission from ${name} ${userId ? '[Existing Account]' : ''}`,
                 html: `
@@ -73,7 +93,7 @@ export async function POST(request: NextRequest) {
         `
             })
         } catch (emailError) {
-            // We log the email error but don't fail the whole request because it's already saved in Supabase
+            // Log the email error but don't fail — submission is already saved in Supabase
             console.error('Email error:', emailError)
         }
 

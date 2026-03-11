@@ -211,6 +211,25 @@ export default function FilterBar({
               </div>
             </div>
 
+            {/* Article Types */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Article Type</h3>
+              <div className="space-y-2">
+                {ARTICLE_TYPES.map(type => (
+                  <label key={type} className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedTypes.includes(type)}
+                      onChange={() => toggleType(type)}
+                      className="mr-2 w-4 h-4 accent-kb-navy rounded"
+                    />
+                    <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
+                      {type}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
           </div>
         </div>

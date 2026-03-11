@@ -47,10 +47,10 @@ function AccountSettingsContent() {
 
             if (profile) {
                 setProfile(profile)
-                // DB columns are snake_case: first_name, last_name, Phone, address
+                // DB columns are snake_case: first_name, last_name, phone, address
                 setFirstName(profile.first_name || '')
                 setLastName(profile.last_name || '')
-                setPhone(profile.Phone || '')
+                setPhone(profile.phone || '')
                 setAddress(profile.address || '')
             }
         }
@@ -88,12 +88,12 @@ function AccountSettingsContent() {
         try {
             const { error } = await supabase
                 .from('profiles')
-                .update({ Phone: phone.trim() })
+                .update({ phone: phone.trim() })
                 .eq('id', user.id)
 
             if (error) throw error
 
-            setProfile({ ...profile, Phone: phone.trim() })
+            setProfile({ ...profile, phone: phone.trim() })
             setIsEditingPhone(false)
             showMessage('Phone number updated successfully!', 'success')
         } catch (err: any) {
@@ -246,13 +246,13 @@ function AccountSettingsContent() {
                                             />
                                             <div className="flex gap-2">
                                                 <button onClick={handleUpdatePhone} className="px-4 py-2 bg-sst-primary text-white text-xs font-bold rounded-lg hover:bg-sst-secondary transition-colors">Save</button>
-                                                <button onClick={() => { setIsEditingPhone(false); setPhone(profile?.Phone || '') }} className="px-4 py-2 bg-gray-200 text-kb-muted text-xs font-bold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                                                <button onClick={() => { setIsEditingPhone(false); setPhone(profile?.phone || '') }} className="px-4 py-2 bg-gray-200 text-kb-muted text-xs font-bold rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="flex justify-between items-center">
-                                            <p className="text-lg font-heading text-kb-dark">{profile?.Phone || 'Not provided'}</p>
-                                            <button onClick={() => setIsEditingPhone(true)} className="p-2 text-sst-primary opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white rounded-lg shadow-sm text-sm font-bold">{profile?.Phone ? 'Edit' : 'Add'}</button>
+                                            <p className="text-lg font-heading text-kb-dark">{profile?.phone || 'Not provided'}</p>
+                                            <button onClick={() => setIsEditingPhone(true)} className="p-2 text-sst-primary opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white rounded-lg shadow-sm text-sm font-bold">{profile?.phone ? 'Edit' : 'Add'}</button>
                                         </div>
                                     )}
                                 </div>

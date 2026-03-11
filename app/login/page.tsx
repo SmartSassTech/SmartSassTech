@@ -93,7 +93,7 @@ export default function LoginPage() {
                 const { data: existingPhone } = await supabase
                     .from('profiles')
                     .select('id')
-                    .eq('Phone', phone.trim())
+                    .eq('phone', phone.trim())
                     .maybeSingle()
 
                 if (existingPhone && !acknowledgePhone) {
@@ -123,8 +123,8 @@ export default function LoginPage() {
                             email,
                             'first_name': firstName.trim(),
                             'last_name': lastName.trim(),
-                            'Phone': phone.trim() || null,
-                            'Last Login': new Date().toISOString(),
+                            'phone': phone.trim() || null,
+                            'last_login': new Date().toISOString(),
                         })
                     }
                     setMessage({ text: 'Account created! Please check your email to confirm your address.', type: 'success' })

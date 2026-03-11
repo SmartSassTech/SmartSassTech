@@ -55,6 +55,7 @@ function MyDevicesContent() {
     const [newDeviceType, setNewDeviceType] = useState('Computer')
     const [newDeviceName, setNewDeviceName] = useState('')
     const [newDeviceBrand, setNewDeviceBrand] = useState('')
+    const [newDeviceModel, setNewDeviceModel] = useState('')
     const [newDeviceYear, setNewDeviceYear] = useState(new Date().getFullYear().toString())
     const [newDeviceNotes, setNewDeviceNotes] = useState('')
 
@@ -134,6 +135,7 @@ function MyDevicesContent() {
                         device_type: newDeviceType,
                         device_name: newDeviceName,
                         brand: newDeviceBrand,
+                        model: newDeviceModel,
                         purchase_year: parseInt(newDeviceYear),
                         notes: newDeviceNotes
                     }
@@ -149,6 +151,7 @@ function MyDevicesContent() {
             // Reset form
             setNewDeviceName('')
             setNewDeviceBrand('')
+            setNewDeviceModel('')
             setNewDeviceNotes('')
             setNewDeviceYear(new Date().getFullYear().toString())
 
@@ -252,7 +255,7 @@ function MyDevicesContent() {
                                                 {getDeviceIcon(device.device_type)}
                                             </div>
                                             <div>
-                                                <div className="text-xs font-bold text-kb-muted uppercase tracking-wider mb-1">{device.brand}</div>
+                                                <div className="text-xs font-bold text-kb-muted uppercase tracking-wider mb-1">{device.brand} {device.model ? `• ${device.model}` : ''}</div>
                                                 <h3 className="text-lg font-bold text-kb-navy leading-tight pr-6">{device.device_name}</h3>
                                             </div>
                                         </div>
@@ -397,16 +400,29 @@ function MyDevicesContent() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-kb-navy ml-1">Model Name</label>
-                                    <input
-                                        required
-                                        type="text"
-                                        placeholder="e.g. iPhone 15 Pro, XPS 13"
-                                        value={newDeviceName}
-                                        onChange={(e) => setNewDeviceName(e.target.value)}
-                                        className="w-full px-4 py-3 bg-kb-bg border border-kb-pale rounded-xl focus:border-sst-primary focus:ring-1 focus:ring-sst-primary outline-none"
-                                    />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-kb-navy ml-1">Device Name</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            placeholder="e.g. My Work Laptop"
+                                            value={newDeviceName}
+                                            onChange={(e) => setNewDeviceName(e.target.value)}
+                                            className="w-full px-4 py-3 bg-kb-bg border border-kb-pale rounded-xl focus:border-sst-primary focus:ring-1 focus:ring-sst-primary outline-none"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-kb-navy ml-1">Model (Optional)</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. iPhone 15 Pro, XPS 13"
+                                            value={newDeviceModel}
+                                            onChange={(e) => setNewDeviceModel(e.target.value)}
+                                            className="w-full px-4 py-3 bg-kb-bg border border-kb-pale rounded-xl focus:border-sst-primary focus:ring-1 focus:ring-sst-primary outline-none"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">

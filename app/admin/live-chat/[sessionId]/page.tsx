@@ -39,11 +39,21 @@ export default function SessionPage() {
             if (data) {
                 setSessionInfo(data)
 
-                // Set messages from the session JSONB column
-                if (data.messages && Array.isArray(data.messages)) {
-                    setMessages(data.messages)
+                // Fetch relational messages
+                const { data: msgs } = await supabase
+                    .from('chat_messages')
+                    .select('*')
+                    .eq('session_id', sessionId)
+                    .order('created_at', { ascending: true })
+
+                if (msgs && msgs.length > 0) {
+                    const formattedMsgs = msgs.map((m: any) => ({
+                        role: m.sender_type === 'agent' || m.sender_type === 'ai' ? 'assistant' : m.sender_type,
+                        content: m.message_content
+                    }))
+                    setMessages(formattedMsgs)
                 } else if (messages.length === 0) {
-                    // Initial connection message if no history exists
+                    // Fallback initial connection message if none in DB
                     setMessages([{
                         role: 'system',
                         content: isAdmin ? 'Secure connection established. You are now speaking as a support representative.' : 'Connected to support. A technical expert will be with you shortly.'
@@ -56,8 +66,8 @@ export default function SessionPage() {
             fetchSession()
         })
 
-        // Subscribe to session updates (including new messages in JSONB)
-        const channel = supabase
+        // Subscribe to session updates (for status changes)
+        const sessionChannel = supabase
             .channel(`session-${sessionId}`)
             .on(
                 'postgres_changes',
@@ -71,13 +81,8 @@ export default function SessionPage() {
                     const updatedSession = payload.new as any
                     setSessionInfo(updatedSession)
 
-                    if (updatedSession.messages) {
-                        setMessages(updatedSession.messages)
-                    }
-
                     if (updatedSession.status === 'resolved' || updatedSession.status === 'closed') {
                         setMessages(prev => {
-                            // Only add closure message if not already there
                             if (prev.some(m => m.role === 'system' && m.content.includes('closed'))) return prev;
                             return [...prev, { role: 'system', content: 'This chat session has been closed. Thank you for using our support!' }]
                         })
@@ -86,8 +91,36 @@ export default function SessionPage() {
             )
             .subscribe()
 
+        // Subscribe to new messages
+        const messageChannel = supabase
+            .channel(`messages-${sessionId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: `session_id=eq.${sessionId}`,
+                },
+                (payload) => {
+                    const newMsg = payload.new as any
+                    
+                    // We optimistically add messages when sending, so we only want to append
+                    // messages if they come from the *other* party to avoid duplicates
+                    const senderRole = newMsg.sender_type === 'agent' || newMsg.sender_type === 'ai' ? 'assistant' : newMsg.sender_type
+                    
+                    const isFromMe = (isAdmin && senderRole === 'assistant') || (!isAdmin && senderRole === 'user')
+                    
+                    if (!isFromMe || senderRole === 'system') {
+                        setMessages(prev => [...prev, { role: senderRole, content: newMsg.message_content }])
+                    }
+                }
+            )
+            .subscribe()
+
         return () => {
-            supabase.removeChannel(channel)
+            supabase.removeChannel(sessionChannel)
+            supabase.removeChannel(messageChannel)
         }
     }, [sessionId, isAdmin])
 
@@ -107,13 +140,19 @@ export default function SessionPage() {
         try {
             const { data: { user } } = await supabase.auth.getUser()
 
-            // Update the session's messages JSONB column
+            // Insert into the new chat_messages table
             const { error } = await supabase
-                .from('chat_sessions')
-                .update({
-                    messages: updatedMessages,
-                    updated_at: new Date().toISOString()
+                .from('chat_messages')
+                .insert({
+                    session_id: sessionId,
+                    sender_type: isAdmin ? 'agent' : 'user',
+                    message_content: content
                 })
+
+            // Also update the session updated_at timestamp
+            await supabase
+                .from('chat_sessions')
+                .update({ updated_at: new Date().toISOString() })
                 .eq('id', sessionId)
 
             if (error) {
@@ -184,10 +223,10 @@ export default function SessionPage() {
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={handleCloseTicket}
-                                disabled={isClosing || sessionInfo?.status === 'resolved'}
+                                disabled={isClosing || sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed'}
                                 className="bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-red-700 transition-all disabled:opacity-50"
                             >
-                                {isClosing ? 'Closing...' : sessionInfo?.status === 'resolved' ? 'Ticket Resolved' : 'Resolve Ticket'}
+                                {isClosing ? 'Closing...' : (sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? 'Ticket Closed' : 'Resolve Ticket'}
                             </button>
                             <div className="text-xs text-amber-900 font-mono bg-white/50 px-3 py-1 rounded-lg border border-amber-200">
                                 Session: {sessionId.substring(0, 8)}
@@ -252,10 +291,10 @@ export default function SessionPage() {
                         <ChatInterface
                             initialMessages={messages}
                             onSendMessage={handleSendMessage}
-                            isLoading={isLoading || sessionInfo?.status === 'resolved'}
+                            isLoading={isLoading || sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed'}
                             title={isAdmin ? `Helping ${sessionInfo?.user_name || 'User'}` : "Live Expert Support"}
-                            status={isAdmin ? (sessionInfo?.status === 'resolved' ? "Chat Closed" : "Speaking as Agent") : (sessionInfo?.status === 'resolved' ? "Conversation Ended" : "Connected to Support")}
-                            placeholder={sessionInfo?.status === 'resolved' ? "This chat has been closed." : (isAdmin ? "Reply to the client..." : "Type your message...")}
+                            status={isAdmin ? ((sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "Chat Closed" : "Speaking as Agent") : ((sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "Conversation Ended" : "Connected to Support")}
+                            placeholder={(sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "This chat has been closed." : (isAdmin ? "Reply to the client..." : "Type your message...")}
                             isAdminView={isAdmin}
                         />
                     </div>

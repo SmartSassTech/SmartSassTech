@@ -207,7 +207,7 @@ export default function AdminDashboard() {
                                                     </button>
                                                 ) : (
                                                     <a
-                                                        href={`/chat/${session.id}?admin=true`}
+                                                        href={`/admin/live-chat/${session.id}?admin=true`}
                                                         className="inline-flex items-center gap-2 text-kb-navy hover:text-blue-700 transition-colors font-bold text-xs"
                                                     >
                                                         Join Conversation

@@ -1,8 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import { getArticles } from '@/lib/articles'
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
+import { getArticles, searchArticles, getArticleBySlug } from '@/lib/articles'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
+    // Rate limit: 30 requests per minute per IP
+    const ip = getClientIp(req)
+    const { success, remaining, resetAt } = rateLimit(ip, { limit: 30, windowSeconds: 60 })
+    if (!success) {
+        return NextResponse.json(
+            { error: 'Too many requests. Please wait a moment before trying again.' },
+            {
+                status: 429,
+                headers: {
+                    'Retry-After': String(Math.ceil((resetAt - Date.now()) / 1000)),
+                    'X-RateLimit-Remaining': '0',
+                },
+            }
+        )
+    }
+
     try {
         console.log('Chat API: Received request')
         const body = await req.json()
@@ -50,10 +67,11 @@ export async function POST(req: NextRequest) {
    - Use numbered lists
    - Check in briefly ("Did that work?")
 
-4. **Use Internal Knowledge Base Articles**: You have access to these articles:
+4. **Use Internal Knowledge Base Articles**:
+You have access to a list of articles:
 ${articleContext}
 
-When relevant, share them: "[Article Title](/articles/slug)"
+When a user asks a question, use the \`search_knowledge_base\` tool to retrieve the exact content from full articles for your reference. When relevant to the user, share the link: "[Article Title](/articles/slug)"
 
 5. **Link to Official External Support**: Provide direct links only when necessary:
    - **Apple**: https://support.apple.com
@@ -68,10 +86,29 @@ When relevant, share them: "[Article Title](/articles/slug)"
 ### Remember:
 Your mission is to be as helpful as possible while respecting the user's time. Gather info quickly, provide clear guidance, and stay concise.`
 
+        const searchTool: any = {
+            functionDeclarations: [
+                {
+                    name: 'search_knowledge_base',
+                    description: 'Search the internal knowledge base for solutions and retrieve the full content of relevant articles. Always use this tool when a user asks for troubleshooting help.',
+                    parameters: {
+                        type: SchemaType.OBJECT,
+                        properties: {
+                            query: {
+                                type: SchemaType.STRING,
+                                description: `The search query to find the best articles (e.g. "laptop won't turn on", "reset password")`
+                            }
+                        },
+                        required: ["query"]
+                    }
+                }
+            ]
+        }
 
         const model = genAI.getGenerativeModel({
             model: 'gemini-flash-latest',
-            systemInstruction: systemPrompt
+            systemInstruction: systemPrompt,
+            tools: [searchTool]
         })
 
         console.log('Chat API: Generating response...')
@@ -92,12 +129,50 @@ Your mission is to be as helpful as possible while respecting the user's time. G
             history: history,
         })
 
-        const result = await chat.sendMessage(lastMessage)
-        const response = await result.response
+        let result = await chat.sendMessage([{ text: lastMessage }])
+        let response = await result.response
+
+        const functionCalls = response.functionCalls()
+        if (functionCalls) {
+            console.log('Chat API: Function call requested by model')
+            for (const call of functionCalls) {
+                if (call.name === 'search_knowledge_base') {
+                    const query = (call.args as any).query
+                    console.log('Chat API: Searching knowledge base for:', query)
+                    
+                    const searchResults = await searchArticles(query)
+                    const topResults = searchResults.slice(0, 2)
+                    
+                    const fullArticles = []
+                    for (const article of topResults) {
+                        try {
+                            const full = await getArticleBySlug(article.slug)
+                            if (full) fullArticles.push(full)
+                        } catch (e) {
+                            console.error('Error fetching full article for RAG:', e)
+                        }
+                    }
+                    
+                    const toolResponseContent = fullArticles.map(a => `Title: ${a.title}\nSlug: ${a.slug}\nContent: ${a.content}`).join('\n\n---\n\n') || 'No detailed articles found for this query.'
+                    
+                    // Send function response back to the model
+                    result = await chat.sendMessage([{
+                        functionResponse: {
+                            name: 'search_knowledge_base',
+                            response: { content: toolResponseContent }
+                        }
+                    }])
+                    response = await result.response
+                }
+            }
+        }
+
         const text = response.text()
         console.log('Chat API: Response generated successfully')
 
-        return NextResponse.json({ role: 'assistant', content: text })
+        return NextResponse.json({ role: 'assistant', content: text }, {
+            headers: { 'X-RateLimit-Remaining': String(remaining) }
+        })
     } catch (error: any) {
         console.error('Chat API Error:', error)
 

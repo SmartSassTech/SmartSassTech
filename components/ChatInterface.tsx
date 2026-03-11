@@ -14,6 +14,7 @@ export interface Message {
 interface ChatInterfaceProps {
     initialMessages?: Message[]
     onSendMessage: (content: string) => Promise<void>
+    onEndChat?: () => void
     isLoading?: boolean
     placeholder?: string
     title?: string
@@ -24,6 +25,7 @@ interface ChatInterfaceProps {
 export default function ChatInterface({
     initialMessages = [],
     onSendMessage,
+    onEndChat,
     isLoading = false,
     placeholder = "Type your message...",
     title = "Chat Support",
@@ -81,13 +83,24 @@ export default function ChatInterface({
                         </div>
                     </div>
                 </div>
-                <button
-                    onClick={() => setIsFullScreen(!isFullScreen)}
-                    className="hover:bg-white/10 p-1.5 rounded-lg transition-colors text-white"
-                    title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
-                >
-                    {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-                </button>
+                <div className="flex items-center gap-2">
+                    {onEndChat && !isAdminView && (
+                        <button
+                            onClick={onEndChat}
+                            className="bg-white/10 hover:bg-red-500/80 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-white/20"
+                            title="End Chat"
+                        >
+                            End Chat
+                        </button>
+                    )}
+                    <button
+                        onClick={() => setIsFullScreen(!isFullScreen)}
+                        className="hover:bg-white/10 p-1.5 rounded-lg transition-colors text-white"
+                        title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+                    >
+                        {isFullScreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+                    </button>
+                </div>
             </div>
 
             {/* Messages */}
@@ -192,18 +205,28 @@ export default function ChatInterface({
             {/* Input */}
             <div className="p-4 bg-white border-t border-gray-100 text-black">
                 <div className="relative flex items-center">
-                    <input
-                        type="text"
+                    <textarea
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                        onChange={(e) => {
+                            setInput(e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSend();
+                                e.currentTarget.style.height = 'auto';
+                            }
+                        }}
                         placeholder={placeholder}
-                        className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none"
+                        rows={1}
+                        className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 leading-relaxed"
                     />
                     <button
                         onClick={handleSend}
                         disabled={!input.trim() || isLoading}
-                        className={`absolute right-1.5 p-2 ${isAdminView ? 'bg-kb-dark' : 'bg-kb-navy'} text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
+                        className={`absolute right-1.5 bottom-1.5 p-2 ${isAdminView ? 'bg-kb-dark' : 'bg-kb-navy'} text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
                     >
                         <Send size={18} />
                     </button>
