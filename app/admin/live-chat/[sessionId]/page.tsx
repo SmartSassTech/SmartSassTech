@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import ChatInterface, { Message } from '@/components/ChatInterface'
 import { supabase } from '@/lib/supabase'
-import { AlertCircle, Clock, ShieldCheck, User, Laptop, MessageCircle } from 'lucide-react'
+import { AlertCircle, Clock, ShieldCheck, User, Laptop, MessageCircle, Loader2 } from 'lucide-react'
 
 export default function SessionPage() {
     const params = useParams()
-    const searchParams = useSearchParams()
     const sessionId = params.sessionId as string
-    const isAdmin = searchParams.get('admin') === 'true'
 
+    const [isAdmin, setIsAdmin] = useState(false)
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true)
     const [messages, setMessages] = useState<Message[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [sessionInfo, setSessionInfo] = useState<any>(null)
@@ -20,12 +20,35 @@ export default function SessionPage() {
     useEffect(() => {
         if (!sessionId) return
 
-        // Ensure user is signed in for RLS
+        // Ensure user is signed in as an agent for RLS
         const ensureAuth = async () => {
-            const { data } = await supabase.auth.getSession()
-            if (!data.session) {
-                await supabase.auth.signInAnonymously()
+            const { data: { session } } = await supabase.auth.getSession()
+            
+            // If no session, or if the user is anonymous, they need to log in properly
+            if (!session || session.user.is_anonymous) {
+                if (session?.user.is_anonymous) {
+                    await supabase.auth.signOut()
+                }
+                window.location.href = `/login?redirect=/admin/live-chat/${sessionId}`
+                return false
             }
+
+            // Check if user is an agent in profiles table
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('profile_type')
+                .eq('id', session.user.id)
+                .single()
+
+            if (error || profile?.profile_type?.toLowerCase() !== 'agent') {
+                alert('Unauthorized Access: You are not registered as an agent.')
+                window.location.href = '/'
+                return false
+            }
+
+            setIsAdmin(true)
+            setIsCheckingAuth(false)
+            return true
         }
 
         // Fetch session info including messages
@@ -52,18 +75,20 @@ export default function SessionPage() {
                         content: m.message_content
                     }))
                     setMessages(formattedMsgs)
-                } else if (messages.length === 0) {
+                } else {
                     // Fallback initial connection message if none in DB
                     setMessages([{
                         role: 'system',
-                        content: isAdmin ? 'Secure connection established. You are now speaking as a support representative.' : 'Connected to support. A technical expert will be with you shortly.'
+                        content: 'Secure connection established. You are now speaking as a support representative.'
                     }])
                 }
             }
         }
 
-        ensureAuth().then(() => {
-            fetchSession()
+        ensureAuth().then((isAuthorized) => {
+            if (isAuthorized) {
+                fetchSession()
+            }
         })
 
         // Subscribe to session updates (for status changes)
@@ -109,7 +134,8 @@ export default function SessionPage() {
                     // messages if they come from the *other* party to avoid duplicates
                     const senderRole = newMsg.sender_type === 'agent' || newMsg.sender_type === 'ai' ? 'assistant' : newMsg.sender_type
                     
-                    const isFromMe = (isAdmin && senderRole === 'assistant') || (!isAdmin && senderRole === 'user')
+                    // On admin page, we are 'agent' and the other party is 'user'
+                    const isFromMe = (senderRole === 'assistant')
                     
                     if (!isFromMe || senderRole === 'system') {
                         setMessages(prev => [...prev, { role: senderRole, content: newMsg.message_content }])
@@ -130,7 +156,7 @@ export default function SessionPage() {
 
         // Optimistic update
         const newMsg: Message = {
-            role: isAdmin ? 'assistant' : 'user',
+            role: 'assistant',
             content
         }
 
@@ -145,7 +171,7 @@ export default function SessionPage() {
                 .from('chat_messages')
                 .insert({
                     session_id: sessionId,
-                    sender_type: isAdmin ? 'agent' : 'user',
+                    sender_type: 'agent',
                     message_content: content
                 })
 
@@ -209,8 +235,13 @@ export default function SessionPage() {
         <div className="flex-1 bg-gray-50 flex flex-col">
 
             <main className="flex-1 container mx-auto px-4 py-8 max-w-6xl">
-                {isAdmin && (
-                    <div className="mb-6 bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                {isCheckingAuth ? (
+                    <div className="flex justify-center items-center h-64">
+                        <Loader2 className="animate-spin text-kb-navy" size={48} />
+                    </div>
+                ) : (
+                    <>
+                        <div className="mb-6 bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center justify-between shadow-sm">
                         <div className="flex items-center gap-3">
                             <div className="bg-amber-100 p-2 rounded-xl">
                                 <ShieldCheck className="text-amber-700" size={24} />
@@ -233,11 +264,9 @@ export default function SessionPage() {
                             </div>
                         </div>
                     </div>
-                )}
 
-                <div className="flex flex-col lg:flex-row gap-8 h-[700px]">
-                    {/* Sidebar - Only visible for Agent */}
-                    {isAdmin && (
+                    <div className="flex flex-col lg:flex-row gap-8 h-[700px]">
+                        {/* Sidebar - Only visible for Agent */}
                         <div className="w-full lg:w-80 space-y-6">
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                                 <h2 className="text-h3 font-bold text-kb-navy mb-4 flex items-center gap-2">
@@ -282,12 +311,10 @@ export default function SessionPage() {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                    )}
 
-                    {/* Chat */}
-                    <div className="flex-1 min-h-0">
+                        {/* Chat */}
+                        <div className="flex-1 min-h-0">
                         <ChatInterface
                             initialMessages={messages}
                             onSendMessage={handleSendMessage}
@@ -295,10 +322,12 @@ export default function SessionPage() {
                             title={isAdmin ? `Helping ${sessionInfo?.user_name || 'User'}` : "Live Expert Support"}
                             status={isAdmin ? ((sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "Chat Closed" : "Speaking as Agent") : ((sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "Conversation Ended" : "Connected to Support")}
                             placeholder={(sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "This chat has been closed." : (isAdmin ? "Reply to the client..." : "Type your message...")}
-                            isAdminView={isAdmin}
-                        />
+                                isAdminView={true}
+                            />
+                        </div>
                     </div>
-                </div>
+                    </>
+                )}
             </main>
 
         </div>

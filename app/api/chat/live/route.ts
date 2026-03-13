@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json()
-        const { name, email, device, issue, user_id, website, history } = body
+        const { name, email, phone, device, issue, user_id, website, history } = body
 
         // Honeypot: bots fill hidden fields; real users leave this blank
         if (website) {
@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, sessionId: null }, { status: 200 })
         }
 
-        if (!name || !email || !device || !issue) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+        if (!name || !email) {
+            return NextResponse.json({ error: 'Name and email are required fields' }, { status: 400 })
         }
 
         // 1. Create a session in Supabase using direct insert
@@ -38,8 +38,9 @@ export async function POST(req: NextRequest) {
             .insert({
                 user_name: name,
                 user_email: email,
-                user_device: device,
-                initial_issue: issue,
+                user_phone: phone || null,
+                user_device: device || null,
+                initial_issue: issue || 'No issue described',
                 user_id: user_id || null
             })
             .select('id')

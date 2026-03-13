@@ -13,6 +13,8 @@
   /* Colors - Branding Palette */
   --color-primary: #2E3B69;
   /* Dark Blue */
+  --color-navy: #2E3B69;
+  /* Navy Blue alias */
   --color-primary-dark: #1F2847;
   --color-primary-light: #41518D;
   --color-secondary: #5B6486;
@@ -283,6 +285,15 @@ a:focus-visible {
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-white);
   transition: all var(--transition-normal);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.search-input::-webkit-search-decoration,
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-results-button,
+.search-input::-webkit-search-results-decoration {
+  display: none;
 }
 
 .search-input::placeholder {

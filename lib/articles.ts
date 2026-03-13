@@ -124,12 +124,18 @@ export function getDailyFeaturedArticles(articles: Article[], count: number = 6)
 export async function searchArticles(query: string): Promise<Article[]> {
   const articles = await getArticles()
   const lowerQuery = query.toLowerCase()
+  const keywords = lowerQuery.split(/\s+/).filter(k => k.length > 0)
 
-  return articles.filter(
-    a =>
-      a.title.toLowerCase().includes(lowerQuery) ||
-      a.description.toLowerCase().includes(lowerQuery) ||
-      a.tags?.some(t => t.toLowerCase().includes(lowerQuery)) ||
-      a.category.toLowerCase().includes(lowerQuery)
-  )
+  return articles.filter(a => {
+    return keywords.every(kw => {
+      const inTitle = a.title.toLowerCase().includes(kw)
+      const inDesc = a.description.toLowerCase().includes(kw)
+      const inTags = a.tags?.some(t => t.toLowerCase().includes(kw))
+      const inCategory = a.category.toLowerCase().includes(kw)
+      const inDevices = a.deviceType?.some(d => d.toLowerCase().includes(kw))
+      const inPlatforms = a.platformCategory?.some(p => p.toLowerCase().includes(kw))
+
+      return inTitle || inDesc || inTags || inCategory || inDevices || inPlatforms
+    })
+  })
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { saveChatTranscript } from '@/lib/notion'
 import { supabaseAdmin } from '@/lib/supabase-admin'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export async function POST(req: NextRequest) {
     try {
@@ -40,12 +41,68 @@ export async function POST(req: NextRequest) {
             content: m.message_content
         })) || []
 
+        // Fetch Agent Name
+        if (session.agent_id) {
+            const { data: profile } = await supabaseAdmin
+                .from('profiles')
+                .select('first_name, last_name')
+                .eq('id', session.agent_id)
+                .single()
+            if (profile) {
+                const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ')
+                session.agent_name = fullName || 'Agent'
+            }
+        }
+
+        // Generate AI Summary
+        try {
+            const apiKey = process.env.GOOGLE_API_KEY
+            if (apiKey && session.messages.length > 0) {
+                const genAI = new GoogleGenerativeAI(apiKey)
+                const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' })
+                
+                const transcriptText = session.messages.map((m: any) => 
+                    `${m.role.toUpperCase()}: ${m.content}`
+                ).join('\n')
+
+                const prompt = `Please provide a concise, 2-3 sentence summary of the following customer support chat transcript. Focus on what the user's issue was, what troubleshooting steps were taken, and whether the issue was resolved.\n\nTranscript:\n${transcriptText}`
+                
+                const result = await model.generateContent(prompt)
+                const summaryText = result.response.text()
+
+                session.summary = summaryText
+
+                // Update the chat session with the summary
+                await supabaseAdmin
+                    .from('chat_sessions')
+                    .update({ summary: summaryText })
+                    .eq('id', sessionId)
+            } else {
+                 session.summary = "No summary generated (API key missing or no messages)."
+            }
+        } catch (aiError) {
+            console.error('Error generating AI transcript summary:', aiError)
+            session.summary = "Failed to generate AI summary."
+        }
+
         // Save to Notion
         const notionResponse = await saveChatTranscript(session)
 
+        // Save notion page ID back to session
+        if (notionResponse?.id) {
+            const { error: updateError } = await supabaseAdmin
+                .from('chat_sessions')
+                .update({ notion_page_id: notionResponse.id })
+                .eq('id', sessionId)
+            
+            if (updateError) {
+                console.error('Error updating notion_page_id in Supabase:', updateError)
+            }
+        }
+
         return NextResponse.json({
             success: true,
-            notionPageId: notionResponse.id
+            notionPageId: notionResponse?.id
         })
 
     } catch (error: any) {

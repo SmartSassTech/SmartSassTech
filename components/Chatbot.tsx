@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, X, Send, Bot, User, Maximize2, Minimize2, Users, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react'
+import { MessageCircle, X, Send, Bot, User, Maximize2, Minimize2, Users, ArrowRight, Loader2, CheckCircle2, Star } from 'lucide-react'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import { supabase } from '@/lib/supabase'
@@ -28,13 +28,17 @@ export default function Chatbot() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     // Human Form State
-    const [formData, setFormData] = useState({ name: '', email: '', device: '', issue: '', website: '' })
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', device: '', issue: '', website: '' })
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [didSaveBotTranscript, setDidSaveBotTranscript] = useState(false)
 
     // Live Session State
     const [sessionId, setSessionId] = useState<string | null>(null)
     const [liveMessages, setLiveMessages] = useState<Message[]>([])
     const [sessionStatus, setSessionStatus] = useState<string>('open')
+    const [rating, setRating] = useState(0)
+    const [hasRated, setHasRated] = useState(false)
+    const [isRating, setIsRating] = useState(false)
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -179,8 +183,25 @@ export default function Chatbot() {
             await supabase.from('chat_sessions')
                 .update({ status: 'closed', updated_at: new Date().toISOString() })
                 .eq('id', sessionId)
+                
+            await supabase.from('chat_messages').insert({
+                session_id: sessionId,
+                sender_type: 'system',
+                message_content: 'The client has ended the chat.'
+            })
         } catch (error) {
             console.error('Failed to close chat', error)
+        }
+    }
+    
+    const triggerSaveBotTranscript = () => {
+        if (mode === 'ai' && messages.length > 1 && !didSaveBotTranscript) {
+            setDidSaveBotTranscript(true)
+            fetch('/api/chat/save-bot-transcript', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages })
+            }).catch(console.error)
         }
     }
 
@@ -219,6 +240,24 @@ export default function Chatbot() {
 
     const currentMessages = mode === 'human-live' ? liveMessages : messages
     const isChatEnded = mode === 'human-live' && (sessionStatus === 'resolved' || sessionStatus === 'closed')
+
+    const handleRate = async (score: number) => {
+        if (!sessionId || hasRated || isRating) return;
+        setRating(score);
+        setIsRating(true);
+        try {
+            await fetch('/api/chat/rate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId, score })
+            });
+            setHasRated(true);
+        } catch (error) {
+            console.error('Failed to submit rating', error);
+        } finally {
+            setIsRating(false);
+        }
+    }
 
     const renderMessageContent = (m: Message) => {
          if (m.content.startsWith('Error:')) {
@@ -305,7 +344,10 @@ export default function Chatbot() {
                                     {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                                 </button>
                                 <button
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => {
+                                        triggerSaveBotTranscript()
+                                        setIsOpen(false)
+                                    }}
                                     className="hover:bg-white/10 p-1.5 rounded-lg transition-colors"
                                     title="Close"
                                 >
@@ -324,16 +366,19 @@ export default function Chatbot() {
 
                                 <form onSubmit={handleHumanRequest} className="w-full space-y-3">
                                     <div>
-                                        <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Your Name" />
+                                        <input required type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Your Name *" />
                                     </div>
                                     <div>
-                                        <input required type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Email Address" />
+                                        <input required type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Email Address *" />
                                     </div>
                                     <div>
-                                        <input required type="text" value={formData.device} onChange={e => setFormData({ ...formData, device: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Device (e.g. iPhone 15)" />
+                                        <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Phone Number (Optional)" />
                                     </div>
                                     <div>
-                                        <textarea required value={formData.issue} onChange={e => setFormData({ ...formData, issue: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none h-20 resize-none text-sm text-black" placeholder="Describe the issue briefly..." />
+                                        <input type="text" value={formData.device} onChange={e => setFormData({ ...formData, device: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none text-sm text-black" placeholder="Device (e.g. iPhone 15) (Optional)" />
+                                    </div>
+                                    <div>
+                                        <textarea value={formData.issue} onChange={e => setFormData({ ...formData, issue: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-kb-navy/20 outline-none h-20 resize-none text-sm text-black" placeholder="Describe the issue briefly... (Optional)" />
                                     </div>
                                     <input type="text" name="website" value={formData.website} onChange={e => setFormData({ ...formData, website: e.target.value })} tabIndex={-1} aria-hidden="true" style={{ display: 'none' }} />
                                     <button disabled={isSubmitting} type="submit" className="w-full bg-kb-navy text-white py-3 rounded-lg font-bold text-sm shadow hover:bg-kb-navy/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
@@ -390,7 +435,10 @@ export default function Chatbot() {
                                     {mode === 'ai' && (
                                         <div className="px-4 pt-3 flex flex-col items-center">
                                             <button
-                                                onClick={() => setMode('human-form')}
+                                                onClick={() => {
+                                                    triggerSaveBotTranscript()
+                                                    setMode('human-form')
+                                                }}
                                                 className="flex items-center gap-1.5 text-[10px] text-kb-navy font-bold hover:bg-kb-navy/5 py-1.5 px-3 rounded-full border border-kb-navy/20 transition-colors cursor-pointer"
                                             >
                                                 <Users size={12} />
@@ -400,34 +448,57 @@ export default function Chatbot() {
                                         </div>
                                     )}
                                     <div className="p-4 pt-2">
-                                        <div className="relative flex items-center">
-                                            <textarea
-                                                value={input}
-                                                onChange={(e) => {
-                                                    setInput(e.target.value);
-                                                    e.target.style.height = 'auto';
-                                                    e.target.style.height = `${e.target.scrollHeight}px`;
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                                        e.preventDefault();
-                                                        handleSend();
-                                                        e.currentTarget.style.height = 'auto';
-                                                    }
-                                                }}
-                                                placeholder={isChatEnded ? "Session ended" : "Type your message..."}
-                                                disabled={isChatEnded}
-                                                rows={1}
-                                                className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 text-black leading-relaxed"
-                                            />
-                                            <button
-                                                onClick={handleSend}
-                                                disabled={!input.trim() || isLoading || isChatEnded}
-                                                className="absolute right-1.5 bottom-1.5 p-2 bg-kb-navy text-white rounded-lg hover:bg-kb-navy/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                            >
-                                                <Send size={18} />
-                                            </button>
-                                        </div>
+                                        {isChatEnded && !hasRated ? (
+                                            <div className="flex flex-col items-center justify-center p-3 bg-gray-50 border border-gray-100 rounded-xl mb-2 animate-in fade-in slide-in-from-bottom-2">
+                                                <p className="text-xs font-semibold text-kb-navy mb-2">How was your support experience?</p>
+                                                <div className="flex gap-1.5">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <button
+                                                            key={star}
+                                                            disabled={isRating}
+                                                            onClick={() => handleRate(star)}
+                                                            className="text-gray-300 hover:text-amber-400 hover:scale-110 transition-all focus:outline-none"
+                                                        >
+                                                            <Star size={24} fill={rating >= star ? 'currentColor' : 'none'} className={rating >= star ? 'text-amber-400' : ''} />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : isChatEnded && hasRated ? (
+                                            <div className="flex items-center justify-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mb-2 text-green-700 font-medium text-xs">
+                                                <CheckCircle2 size={16} />
+                                                Thank you for your feedback!
+                                            </div>
+                                        ) : (
+                                            <div className="relative flex items-center">
+                                                <textarea
+                                                    value={input}
+                                                    onChange={(e) => {
+                                                        setInput(e.target.value);
+                                                        e.target.style.height = 'auto';
+                                                        e.target.style.height = `${e.target.scrollHeight}px`;
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            e.preventDefault();
+                                                            handleSend();
+                                                            e.currentTarget.style.height = 'auto';
+                                                        }
+                                                    }}
+                                                    placeholder={isChatEnded ? "Session ended" : "Type your message..."}
+                                                    disabled={isChatEnded}
+                                                    rows={1}
+                                                    className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 text-black leading-relaxed"
+                                                />
+                                                <button
+                                                    onClick={handleSend}
+                                                    disabled={!input.trim() || isLoading || isChatEnded}
+                                                    className="absolute right-1.5 bottom-1.5 p-2 bg-kb-navy text-white rounded-lg hover:bg-kb-navy/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                >
+                                                    <Send size={18} />
+                                                </button>
+                                            </div>
+                                        )}
                                         <p className="text-[9px] text-center text-gray-400 mt-2">
                                             {mode === 'ai' ? 'Powered by Gemini AI • Always verify critical info' : 'Secure End-to-End Chat'}
                                         </p>
@@ -442,7 +513,10 @@ export default function Chatbot() {
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => {
+                    if (isOpen) triggerSaveBotTranscript()
+                    setIsOpen(!isOpen)
+                }}
                 className="bg-kb-teal text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
                 style={{ boxShadow: '0 4px 20px rgba(42, 157, 143, 0.4)' }}
             >

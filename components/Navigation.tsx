@@ -101,7 +101,7 @@ export default function Navigation() {
               <input
                 type="search"
                 className="search-input w-full pr-10"
-                placeholder="Search..."
+                placeholder="Search guides, devices, services..."
                 aria-label="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

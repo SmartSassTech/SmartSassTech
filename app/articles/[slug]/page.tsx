@@ -5,9 +5,10 @@ import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import ArticleTOC from '@/components/ArticleTOC'
 
-// Render article pages on-demand (SSR) instead of at build time.
-// This prevents slow Notion API responses from timing out the build.
-export const dynamic = 'force-dynamic'
+// Render article pages on-demand (SSR) with 1 hour revalidation.
+// This allows the page to serve from cache instantly while refreshing 
+// background Notion API responses in the background.
+export const revalidate = 3600 // revalidate every hour
 
 interface ArticlePageProps {
   params: Promise<{
