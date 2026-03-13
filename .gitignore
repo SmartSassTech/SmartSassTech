@@ -13,6 +13,9 @@
 # Production
 /build
 
+# Cache (contains Notion presigned URLs with temporary AWS credentials)
+.cache/
+
 # Misc
 .DS_Store
 *.pem
