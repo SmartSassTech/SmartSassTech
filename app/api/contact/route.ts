@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 import { resend } from '@/lib/resend'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
@@ -60,11 +61,13 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Insert into Supabase
-        const { error: supabaseError } = await supabase
+        const { data: submission, error: supabaseError } = await supabase
             .from('contact_submissions')
             .insert([
                 { name, email, phone, message, user_id: userId }
             ])
+            .select('id')
+            .single()
 
         if (supabaseError) {
             console.error('Supabase error:', supabaseError)
@@ -72,6 +75,31 @@ export async function POST(request: NextRequest) {
                 { error: 'Failed to save submission' },
                 { status: 500 }
             )
+        }
+
+        // 2b. Auto-create a support ticket from the contact submission
+        try {
+            const SLA_FIRST_RESPONSE_HOURS = 4
+            const SLA_RESOLUTION_HOURS = 24
+            const now = Date.now()
+
+            await supabaseAdmin
+                .from('support_tickets')
+                .insert({
+                    subject: `Contact Form: ${name}`,
+                    description: message,
+                    status: 'open',
+                    priority: 'medium',
+                    category: 'General',
+                    source: 'contact_form',
+                    user_id: userId,
+                    contact_submission_id: submission?.id || null,
+                    first_response_due: new Date(now + SLA_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
+                    resolution_due: new Date(now + SLA_RESOLUTION_HOURS * 60 * 60 * 1000).toISOString(),
+                })
+        } catch (ticketErr) {
+            console.error('Error auto-creating support ticket from contact form:', ticketErr)
+            // Don't fail the contact submission if ticket creation fails
         }
 
         // 3. Send email via Resend

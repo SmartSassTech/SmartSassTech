@@ -2,9 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Bot, User, AlertCircle, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react'
+import { Send, Bot, User, AlertCircle, ShieldCheck, Maximize2, Minimize2, Monitor, MonitorOff } from 'lucide-react'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
+import { ScreenShareManager } from '@/lib/webrtc-screen-share'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface Message {
     role: 'user' | 'assistant' | 'system'
@@ -20,6 +22,10 @@ interface ChatInterfaceProps {
     title?: string
     status?: string
     isAdminView?: boolean
+    sessionId?: string
+    supabaseClient?: SupabaseClient
+    onRemoteStream?: (stream: MediaStream | null) => void
+    onScreenShareStatusChange?: (active: boolean) => void
 }
 
 export default function ChatInterface({
@@ -30,12 +36,54 @@ export default function ChatInterface({
     placeholder = "Type your message...",
     title = "Chat Support",
     status = "Online",
-    isAdminView = false
+    isAdminView = false,
+    sessionId,
+    supabaseClient,
+    onRemoteStream,
+    onScreenShareStatusChange,
 }: ChatInterfaceProps) {
     const [messages, setMessages] = useState<Message[]>(initialMessages)
     const [input, setInput] = useState('')
     const [isFullScreen, setIsFullScreen] = useState(false)
+    const [isSharing, setIsSharing] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const screenShareRef = useRef<ScreenShareManager | null>(null)
+
+    // Initialize screen share manager for both roles
+    useEffect(() => {
+        if (!sessionId || !supabaseClient) return
+
+        const role = isAdminView ? 'viewer' : 'sharer'
+        const manager = new ScreenShareManager(supabaseClient, sessionId, role, {
+            onRemoteStream: (stream) => onRemoteStream?.(stream),
+            onSharingStarted: () => {
+                setIsSharing(true)
+                onScreenShareStatusChange?.(true)
+            },
+            onSharingStopped: () => {
+                setIsSharing(false)
+                onRemoteStream?.(null)
+                onScreenShareStatusChange?.(false)
+            },
+            onError: (err) => console.error('[ScreenShare]', err),
+        })
+        manager.init()
+        screenShareRef.current = manager
+
+        return () => {
+            manager.destroy()
+            screenShareRef.current = null
+        }
+    }, [sessionId, supabaseClient, isAdminView])
+
+    const handleShareScreen = async () => {
+        if (!screenShareRef.current) return
+        if (isSharing) {
+            screenShareRef.current.stopSharing()
+        } else {
+            await screenShareRef.current.startSharing()
+        }
+    }
 
     useEffect(() => {
         setMessages(initialMessages)
@@ -202,6 +250,22 @@ export default function ChatInterface({
                 <div ref={messagesEndRef} />
             </div>
 
+            {/* Screen share active banner */}
+            {isSharing && !isAdminView && (
+                <div className="px-4 py-2.5 bg-amber-50 border-t border-amber-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                        <span className="text-xs font-bold text-amber-800">Sharing your screen with agent</span>
+                    </div>
+                    <button
+                        onClick={handleShareScreen}
+                        className="px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                        Stop Sharing
+                    </button>
+                </div>
+            )}
+
             {/* Input */}
             <div className="p-4 bg-white border-t border-gray-100 text-black">
                 <div className="relative flex items-center">
@@ -221,15 +285,30 @@ export default function ChatInterface({
                         }}
                         placeholder={placeholder}
                         rows={1}
-                        className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 leading-relaxed"
+                        className={`w-full pl-4 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 leading-relaxed ${sessionId && !isAdminView ? 'pr-24' : 'pr-12'}`}
                     />
-                    <button
-                        onClick={handleSend}
-                        disabled={!input.trim() || isLoading}
-                        className={`absolute right-1.5 bottom-1.5 p-2 ${isAdminView ? 'bg-kb-dark' : 'bg-kb-navy'} text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
-                    >
-                        <Send size={18} />
-                    </button>
+                    <div className="absolute right-1.5 bottom-1.5 flex items-center gap-1">
+                        {sessionId && !isAdminView && (
+                            <button
+                                onClick={handleShareScreen}
+                                title={isSharing ? 'Stop Sharing' : 'Share Screen'}
+                                className={`p-2 rounded-lg transition-all ${
+                                    isSharing
+                                        ? 'bg-red-500 text-white hover:bg-red-600'
+                                        : 'bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700'
+                                }`}
+                            >
+                                {isSharing ? <MonitorOff size={18} /> : <Monitor size={18} />}
+                            </button>
+                        )}
+                        <button
+                            onClick={handleSend}
+                            disabled={!input.trim() || isLoading}
+                            className={`p-2 ${isAdminView ? 'bg-kb-dark' : 'bg-kb-navy'} text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
+                        >
+                            <Send size={18} />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

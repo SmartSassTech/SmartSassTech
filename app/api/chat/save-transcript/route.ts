@@ -100,6 +100,31 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        // Auto-create a support ticket from the chat session
+        try {
+            const ticketSubject = session.initial_issue
+                ? `Chat: ${session.initial_issue.substring(0, 100)}`
+                : `Chat Session: ${session.user_name || 'Visitor'}`
+
+            await supabaseAdmin
+                .from('support_tickets')
+                .insert({
+                    subject: ticketSubject,
+                    description: session.summary || session.initial_issue || 'Chat session transcript saved.',
+                    status: 'resolved',
+                    priority: 'medium',
+                    category: 'General',
+                    source: 'chat',
+                    user_id: session.user_id || null,
+                    chat_session_id: sessionId,
+                    assigned_agent_id: session.agent_id || null,
+                    resolved_at: new Date().toISOString(),
+                })
+        } catch (ticketErr) {
+            console.error('Error auto-creating support ticket from chat:', ticketErr)
+            // Don't fail the transcript save if ticket creation fails
+        }
+
         return NextResponse.json({
             success: true,
             notionPageId: notionResponse?.id

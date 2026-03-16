@@ -2,10 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageCircle, X, Send, Bot, User, Maximize2, Minimize2, Users, ArrowRight, Loader2, CheckCircle2, Star } from 'lucide-react'
+import { MessageCircle, X, Send, Bot, User, Maximize2, Minimize2, Users, ArrowRight, Loader2, CheckCircle2, Star, Monitor, MonitorOff } from 'lucide-react'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import { supabase } from '@/lib/supabase'
+import { ScreenShareManager } from '@/lib/webrtc-screen-share'
 
 interface Message {
     role: 'user' | 'assistant' | 'system'
@@ -39,6 +40,50 @@ export default function Chatbot() {
     const [rating, setRating] = useState(0)
     const [hasRated, setHasRated] = useState(false)
     const [isRating, setIsRating] = useState(false)
+    const [isSharing, setIsSharing] = useState(false)
+    const screenShareRef = useRef<ScreenShareManager | null>(null)
+
+    // Initialize/cleanup screen share manager for live chat mode
+    useEffect(() => {
+        if (mode !== 'human-live' || !sessionId) {
+            // Clean up if we leave live mode
+            if (screenShareRef.current) {
+                screenShareRef.current.destroy()
+                screenShareRef.current = null
+                setIsSharing(false)
+            }
+            return
+        }
+
+        const manager = new ScreenShareManager(supabase, sessionId, 'sharer', {
+            onSharingStarted: () => {
+                setIsSharing(true)
+                setLiveMessages(prev => [...prev, { role: 'system', content: '🖥️ Screen sharing started' }])
+            },
+            onSharingStopped: () => {
+                setIsSharing(false)
+                setLiveMessages(prev => [...prev, { role: 'system', content: '🖥️ Screen sharing ended' }])
+            },
+            onError: (err) => console.error('[ScreenShare]', err),
+        })
+        manager.init()
+        screenShareRef.current = manager
+
+        return () => {
+            manager.destroy()
+            screenShareRef.current = null
+            setIsSharing(false)
+        }
+    }, [mode, sessionId])
+
+    const handleShareScreen = async () => {
+        if (!screenShareRef.current) return
+        if (isSharing) {
+            screenShareRef.current.stopSharing()
+        } else {
+            await screenShareRef.current.startSharing()
+        }
+    }
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -432,6 +477,20 @@ export default function Chatbot() {
 
                                 {/* Input Options & Footer */}
                                 <div className="bg-white border-t border-gray-100 shrink-0">
+                                    {isSharing && mode === 'human-live' && (
+                                        <div className="px-4 py-2 bg-amber-50 border-b border-amber-200 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                                <span className="text-[10px] font-bold text-amber-800">Sharing your screen</span>
+                                            </div>
+                                            <button
+                                                onClick={handleShareScreen}
+                                                className="px-2 py-0.5 bg-red-500 text-white text-[9px] font-bold rounded hover:bg-red-600 transition-colors"
+                                            >
+                                                Stop
+                                            </button>
+                                        </div>
+                                    )}
                                     {mode === 'ai' && (
                                         <div className="px-4 pt-3 flex flex-col items-center">
                                             <button
@@ -488,15 +547,30 @@ export default function Chatbot() {
                                                     placeholder={isChatEnded ? "Session ended" : "Type your message..."}
                                                     disabled={isChatEnded}
                                                     rows={1}
-                                                    className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 text-black leading-relaxed"
+                                                    className={`w-full pl-4 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 text-black leading-relaxed ${mode === 'human-live' ? 'pr-24' : 'pr-12'}`}
                                                 />
-                                                <button
-                                                    onClick={handleSend}
-                                                    disabled={!input.trim() || isLoading || isChatEnded}
-                                                    className="absolute right-1.5 bottom-1.5 p-2 bg-kb-navy text-white rounded-lg hover:bg-kb-navy/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                                >
-                                                    <Send size={18} />
-                                                </button>
+                                                <div className="absolute right-1.5 bottom-1.5 flex items-center gap-1">
+                                                    {mode === 'human-live' && !isChatEnded && (
+                                                        <button
+                                                            onClick={handleShareScreen}
+                                                            title={isSharing ? 'Stop Sharing' : 'Share Screen'}
+                                                            className={`p-2 rounded-lg transition-all ${
+                                                                isSharing
+                                                                    ? 'bg-red-500 text-white hover:bg-red-600'
+                                                                    : 'bg-gray-200 text-gray-500 hover:bg-gray-300 hover:text-gray-700'
+                                                            }`}
+                                                        >
+                                                            {isSharing ? <MonitorOff size={18} /> : <Monitor size={18} />}
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={handleSend}
+                                                        disabled={!input.trim() || isLoading || isChatEnded}
+                                                        className="p-2 bg-kb-navy text-white rounded-lg hover:bg-kb-navy/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                    >
+                                                        <Send size={18} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                         <p className="text-[9px] text-center text-gray-400 mt-2">

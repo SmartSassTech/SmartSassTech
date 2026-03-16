@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import ChatInterface, { Message } from '@/components/ChatInterface'
 import { supabase } from '@/lib/supabase'
-import { AlertCircle, Clock, ShieldCheck, User, Laptop, MessageCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Clock, ShieldCheck, User, Laptop, MessageCircle, Loader2, Monitor, Maximize2, Minimize2, X, Send } from 'lucide-react'
 
 export default function SessionPage() {
     const params = useParams()
@@ -16,6 +16,31 @@ export default function SessionPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [sessionInfo, setSessionInfo] = useState<any>(null)
     const [isClosing, setIsClosing] = useState(false)
+    const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+    const [isViewerFullscreen, setIsViewerFullscreen] = useState(false)
+    const [miniChatInput, setMiniChatInput] = useState('')
+    const [isMiniChatOpen, setIsMiniChatOpen] = useState(true)
+    const videoRef = useRef<HTMLVideoElement>(null)
+    const miniChatEndRef = useRef<HTMLDivElement>(null)
+
+    const handleScreenShareStatusChange = (active: boolean) => {
+        const msg = active ? '🖥️ Customer started sharing their screen' : '🖥️ Customer stopped sharing their screen'
+        setMessages(prev => [...prev, { role: 'system', content: msg }])
+    }
+
+    const handleMiniChatSend = async () => {
+        if (!miniChatInput.trim()) return
+        const content = miniChatInput.trim()
+        setMiniChatInput('')
+        await handleSendMessage(content)
+    }
+
+    // Attach remote stream to video element when it arrives
+    useEffect(() => {
+        if (videoRef.current && remoteStream) {
+            videoRef.current.srcObject = remoteStream
+        }
+    }, [remoteStream])
 
     useEffect(() => {
         if (!sessionId) return
@@ -268,6 +293,88 @@ export default function SessionPage() {
                     <div className="flex flex-col lg:flex-row gap-8 h-[700px]">
                         {/* Sidebar - Only visible for Agent */}
                         <div className="w-full lg:w-80 space-y-6">
+                            {/* Screen Share Viewer */}
+                            {remoteStream && (
+                                <div className={`bg-black rounded-3xl overflow-hidden border-2 border-green-400/50 shadow-lg ${
+                                    isViewerFullscreen ? 'fixed inset-4 z-[9999] rounded-2xl' : ''
+                                }`}>
+                                    <div className="flex items-center justify-between px-3 py-2 bg-black/80">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                            <span className="text-[10px] font-bold text-green-400 uppercase tracking-wider">Customer Screen</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => setIsViewerFullscreen(!isViewerFullscreen)}
+                                                className="p-1 text-white/50 hover:text-white transition-colors"
+                                            >
+                                                {isViewerFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <video
+                                        ref={videoRef}
+                                        autoPlay
+                                        playsInline
+                                        className={`w-full bg-black ${isViewerFullscreen ? 'h-[calc(100%-32px)] object-contain' : 'max-h-[300px] object-contain'}`}
+                                    />
+
+                                    {/* Mini Chat - only in fullscreen */}
+                                    {isViewerFullscreen && (
+                                        <div className="absolute bottom-4 right-4 w-80 z-10">
+                                            <button
+                                                onClick={() => setIsMiniChatOpen(!isMiniChatOpen)}
+                                                className="ml-auto mb-1 flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white text-xs font-bold rounded-lg transition-colors"
+                                            >
+                                                <MessageCircle size={12} />
+                                                {isMiniChatOpen ? 'Hide Chat' : 'Show Chat'}
+                                            </button>
+                                            {isMiniChatOpen && (
+                                                <div className="bg-gray-900/90 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+                                                    <div className="max-h-48 overflow-y-auto p-3 space-y-2">
+                                                        {messages.slice(-8).map((m, i) => (
+                                                            <div key={i} className={`text-xs ${
+                                                                m.role === 'system' ? 'text-center text-gray-400 italic' :
+                                                                m.role === 'assistant' ? 'text-right' : 'text-left'
+                                                            }`}>
+                                                                {m.role === 'system' ? (
+                                                                    <span className="bg-white/5 px-2 py-0.5 rounded-full">{m.content}</span>
+                                                                ) : (
+                                                                    <span className={`inline-block px-2.5 py-1.5 rounded-xl max-w-[85%] ${
+                                                                        m.role === 'assistant'
+                                                                            ? 'bg-blue-600 text-white'
+                                                                            : 'bg-white/15 text-white'
+                                                                    }`}>
+                                                                        {m.content.length > 120 ? m.content.slice(0, 120) + '...' : m.content}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                        <div ref={miniChatEndRef} />
+                                                    </div>
+                                                    <div className="p-2 border-t border-white/10 flex gap-1.5">
+                                                        <input
+                                                            value={miniChatInput}
+                                                            onChange={(e) => setMiniChatInput(e.target.value)}
+                                                            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleMiniChatSend() } }}
+                                                            placeholder="Quick reply..."
+                                                            className="flex-1 bg-white/10 text-white text-xs px-3 py-2 rounded-lg outline-none placeholder-white/40 focus:bg-white/15 transition-colors"
+                                                        />
+                                                        <button
+                                                            onClick={handleMiniChatSend}
+                                                            disabled={!miniChatInput.trim()}
+                                                            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 disabled:opacity-30 transition-all"
+                                                        >
+                                                            <Send size={14} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                                 <h2 className="text-h3 font-bold text-kb-navy mb-4 flex items-center gap-2">
                                     <Clock size={20} className="text-kb-navy/40" />
@@ -323,6 +430,10 @@ export default function SessionPage() {
                             status={isAdmin ? ((sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "Chat Closed" : "Speaking as Agent") : ((sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "Conversation Ended" : "Connected to Support")}
                             placeholder={(sessionInfo?.status === 'resolved' || sessionInfo?.status === 'closed') ? "This chat has been closed." : (isAdmin ? "Reply to the client..." : "Type your message...")}
                                 isAdminView={true}
+                                sessionId={sessionId}
+                                supabaseClient={supabase}
+                                onRemoteStream={(stream) => setRemoteStream(stream)}
+                                onScreenShareStatusChange={handleScreenShareStatusChange}
                             />
                         </div>
                     </div>

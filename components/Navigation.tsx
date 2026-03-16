@@ -170,6 +170,9 @@ export default function Navigation() {
                       <Link href="/rewards" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">🏆</span> My Rewards
                       </Link>
+                      <Link href="/support" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                        <span className="menu-icon">🎫</span> My Tickets
+                      </Link>
                       <button className="user-dropdown-item user-dropdown-logout" role="menuitem" onClick={handleLogout}>
                         <span className="menu-icon">🚪</span> Log Out
                       </button>
@@ -205,9 +208,16 @@ export default function Navigation() {
             <li className={`nav-tab ${pathname === '/about' ? 'active' : ''}`}>
               <Link href="/about">About</Link>
             </li>
-            <li className={`nav-tab ${pathname === '/contact' ? 'active' : ''}`}>
-              <Link href="/contact">Contact</Link>
-            </li>
+            {!user && (
+              <li className={`nav-tab ${pathname === '/contact' ? 'active' : ''}`}>
+                <Link href="/contact">Contact</Link>
+              </li>
+            )}
+            {user && (
+              <li className={`nav-tab ${pathname.startsWith('/support') ? 'active' : ''}`}>
+                <Link href="/support">Support</Link>
+              </li>
+            )}
           </ul>
         </div>
       </nav>
