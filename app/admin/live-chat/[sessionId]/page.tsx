@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import ChatInterface, { Message } from '@/components/ChatInterface'
 import { supabase } from '@/lib/supabase'
 import { AlertCircle, Clock, ShieldCheck, User, Laptop, MessageCircle, Loader2, Monitor, Maximize2, Minimize2, X, Send } from 'lucide-react'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { ChevronLeft, ChevronRight, Check, MapPin, Loader2, Ticket, XCircle, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
@@ -32,7 +32,7 @@ const TIME_SLOTS = [
     '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
 ]
 
-export default function BookingPage() {
+function BookingContent() {
     const [selectedService, setSelectedService] = useState<Service | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
         const now = new Date()
@@ -815,5 +815,18 @@ export default function BookingPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function BookingPage() {
+    return (
+        <Suspense fallback={
+            <div className="bg-kb-bg min-h-screen py-24 flex flex-col items-center justify-center">
+                <Loader2 className="animate-spin text-sst-primary mb-4" size={48} />
+                <p className="text-kb-muted font-bold">Loading booking experience...</p>
+            </div>
+        }>
+            <BookingContent />
+        </Suspense>
     )
 }
