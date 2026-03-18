@@ -226,4 +226,5 @@ function MySubscriptions() {
     )
 }
 
-export default withAuth(MySubscriptions)
+export default withAuth(MySubscriptions, { allowedRoles: ['client'] })
+

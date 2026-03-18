@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import withAuth from '@/components/withAuth'
 import { User, Shield, Mail, Key, Phone, Check, X, AlertCircle, MapPin, Calendar } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 
 function AccountSettingsContent() {
@@ -11,6 +12,7 @@ function AccountSettingsContent() {
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+    const [userRole, setUserRole] = useState<string>('client')
 
     // Editing states
     const [isEditingName, setIsEditingName] = useState(false)
@@ -27,6 +29,10 @@ function AccountSettingsContent() {
     const [newEmail, setNewEmail] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [deleteConfirmText, setDeleteConfirmText] = useState('')
+    const [isDeletingLoading, setIsDeletingLoading] = useState(false)
 
     useEffect(() => {
         fetchData()
@@ -47,6 +53,7 @@ function AccountSettingsContent() {
 
             if (profile) {
                 setProfile(profile)
+                setUserRole(profile.role || 'client')
                 // DB columns are snake_case: first_name, last_name, phone, address
                 setFirstName(profile.first_name || '')
                 setLastName(profile.last_name || '')
@@ -152,6 +159,38 @@ function AccountSettingsContent() {
             setConfirmPassword('')
         } catch (err: any) {
             showMessage(err.message, 'error')
+        }
+    }
+
+    const handleAccountDeletion = async () => {
+        if (deleteConfirmText.toUpperCase() !== 'DELETE') {
+            showMessage('Please type DELETE to confirm.', 'error')
+            return
+        }
+
+        setIsDeletingLoading(true)
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) throw new Error('No active session.')
+
+            const response = await fetch('/api/auth/delete-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ userId: user.id })
+            })
+
+            const result = await response.json()
+            if (!response.ok) throw new Error(result.error || 'Failed to delete account.')
+
+            // Logout and redirect
+            await supabase.auth.signOut()
+            window.location.href = '/'
+        } catch (err: any) {
+            showMessage(err.message, 'error')
+            setIsDeletingLoading(false)
         }
     }
 
@@ -365,51 +404,122 @@ function AccountSettingsContent() {
                         </div>
 
                         {/* ── My Devices ── */}
-                        <div className="space-y-6">
-                            <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
-                                <span className="text-sst-primary">📱</span>
-                                My Devices
-                            </h2>
-                            <div className="p-8 bg-gray-50/50 rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div>
-                                    <p className="font-bold text-kb-navy mb-1">Manage your tech</p>
-                                    <p className="text-sm text-kb-muted">View devices you own and see personalized tech recommendations.</p>
+                        {userRole === 'client' && (
+                            <div className="space-y-6 text-sst-primary font-bold">
+                                <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
+                                    <span className="text-sst-primary font-bold">📱</span>
+                                    My Devices
+                                </h2>
+                                <div className="p-8 bg-gray-50/50 rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                    <div>
+                                        <p className="font-bold text-kb-navy mb-1">Manage your tech</p>
+                                        <p className="text-sm text-kb-muted">View devices you own and see personalized tech recommendations.</p>
+                                    </div>
+                                    <Link
+                                        href="/my-devices"
+                                        className="flex-shrink-0 px-8 py-3 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-md active:scale-95"
+                                    >
+                                        Go to My Devices →
+                                    </Link>
                                 </div>
-                                <Link
-                                    href="/my-devices"
-                                    className="flex-shrink-0 px-8 py-3 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-md active:scale-95"
-                                >
-                                    Go to My Devices →
-                                </Link>
                             </div>
-                        </div>
+                        )}
 
                         {/* ── My Bookings ── */}
-                        <div className="space-y-6">
-                            <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
-                                <Calendar size={24} className="text-sst-primary" />
-                                My Bookings
-                            </h2>
-                            <div className="p-8 bg-gray-50/50 rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div>
-                                    <p className="font-bold text-kb-navy mb-1">View your appointments</p>
-                                    <p className="text-sm text-kb-muted">See upcoming, past, and canceled tech support sessions.</p>
+                        {userRole === 'client' && (
+                            <div className="space-y-6">
+                                <h2 className="flex items-center gap-3 text-h2 text-kb-navy border-b border-gray-100 pb-4">
+                                    <Calendar size={24} className="text-sst-primary" />
+                                    My Bookings
+                                </h2>
+                                <div className="p-8 bg-gray-50/50 rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                    <div>
+                                        <p className="font-bold text-kb-navy mb-1">View your appointments</p>
+                                        <p className="text-sm text-kb-muted">See upcoming, past, and canceled tech support sessions.</p>
+                                    </div>
+                                    <Link
+                                        href="/my-bookings"
+                                        className="flex-shrink-0 px-8 py-3 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-md active:scale-95"
+                                    >
+                                        Go to My Bookings →
+                                    </Link>
                                 </div>
-                                <Link
-                                    href="/my-bookings"
-                                    className="flex-shrink-0 px-8 py-3 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-md active:scale-95"
-                                >
-                                    Go to My Bookings →
-                                </Link>
                             </div>
-                        </div>
+                        )}
 
                     </div>
                 </div>
 
                 <div className="mt-12 text-center">
-                    <p className="text-kb-muted text-sm">Need to close your account? <button className="text-red-600 font-bold hover:underline">Contact Support</button></p>
+                    <p className="text-kb-muted text-sm pb-4">Need to close your account?</p>
+                    <button 
+                        onClick={() => setShowDeleteModal(true)}
+                        className="px-6 py-3 bg-red-50 text-red-600 font-bold rounded-2xl border border-red-100 hover:bg-red-100 transition-all shadow-sm active:scale-95 text-sm"
+                    >
+                        Delete My Account
+                    </button>
                 </div>
+
+                {/* Deletion Modal */}
+                <AnimatePresence>
+                    {showDeleteModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setShowDeleteModal(false)}
+                                className="absolute inset-0 bg-kb-navy/60 backdrop-blur-sm"
+                            />
+                            <motion.div 
+                                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                                className="relative bg-white rounded-[2rem] shadow-2xl p-8 max-w-md w-full border border-red-100"
+                            >
+                                <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-red-600 mx-auto mb-6">
+                                    <AlertCircle size={32} />
+                                </div>
+                                <h3 className="text-2xl font-black text-kb-navy text-center mb-2">Delete Your Account?</h3>
+                                <p className="text-kb-muted text-center text-sm mb-8 leading-relaxed">
+                                    This action is permanent and cannot be undone. All your profile information, bookings, and devices will be permanently deleted.
+                                </p>
+
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-bold text-kb-muted uppercase tracking-wider text-center">
+                                            Type <span className="text-red-600">DELETE</span> below to confirm
+                                        </p>
+                                        <input 
+                                            type="text" 
+                                            value={deleteConfirmText}
+                                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                                            placeholder="DELETE"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-center font-bold tracking-widest focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder:text-gray-300 placeholder:font-normal uppercase"
+                                        />
+                                    </div>
+                                    <div className="flex gap-3 pt-2">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setShowDeleteModal(false)}
+                                            className="flex-1 py-4 bg-gray-100 text-kb-navy font-bold rounded-2xl hover:bg-gray-200 transition-all active:scale-95 text-sm"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            onClick={handleAccountDeletion}
+                                            disabled={deleteConfirmText.toUpperCase() !== 'DELETE' || isDeletingLoading}
+                                            className="flex-1 py-4 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-700 transition-all shadow-lg shadow-red-200 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none text-sm"
+                                        >
+                                            {isDeletingLoading ? 'Deleting...' : 'Confirm'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     )

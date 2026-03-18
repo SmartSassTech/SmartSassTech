@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { createClient } from '@supabase/supabase-js'
 
+export const dynamic = 'force-dynamic'
+
 async function getUser(request: NextRequest) {
   const authHeader = request.headers.get('Authorization')
   if (!authHeader) return null
@@ -19,11 +21,11 @@ async function getUser(request: NextRequest) {
 async function isAgent(userId: string): Promise<boolean> {
   const { data } = await supabaseAdmin
     .from('profiles')
-    .select('role, profile_type')
+    .select('role')
     .eq('id', userId)
     .single()
 
-  return data?.role === 'agent' || data?.role === 'admin' || data?.profile_type === 'Agent'
+  return data?.role === 'agent' || data?.role === 'admin'
 }
 
 // GET /api/tickets/[ticketId]/comments — list comments
@@ -56,7 +58,7 @@ export async function GET(
 
   let query = supabaseAdmin
     .from('ticket_comments')
-    .select('*, author:author_id(first_name, last_name, email, profile_type)')
+    .select('*, author:author_id(first_name, last_name, email, role)')
     .eq('ticket_id', ticketId)
     .order('created_at', { ascending: true })
 
@@ -126,7 +128,7 @@ export async function POST(
       content: content.trim(),
       is_internal: isInternalNote,
     })
-    .select('*, author:author_id(first_name, last_name, email, profile_type)')
+    .select('*, author:author_id(first_name, last_name, email, role)')
     .single()
 
   if (error) {

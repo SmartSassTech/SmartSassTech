@@ -66,7 +66,7 @@ interface Comment {
         first_name: string | null
         last_name: string | null
         email: string
-        profile_type: string | null
+        role: string | null
     } | null
 }
 
@@ -316,7 +316,7 @@ export default function AdminTicketDetail() {
 
                                 {/* Comments */}
                                 {comments.map(comment => {
-                                    const isAgent = comment.author?.profile_type === 'Agent'
+                                    const isAgent = comment.author?.role === 'agent' || comment.author?.role === 'admin'
                                     const authorName = comment.author
                                         ? `${comment.author.first_name || ''} ${comment.author.last_name || ''}`.trim() || comment.author.email
                                         : 'Unknown'

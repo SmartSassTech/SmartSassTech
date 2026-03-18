@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import withAuth from '@/components/withAuth'
 import { supabase } from '@/lib/supabase'
 import { Plus, Laptop, Smartphone, Monitor, Watch, Printer, ShieldCheck, Wifi, ExternalLink, Trash2, Edit3, X, Check } from 'lucide-react'
+import AutoResizingTextarea from '@/components/AutoResizingTextarea'
 
 // Map device types to icons
 const getDeviceIcon = (type: string) => {
@@ -38,7 +39,7 @@ const getDeviceIcon = (type: string) => {
     }
 }
 
-function MyDevicesContent() {
+function MyDevicesPage() {
     const router = useRouter()
     const [user, setUser] = useState<any>(null)
     const [loading, setLoading] = useState(true)
@@ -82,10 +83,10 @@ function MyDevicesContent() {
         if (user) {
             setUser(user)
 
-            // Fetch manually added devices
+            // Fetch manually added devices + health status via join-like logic
             const { data: devices, error: devicesError } = await supabase
                 .from('user_devices')
-                .select('*')
+                .select('*, device_health_status(health_score, update_status)')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
@@ -127,13 +128,14 @@ function MyDevicesContent() {
         if (!user) return
 
         try {
+            const finalDeviceName = newDeviceName || newDeviceModel;
             const { data, error } = await supabase
                 .from('user_devices')
                 .insert([
                     {
                         user_id: user.id,
                         device_type: newDeviceType,
-                        device_name: newDeviceName,
+                        device_name: finalDeviceName,
                         brand: newDeviceBrand,
                         model: newDeviceModel,
                         purchase_year: parseInt(newDeviceYear),
@@ -144,7 +146,7 @@ function MyDevicesContent() {
 
             if (error) throw error
 
-            setOwnedDevices([data[0], ...ownedDevices])
+            setOwnedDevices(data ? [data[0], ...ownedDevices] : ownedDevices)
             setIsAddModalOpen(false)
             showMessage('Device added successfully!', 'success')
 
@@ -173,6 +175,24 @@ function MyDevicesContent() {
 
             setOwnedDevices(ownedDevices.filter(d => d.id !== deviceId))
             showMessage('Device removed', 'success')
+        } catch (err: any) {
+            showMessage(err.message, 'error')
+        }
+    }
+
+    const handleDeleteRecommendation = async (recId: string) => {
+        if (!confirm('Are you sure you want to remove this recommendation?')) return
+
+        try {
+            const { error } = await supabase
+                .from('quiz_results')
+                .delete()
+                .eq('id', recId)
+
+            if (error) throw error
+
+            setRecommendations(recommendations.filter(r => r.id !== recId))
+            showMessage('Recommendation removed', 'success')
         } catch (err: any) {
             showMessage(err.message, 'error')
         }
@@ -240,42 +260,80 @@ function MyDevicesContent() {
                             </div>
                         ) : (
                             <div className="grid sm:grid-cols-2 gap-6">
-                                {ownedDevices.map(device => (
-                                    <div key={device.id} className="bg-white rounded-2xl border border-kb-pale p-6 shadow-sm hover:shadow-md transition-shadow relative group">
-                                        <button
-                                            onClick={() => handleDeleteDevice(device.id)}
-                                            className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            title="Remove device"
+                                {ownedDevices.map(device => {
+                                    const health = device.device_health_status?.[0]
+                                    const healthScore = health?.health_score
+                                    
+                                    return (
+                                        <Link 
+                                            href={`/my-devices/${device.id}`}
+                                            key={device.id} 
+                                            className="bg-white rounded-2xl border border-kb-pale p-6 shadow-sm hover:shadow-md hover:border-sst-primary transition-all relative group block"
                                         >
-                                            <Trash2 size={18} />
-                                        </button>
-
-                                        <div className="flex items-start gap-4 mb-4">
-                                            <div className="p-3 bg-kb-bg rounded-xl">
-                                                {getDeviceIcon(device.device_type)}
+                                            <div className="absolute top-4 right-4 flex items-center gap-2">
+                                                {healthScore !== undefined && (
+                                                    <div className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-tight ${
+                                                        healthScore >= 80 ? 'bg-green-100 text-green-700' : 
+                                                        healthScore >= 50 ? 'bg-yellow-100 text-yellow-700' : 
+                                                        'bg-red-100 text-red-700'
+                                                    }`}>
+                                                        Health: {healthScore}
+                                                    </div>
+                                                )}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleDeleteDevice(device.id);
+                                                    }}
+                                                    className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    title="Remove device"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </div>
-                                            <div>
-                                                <div className="text-xs font-bold text-kb-muted uppercase tracking-wider mb-1">{device.brand} {device.model ? `• ${device.model}` : ''}</div>
-                                                <h3 className="text-lg font-bold text-kb-navy leading-tight pr-6">{device.device_name}</h3>
+
+                                            <div className="flex items-start gap-4 mb-4">
+                                                <div className="p-3 bg-kb-bg rounded-xl">
+                                                    {getDeviceIcon(device.device_type)}
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-bold text-kb-muted uppercase tracking-wider mb-1">{device.brand} {device.model ? `• ${device.model}` : ''}</div>
+                                                    <h3 className="text-lg font-bold text-kb-navy leading-tight pr-12">{device.device_name}</h3>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="flex flex-wrap gap-2 mt-4 text-sm">
-                                            <span className="bg-sst-beige/50 text-kb-dark px-3 py-1 rounded-lg font-medium border border-sst-beige">
-                                                Purchased {device.purchase_year}
-                                            </span>
-                                            <span className="bg-kb-bg text-kb-dark px-3 py-1 rounded-lg font-medium border border-kb-pale">
-                                                {device.device_type}
-                                            </span>
-                                        </div>
+                                            <div className="flex flex-wrap gap-2 mt-4 text-sm">
+                                                <span className="bg-sst-beige/50 text-kb-dark px-3 py-1 rounded-lg font-medium border border-sst-beige">
+                                                    Purchased {device.purchase_year}
+                                                </span>
+                                                <span className="bg-kb-bg text-kb-dark px-3 py-1 rounded-lg font-medium border border-kb-pale">
+                                                    {device.device_type}
+                                                </span>
+                                                {health?.update_status === 'outdated' && (
+                                                    <span className="bg-red-50 text-red-600 px-3 py-1 rounded-lg font-bold border border-red-100 flex items-center gap-1">
+                                                        <ShieldCheck size={14} /> Update Needed
+                                                    </span>
+                                                )}
+                                                {health?.health_score < 60 && (
+                                                    <span className="bg-amber-50 text-amber-600 px-3 py-1 rounded-lg font-bold border border-amber-100 flex items-center gap-1">
+                                                        <X size={14} /> Reliability Issue
+                                                    </span>
+                                                )}
+                                            </div>
 
-                                        {device.notes && (
-                                            <p className="mt-4 text-sm text-kb-dark/80 bg-gray-50 p-3 rounded-xl border border-gray-100 line-clamp-2">
-                                                "{device.notes}"
-                                            </p>
-                                        )}
-                                    </div>
-                                ))}
+                                            {device.notes && (
+                                                <p className="mt-4 text-sm text-kb-dark/80 bg-gray-50 p-3 rounded-xl border border-gray-100 line-clamp-1">
+                                                    "{device.notes}"
+                                                </p>
+                                            )}
+                                            
+                                            <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center text-xs font-bold text-sst-primary group-hover:translate-x-1 transition-transform">
+                                                <span>View Full Profile & Diagnostics</span>
+                                                <ExternalLink size={14} />
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
                             </div>
                         )}
                     </div>
@@ -309,7 +367,14 @@ function MyDevicesContent() {
                                     if (!topProduct) return null;
 
                                     return (
-                                        <div key={rec.id} className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-kb-pale p-6 shadow-sm">
+                                        <div key={rec.id} className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-kb-pale p-6 shadow-sm relative group/rec">
+                                            <button
+                                                onClick={() => handleDeleteRecommendation(rec.id)}
+                                                className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover/rec:opacity-100 transition-opacity"
+                                                title="Remove recommendation"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                             <div className="text-xs font-bold text-sst-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
                                                 <Check size={14} /> {rec.quiz_id.replace('-', ' ')} Match
                                             </div>
@@ -345,7 +410,7 @@ function MyDevicesContent() {
             {/* ADD DEVICE MODAL */}
             {
                 isAddModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-kb-navy/60 backdrop-blur-sm animate-fadeIn">
+                    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-kb-navy/60 backdrop-blur-sm animate-fadeIn">
                         <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
                             <div className="bg-kb-bg border-b border-kb-pale p-5 flex justify-between items-center">
                                 <h3 className="text-xl font-bold text-kb-navy">Add New Device</h3>
@@ -402,9 +467,8 @@ function MyDevicesContent() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-kb-navy ml-1">Device Name</label>
+                                        <label className="text-sm font-bold text-kb-navy ml-1">Device Name (Optional)</label>
                                         <input
-                                            required
                                             type="text"
                                             placeholder="e.g. My Work Laptop"
                                             value={newDeviceName}
@@ -414,8 +478,9 @@ function MyDevicesContent() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-kb-navy ml-1">Model (Optional)</label>
+                                        <label className="text-sm font-bold text-kb-navy ml-1">Model</label>
                                         <input
+                                            required
                                             type="text"
                                             placeholder="e.g. iPhone 15 Pro, XPS 13"
                                             value={newDeviceModel}
@@ -427,12 +492,11 @@ function MyDevicesContent() {
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-kb-navy ml-1">Notes (Optional)</label>
-                                    <textarea
-                                        rows={2}
+                                    <AutoResizingTextarea
                                         placeholder="Storage size, color, issues..."
                                         value={newDeviceNotes}
                                         onChange={(e) => setNewDeviceNotes(e.target.value)}
-                                        className="w-full px-4 py-3 bg-kb-bg border border-kb-pale rounded-xl focus:border-sst-primary focus:ring-1 focus:ring-sst-primary outline-none resize-none"
+                                        className="w-full px-4 py-3 bg-kb-bg border border-kb-pale rounded-xl focus:border-sst-primary focus:ring-1 focus:ring-sst-primary outline-none"
                                     />
                                 </div>
 
@@ -463,14 +527,5 @@ function MyDevicesContent() {
     )
 }
 
-export default function MyDevicesPage() {
-    return (
-        <React.Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-kb-bg">
-                <div className="w-12 h-12 border-4 border-sst-primary border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        }>
-            <MyDevicesContent />
-        </React.Suspense>
-    )
-}
+export default withAuth(MyDevicesPage, { allowedRoles: ['client'] })
+

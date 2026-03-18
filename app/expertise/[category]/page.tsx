@@ -1,68 +1,12 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { EXPERTISE_DATA } from '@/lib/expertise-data'
+import BrandLogo from '@/components/BrandLogo'
 
 export async function generateStaticParams() {
     return Object.keys(EXPERTISE_DATA).map((category) => ({
         category,
     }))
-}
-
-// Map resource titles to their official brand logo SVG paths
-function BrandLogo({ title }: { title: string }) {
-    const t = title.toLowerCase()
-
-    const logoMap: { [key: string]: string } = {
-        'apple': '/assets/images/External Resources/apple-color-svgrepo-com.svg',
-        'google': '/assets/images/External Resources/google-color-svgrepo-com.svg',
-        'android': '/assets/images/External Resources/android-color-svgrepo-com.svg',
-        'pixel': '/assets/images/External Resources/google-color-svgrepo-com.svg',
-        'nest': '/assets/images/External Resources/google-color-svgrepo-com.svg',
-        'samsung': '/assets/images/External Resources/samsung-svgrepo-com.svg',
-        'microsoft': '/assets/images/External Resources/microsoft-svgrepo-com.svg',
-        'hp': '/assets/images/External Resources/hp-svgrepo-com.svg',
-        'dell': '/assets/images/External Resources/dell-2-logo-svgrepo-com.svg',
-        'lenovo': '/assets/images/External Resources/lenovo-svgrepo-com.svg',
-        'amazon': '/assets/images/External Resources/amazon-color-svgrepo-com.svg',
-        'fire': '/assets/images/External Resources/amazon-color-svgrepo-com.svg',
-        'roku': '/assets/images/External Resources/roku-svgrepo-com.svg',
-        'fitbit': '/assets/images/External Resources/fitbit-logo-svgrepo-com.svg',
-        'garmin': '/assets/images/External Resources/garmin-svgrepo-com.svg',
-        'ring': '/assets/images/External Resources/Ring_logo.svg',
-        'arlo': '/assets/images/External Resources/arlo-svgrepo-com.svg',
-        'epson': '/assets/images/External Resources/epson-svgrepo-com.svg',
-        'brother': '/assets/images/External Resources/Brother_logo.svg',
-        'canon': '/assets/images/External Resources/Canon_logo.svg',
-        'spectrum': '/assets/images/External Resources/Spectrum_Logo.svg',
-        'netgear': '/assets/images/External Resources/Netgearlogo.svg',
-        'tp-link': '/assets/images/External Resources/TP-LINK_logo.svg',
-        'logitech': '/assets/images/External Resources/logitech-svgrepo-com.svg',
-        'logi': '/assets/images/External Resources/logitech-svgrepo-com.svg'
-    }
-
-    // Find the first matching key in the logo map
-    const matchingKey = Object.keys(logoMap).find(key => t.includes(key))
-
-    if (matchingKey) {
-        const logoSrc = logoMap[matchingKey]
-        const isWide = ['samsung', 'dell', 'lenovo', 'amazon', 'roku', 'epson', 'brother', 'canon', 'spectrum', 'netgear', 'tp-link', 'logitech', 'logi'].includes(matchingKey)
-
-        return (
-            <img
-                src={logoSrc}
-                className={`resource-logo ${isWide ? 'resource-logo--wide' : ''}`}
-                alt={`${matchingKey} logo`}
-                aria-hidden="true"
-            />
-        )
-    }
-
-    // Default fallback if no logo found (same as original fallback logic)
-    return (
-        <div className="resource-logo-fallback" aria-hidden="true">
-            {title.charAt(0).toUpperCase()}
-        </div>
-    )
 }
 
 export default async function ExpertisePage({ params }: { params: Promise<{ category: string }> }) {
@@ -158,7 +102,7 @@ export default async function ExpertisePage({ params }: { params: Promise<{ cate
                                 aria-label={`Visit ${resource.title}`}
                             >
                                 <div className="resource-card-logo">
-                                    <BrandLogo title={resource.title} />
+                                    <BrandLogo brand={resource.title} size={40} />
                                 </div>
                                 <div className="resource-card-name">{resource.title}</div>
                                 <div className="resource-card-arrow">

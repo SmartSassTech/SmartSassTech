@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { createClient } from '@supabase/supabase-js'
+import { resend } from '@/lib/resend'
+
+export const dynamic = 'force-dynamic'
 
 // Helper: get authenticated user from request
 async function getUser(request: NextRequest) {
@@ -21,11 +24,11 @@ async function getUser(request: NextRequest) {
 async function isAgent(userId: string): Promise<boolean> {
   const { data } = await supabaseAdmin
     .from('profiles')
-    .select('role, profile_type')
+    .select('role')
     .eq('id', userId)
     .single()
 
-  return data?.role === 'agent' || data?.role === 'admin' || data?.profile_type === 'Agent'
+  return data?.role === 'agent' || data?.role === 'admin'
 }
 
 // SLA defaults (in hours)
@@ -141,6 +144,29 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating ticket:', error)
       return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 })
+    }
+
+    // 3. Send email notification to smartsasstech.com
+    try {
+      await resend.emails.send({
+        from: 'SmartSassTech <notifications@resend.dev>',
+        to: 'smartsasstech@gmail.com', // Replace with the actual address if different
+        subject: `New Support Ticket: ${subject}`,
+        html: `
+          <h1>New Support Ticket Submitted</h1>
+          <p><strong>Ticket ID:</strong> ${data?.id}</p>
+          <p><strong>Customer ID:</strong> ${user.id}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Category:</strong> ${category || 'General'}</p>
+          <p><strong>Priority:</strong> ${ticketPriority}</p>
+          <p><strong>Description:</strong></p>
+          <p>${description}</p>
+          <hr />
+          <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://www.smartsasstech.com'}/admin/support/${data?.id}">View Ticket in Admin Dashboard</a></p>
+        `
+      })
+    } catch (emailError) {
+      console.error('Email error:', emailError)
     }
 
     return NextResponse.json({ ticket: data }, { status: 201 })

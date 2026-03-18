@@ -124,12 +124,6 @@ export default function Chatbot() {
                 (payload) => {
                     const updatedSession = payload.new as any
                     setSessionStatus(updatedSession.status)
-                    if (updatedSession.status === 'resolved' || updatedSession.status === 'closed') {
-                        setLiveMessages(prev => {
-                             if (prev.some(m => m.role === 'system' && m.content.includes('closed'))) return prev;
-                             return [...prev, { role: 'system', content: 'This chat session has been closed by the agent. Thank you for using our support!' }]
-                        })
-                    }
                 }
             ).subscribe()
 
@@ -255,7 +249,15 @@ export default function Chatbot() {
         setIsSubmitting(true)
 
         try {
-            const { data: authData, error: authError } = await supabase.auth.signInAnonymously()
+            const { data: authData, error: authError } = await supabase.auth.signInAnonymously({
+                options: {
+                    data: {
+                        first_name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                    }
+                }
+            })
             if (authError) throw authError
 
             const response = await fetch('/api/chat/live', {

@@ -27,6 +27,16 @@ export default function LoginPage() {
             setEmail(savedEmail)
             setRememberMe(true)
         }
+
+        // Check for message/type in URL (from auth confirmation)
+        const searchParams = new URLSearchParams(window.location.search)
+        const urlMsg = searchParams.get('message')
+        const urlType = searchParams.get('type') as 'success' | 'error' | null
+        if (urlMsg && urlType) {
+            setMessage({ text: urlMsg, type: urlType })
+            // Clean URL
+            window.history.replaceState({}, '', window.location.pathname)
+        }
     }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -102,32 +112,30 @@ export default function LoginPage() {
                     return
                 }
 
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            first_name: firstName.trim(),
-                            last_name: lastName.trim(),
-                            phone: phone.trim(),
-                        }
-                    }
+                // Call our custom sign-up API
+                const response = await fetch('/api/auth/sign-up', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        firstName,
+                        lastName,
+                        phone,
+                    }),
                 })
-                if (error) {
-                    setMessage({ text: error.message, type: 'error' })
+
+                const result = await response.json()
+
+                if (!response.ok) {
+                    setMessage({ text: result.error || 'Failed to create account.', type: 'error' })
                 } else {
-                    // Also write profile immediately (the trigger handles it but let's be safe)
-                    if (data.user) {
-                        await supabase.from('profiles').upsert({
-                            id: data.user.id,
-                            email,
-                            'first_name': firstName.trim(),
-                            'last_name': lastName.trim(),
-                            'phone': phone.trim() || null,
-                            'last_login': new Date().toISOString(),
-                        })
-                    }
-                    setMessage({ text: 'Account created! Please check your email to confirm your address.', type: 'success' })
+                    setMessage({ text: result.message || 'Account created! Please check your email.', type: 'success' })
+                    // Clear form
+                    setIsLogin(true)
+                    setPassword('')
                 }
             }
         } catch (err) {

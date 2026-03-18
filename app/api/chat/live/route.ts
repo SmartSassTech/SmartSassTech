@@ -89,9 +89,10 @@ export async function POST(req: NextRequest) {
                     <h2>New Chat Request</h2>
                     <p><strong>User:</strong> ${name}</p>
                     <p><strong>Email:</strong> ${email}</p>
-                    <p><strong>Device:</strong> ${device}</p>
-                    <p><strong>Issue:</strong> ${issue}</p>
-                    <p><a href="${chatLink}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Join Chat Session</a></p>
+                    <p><strong>Phone:</strong> ${phone || 'Not specified'}</p>
+                    <p><strong>Device:</strong> ${device || 'Not specified'}</p>
+                    <p><strong>Issue:</strong> ${issue || 'No initial issue description provided'}</p>
+                    <p><a href="${chatLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Join Chat Session</a></p>
                 `
             })
         } catch (emailError) {

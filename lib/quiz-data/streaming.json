@@ -30,6 +30,10 @@
                 {
                     "text": "Reality TV & Documentaries",
                     "value": "reality"
+                },
+                {
+                    "text": "Other / Mixed Genres",
+                    "value": "other"
                 }
             ]
         },
@@ -56,6 +60,10 @@
                 {
                     "text": "Apple TV+ Originals: Ted Lasso, Severance, The Morning Show",
                     "value": "apple"
+                },
+                {
+                    "text": "None of these / Something else",
+                    "value": "none"
                 }
             ]
         },

@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { ChevronLeft, ChevronRight, Check, MapPin, Loader2, Ticket, XCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, MapPin, Loader2, Ticket, XCircle, Laptop, Smartphone, Tablet, Monitor } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import AutoResizingTextarea from '@/components/AutoResizingTextarea'
 
 // Define types for booking
 interface Service {
@@ -32,8 +34,13 @@ const TIME_SLOTS = [
 
 export default function BookingPage() {
     const [selectedService, setSelectedService] = useState<Service | null>(null)
-    const [currentMonth, setCurrentMonth] = useState(new Date())
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+    const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+        const now = new Date()
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        if (now.getHours() >= 17) d.setDate(d.getDate() + 1)
+        return d
+    })
+    const [currentMonth, setCurrentMonth] = useState(new Date(selectedDate?.getFullYear() || new Date().getFullYear(), selectedDate?.getMonth() || new Date().getMonth(), 1))
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         name: '',
@@ -58,22 +65,31 @@ export default function BookingPage() {
     const [showSuggestions, setShowSuggestions] = useState(false)
     const autocompleteRef = useRef<HTMLDivElement>(null)
 
+    const searchParams = useSearchParams()
+    const rescheduleId = searchParams.get('reschedule')
+    const chatSessionId = searchParams.get('chatSessionId')
+
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
     const [showReview, setShowReview] = useState(false)
+    
+    // New state for devices and conflicts
+    const [userDevices, setUserDevices] = useState<any[]>([])
+    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null)
+    const [busySlots, setBusySlots] = useState<string[]>([])
+    const [isLoadingConflicts, setIsLoadingConflicts] = useState(false)
 
-    // Check for auth session
+    // Check for auth session & fetch user data
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 setUserId(session.user.id)
-                // Pre-fill some form data if user is logged in
                 setFormData(prev => ({
                     ...prev,
                     email: session.user.email || '',
                 }))
 
-                // Fetch profile to get name
+                // 1. Fetch profile to get name & address
                 supabase.from('profiles').select('first_name, last_name, address, Phone').eq('id', session.user.id).single().then(({ data }) => {
                     if (data) {
                         setFormData(prev => ({
@@ -85,9 +101,57 @@ export default function BookingPage() {
                         if (data.address) setAddressQuery(data.address)
                     }
                 })
+
+                // 2. Fetch user's devices
+                supabase.from('user_devices').select('*').eq('user_id', session.user.id).then(({ data }) => {
+                    if (data) setUserDevices(data)
+                })
+
+                // 3. If rescheduling, fetch original booking
+                if (rescheduleId) {
+                    supabase.from('bookings').select('*').eq('id', rescheduleId).single().then(({ data }) => {
+                        if (data) {
+                            setSelectedService(SERVICES.find(s => s.name === data.service_name) || SERVICES[0])
+                            setFormData(prev => ({
+                                ...prev,
+                                location: data.location_preference,
+                                address: data.customer_address || '',
+                                notes: `(Rescheduling session: ${data.id}) ${data.notes || ''}`
+                            }))
+                            if (data.customer_address) setAddressQuery(data.customer_address)
+                        }
+                    })
+                }
             }
         })
-    }, [])
+    }, [rescheduleId])
+
+    // Conflict detection: Fetch occupied slots when date changes
+    useEffect(() => {
+        if (!selectedDate) return
+
+        const fetchConflicts = async () => {
+            setIsLoadingConflicts(true)
+            try {
+                const dateStr = selectedDate.toISOString().split('T')[0]
+                const { data, error } = await supabase
+                    .from('bookings')
+                    .select('booking_time')
+                    .eq('booking_date', dateStr)
+                    .neq('service_status', 'cancelled')
+                
+                if (data) {
+                    setBusySlots(data.map(b => b.booking_time))
+                }
+            } catch (err) {
+                console.error("Conflict checking error:", err)
+            } finally {
+                setIsLoadingConflicts(false)
+            }
+        }
+
+        fetchConflicts()
+    }, [selectedDate])
 
     // Handle click outside for autocomplete dropdown
     useEffect(() => {
@@ -110,8 +174,9 @@ export default function BookingPage() {
         const fetchAddresses = async () => {
             setIsSearchingAddress(true)
             try {
+                // Optimize search with bias towards Rochester, NY (-77.61, 43.15)
                 const response = await fetch(
-                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&addressdetails=1&limit=5&countrycodes=us`,
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&addressdetails=1&limit=5&countrycodes=us&viewbox=-77.7,43.2,-77.5,43.1`,
                     {
                         headers: {
                             'Accept-Language': 'en-US,en;q=0.9',
@@ -120,7 +185,30 @@ export default function BookingPage() {
                     }
                 )
                 const data = await response.json()
-                setAddressSuggestions(data)
+                
+                // Pre-format and de-duplicate suggestions
+                const unique: any[] = []
+                const seen = new Set()
+                
+                data.forEach((item: any) => {
+                    const a = item.address || {}
+                    const houseNumber = a.house_number || ''
+                    const road = a.road || ''
+                    const city = a.city || a.town || a.village || a.hamlet || ''
+                    const state = a.state || ''
+                    const zip = a.postcode || ''
+                    
+                    // Create a normalized string for comparison
+                    const street = [houseNumber, road].filter(Boolean).join(' ')
+                    const formatted = [street, city, state, zip].filter(Boolean).join(', ').trim().replace(/, ,/g, ',')
+                    
+                    if (formatted && !seen.has(formatted.toLowerCase())) {
+                        seen.add(formatted.toLowerCase())
+                        unique.push({ ...item, formatted })
+                    }
+                })
+                
+                setAddressSuggestions(unique)
             } catch (error) {
                 console.error("Error fetching addresses:", error)
             } finally {
@@ -223,25 +311,40 @@ export default function BookingPage() {
         const pointsAwarded = Math.floor(finalPrice)
 
         try {
-            // 1. Insert booking
-            const { error: bookingError } = await supabase
-                .from('bookings')
-                .insert([{
-                    customer_name: formData.name,
-                    customer_email: formData.email,
-                    customer_phone: formData.phone,
-                    customer_address: formData.address,
-                    location_preference: formData.location,
-                    service_name: selectedService?.name,
-                    booking_date: selectedDate?.toISOString().split('T')[0],
-                    booking_time: selectedTime,
-                    duration: selectedService?.duration,
-                    price: finalPrice,
-                    notes: formData.notes,
-                    payment_status: 'completed',
-                    paypal_order_id: orderId,
-                    user_id: userId
-                }])
+            // 1. Insert or Update booking
+            const bookingData = {
+                customer_name: formData.name,
+                customer_email: formData.email,
+                customer_phone: formData.phone,
+                customer_address: formData.address,
+                location_preference: formData.location,
+                service_name: selectedService?.name,
+                booking_date: selectedDate?.toISOString().split('T')[0],
+                booking_time: selectedTime,
+                duration: selectedService?.duration,
+                price: finalPrice,
+                notes: formData.notes,
+                payment_status: 'completed',
+                service_status: 'scheduled',
+                paypal_order_id: orderId,
+                user_id: userId,
+                device_id: selectedDeviceId,
+                chat_session_id: chatSessionId
+            }
+
+            let bookingError;
+            if (rescheduleId) {
+                const { error: updateError } = await supabase
+                    .from('bookings')
+                    .update({ ...bookingData, service_status: 'scheduled' })
+                    .eq('id', rescheduleId)
+                bookingError = updateError
+            } else {
+                const { error: insertError } = await supabase
+                    .from('bookings')
+                    .insert([bookingData])
+                bookingError = insertError
+            }
 
             if (bookingError) throw bookingError
 
@@ -300,8 +403,9 @@ export default function BookingPage() {
         const month = currentMonth.getMonth()
         const firstDay = new Date(year, month, 1).getDay()
         const daysInMonth = new Date(year, month + 1, 0).getDate()
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
+        const now = new Date()
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const isPast5PMToday = now.getHours() >= 17
 
         const days = []
         for (let i = 0; i < firstDay; i++) {
@@ -309,7 +413,8 @@ export default function BookingPage() {
         }
         for (let d = 1; d <= daysInMonth; d++) {
             const date = new Date(year, month, d)
-            const isDisabled = date < today
+            const isToday = date.getTime() === todayStart.getTime()
+            const isDisabled = date < todayStart || (isToday && isPast5PMToday)
             const isSelected = selectedDate?.getTime() === date.getTime()
 
             days.push(
@@ -321,8 +426,8 @@ export default function BookingPage() {
                         setSelectedTime(null)
                     }}
                     className={`aspect-square flex items-center justify-center rounded-xl font-bold transition-all
-            ${isDisabled ? 'text-kb-muted bg-gray-50 cursor-not-allowed' : 'hover:bg-sst-primary hover:text-white'}
-            ${isSelected ? 'bg-sst-primary text-white shadow-lg' : 'bg-white text-sst-primary border-2 border-kb-cream'}
+            ${isDisabled ? 'text-kb-muted bg-gray-50 cursor-not-allowed opacity-30 shadow-none' : 'hover:bg-sst-primary hover:text-white'}
+            ${isSelected ? 'bg-sst-primary text-white shadow-lg' : !isDisabled ? 'bg-white text-sst-primary border-2 border-kb-cream' : ''}
           `}
                 >
                     {d}
@@ -379,7 +484,7 @@ export default function BookingPage() {
                                     <button
                                         key={service.id}
                                         onClick={() => setSelectedService(service)}
-                                        className={`w-full text-left p-6 rounded-2xl border-2 transition-all group
+                                        className={`w-full text-left p-4 md:p-6 rounded-2xl border-2 transition-all group
                       ${selectedService?.id === service.id
                                                 ? 'border-sst-primary bg-sst-primary/5 shadow-md'
                                                 : 'border-white bg-white hover:border-sst-primary/30'}
@@ -409,13 +514,17 @@ export default function BookingPage() {
                                     <h2 className="mb-8">2. Choose Date & Time</h2>
 
                                     <div className="flex items-center justify-between mb-8">
-                                        <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))} className="p-2 hover:bg-kb-bg rounded-full transition-all">
+                                        <button
+                                            disabled={currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear()}
+                                            onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                                            className="p-2 hover:bg-kb-bg rounded-full transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                                        >
                                             <ChevronLeft size={24} />
                                         </button>
                                         <h3 className="text-h3 font-bold text-sst-primary">
                                             {currentMonth.toLocaleDateString('default', { month: 'long', year: 'numeric' })}
                                         </h3>
-                                        <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))} className="p-2 hover:bg-kb-bg rounded-full transition-all">
+                                        <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} className="p-2 hover:bg-kb-bg rounded-full transition-all">
                                             <ChevronRight size={24} />
                                         </button>
                                     </div>
@@ -429,31 +538,43 @@ export default function BookingPage() {
 
                                     {selectedDate && (
                                         <div className="pt-8 border-t border-kb-cream">
-                                            <h3 className="font-bold text-sst-primary mb-6">Available Times for {selectedDate.toLocaleDateString()}</h3>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h3 className="font-bold text-sst-primary">Available Times for {selectedDate.toLocaleDateString()}</h3>
+                                                {isLoadingConflicts && (
+                                                    <div className="flex items-center gap-2 text-kb-muted text-sm">
+                                                        <Loader2 className="animate-spin" size={16} />
+                                                        Checking availability...
+                                                    </div>
+                                                )}
+                                            </div>
                                             <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                                                 {TIME_SLOTS.map(time => {
                                                     const [timePart, modifier] = time.split(' ');
                                                     let [hours, minutes] = timePart.split(':').map(Number);
                                                     if (hours === 12 && modifier === 'AM') hours = 0;
                                                     if (hours < 12 && modifier === 'PM') hours += 12;
-
+ 
                                                     const slotDate = new Date(selectedDate);
                                                     slotDate.setHours(hours, minutes, 0, 0);
-
+ 
                                                     const now = new Date();
                                                     const isPast = slotDate < now;
-
+                                                    const isTaken = busySlots.includes(time);
+ 
                                                     return (
                                                         <button
                                                             key={time}
-                                                            disabled={isPast}
+                                                            disabled={isPast || isTaken || isLoadingConflicts}
                                                             onClick={() => setSelectedTime(time)}
-                                                            className={`py-3 rounded-xl font-bold transition-all border-2
-                                                                ${isPast ? 'text-kb-muted bg-gray-50 border-gray-200 cursor-not-allowed opacity-50' :
+                                                            className={`py-3 rounded-xl font-bold transition-all border-2 relative
+                                                                ${(isPast || isTaken) ? 'text-kb-muted bg-gray-50 border-gray-200 cursor-not-allowed opacity-50' :
                                                                     selectedTime === time ? 'bg-sst-primary text-white border-sst-primary shadow-lg' : 'bg-white text-sst-primary border-kb-cream hover:border-sst-primary/50'}
                                                             `}
                                                         >
                                                             {time}
+                                                            {isTaken && !isPast && (
+                                                                <span className="absolute -top-2 -right-1 bg-red-100 text-red-600 text-[10px] px-1.5 py-0.5 rounded-full border border-red-200">Taken</span>
+                                                            )}
                                                         </button>
                                                     );
                                                 })}
@@ -507,6 +628,47 @@ export default function BookingPage() {
                                                     <label className="block text-sst-primary font-bold mb-2">Phone *</label>
                                                     <input required type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all" />
                                                 </div>
+
+                                                {/* Device Selection */}
+                                                {userId && userDevices.length > 0 && (
+                                                    <div className="bg-kb-bg/30 p-6 rounded-2xl border-2 border-kb-cream">
+                                                        <label className="block text-sst-primary font-bold mb-4 flex items-center gap-2">
+                                                            <Laptop size={18} /> Which device needs help? *
+                                                        </label>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                            {userDevices.map(device => {
+                                                                const isSelected = selectedDeviceId === device.id
+                                                                const Icon = device.device_type?.toLowerCase().includes('phone') ? Smartphone 
+                                                                           : device.device_type?.toLowerCase().includes('tablet') ? Tablet
+                                                                           : device.device_type?.toLowerCase().includes('desktop') ? Monitor
+                                                                           : Laptop
+                                                                
+                                                                return (
+                                                                    <button
+                                                                        key={device.id}
+                                                                        type="button"
+                                                                        onClick={() => setSelectedDeviceId(device.id)}
+                                                                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left
+                                                                            ${isSelected ? 'border-sst-primary bg-white shadow-md' : 'border-white bg-white hover:border-sst-primary/30'}
+                                                                        `}
+                                                                    >
+                                                                        <div className={`p-2 rounded-lg ${isSelected ? 'bg-sst-primary text-white' : 'bg-kb-bg text-kb-muted'}`}>
+                                                                            <Icon size={20} />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="font-bold text-sm text-kb-navy leading-none mb-1">{device.device_name || device.model}</p>
+                                                                            <p className="text-xs text-kb-muted">{device.brand} {device.model}</p>
+                                                                        </div>
+                                                                        {isSelected && <Check size={16} className="ml-auto text-sst-primary" />}
+                                                                    </button>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                        <Link href="/my-devices" className="inline-block mt-4 text-xs font-bold text-kb-muted hover:text-sst-primary underline transition-all">
+                                                            + Add/Manage Devices
+                                                        </Link>
+                                                    </div>
+                                                )}
 
                                                 {/* Discount Code Section */}
                                                 {userId && (
@@ -566,57 +728,79 @@ export default function BookingPage() {
                                                 </div>
                                                 {formData.location === 'home' && (
                                                     <div className="relative" ref={autocompleteRef}>
-                                                        <label className="block text-sst-primary font-bold mb-2">Address *</label>
+                                                        <label className="block text-sst-primary font-bold mb-2">Service Address *</label>
                                                         <div className="relative">
+                                                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-kb-muted" size={20} />
                                                             <input
                                                                 required
                                                                 type="text"
                                                                 value={addressQuery}
                                                                 onChange={e => {
                                                                     setAddressQuery(e.target.value)
-                                                                    setFormData({ ...formData, address: e.target.value })
                                                                     setShowSuggestions(true)
                                                                 }}
                                                                 onFocus={() => setShowSuggestions(true)}
-                                                                className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all pr-12"
-                                                                placeholder="Start typing your address..."
+                                                                placeholder="Enter your street address"
+                                                                className="w-full pl-12 pr-12 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
                                                                 autoComplete="off"
                                                             />
-                                                            {isSearchingAddress && (
-                                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sst-primary">
-                                                                    <Loader2 className="animate-spin" size={20} />
-                                                                </div>
+                                                            {addressQuery && (
+                                                                <button 
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setAddressQuery('')
+                                                                        setFormData(f => ({ ...f, address: '' }))
+                                                                        setAddressSuggestions([])
+                                                                    }}
+                                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-kb-muted hover:text-red-500 transition-colors"
+                                                                >
+                                                                    <XCircle size={20} />
+                                                                </button>
                                                             )}
                                                         </div>
 
-                                                        {showSuggestions && addressSuggestions.length > 0 && (
-                                                            <div className="absolute z-50 w-full mt-2 bg-white border border-kb-cream rounded-2xl shadow-xl max-h-60 overflow-y-auto">
-                                                                {addressSuggestions.map((place: any) => (
-                                                                    <button
-                                                                        key={place.place_id}
-                                                                        type="button"
-                                                                        className="w-full text-left px-5 py-3 hover:bg-kb-bg transition-colors flex items-start gap-3 border-b border-kb-cream last:border-none"
-                                                                        onClick={() => {
-                                                                            const formattedAddress = place.display_name;
-                                                                            setAddressQuery(formattedAddress)
-                                                                            setFormData({ ...formData, address: formattedAddress })
-                                                                            setShowSuggestions(false)
-                                                                        }}
-                                                                    >
-                                                                        <MapPin className="text-sst-primary shrink-0 mt-0.5" size={18} />
-                                                                        <div>
-                                                                            <span className="text-kb-dark font-medium block">{place.address?.road || place.name} {place.address?.house_number}</span>
-                                                                            <span className="text-xs text-kb-muted">{place.address?.city || place.address?.town}, {place.address?.state} {place.address?.postcode}</span>
-                                                                        </div>
-                                                                    </button>
-                                                                ))}
+                                                        {showSuggestions && (addressSuggestions.length > 0 || isSearchingAddress) && (
+                                                            <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-2xl border border-kb-cream overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                                                {isSearchingAddress ? (
+                                                                    <div className="p-4 flex items-center justify-center gap-2 text-kb-muted">
+                                                                        <Loader2 className="animate-spin" size={16} />
+                                                                        <span>Searching addresses...</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="max-h-64 overflow-y-auto">
+                                                                        {addressSuggestions.map((suggestion, index) => (
+                                                                            <button
+                                                                                key={index}
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    setAddressQuery(suggestion.formatted)
+                                                                                    setFormData({ ...formData, address: suggestion.formatted })
+                                                                                    setShowSuggestions(false)
+                                                                                }}
+                                                                                className="w-full px-5 py-4 text-left hover:bg-gray-50 flex items-start gap-3 transition-colors border-b border-kb-cream last:border-none"
+                                                                            >
+                                                                                <MapPin className="mt-1 text-sst-primary flex-shrink-0" size={16} />
+                                                                                <div>
+                                                                                    <p className="text-[1rem] font-bold text-kb-navy leading-tight line-clamp-2">
+                                                                                        {suggestion.formatted}
+                                                                                    </p>
+                                                                                </div>
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
                                                 )}
                                                 <div>
                                                     <label className="block text-sst-primary font-bold mb-2">Notes</label>
-                                                    <textarea value={formData.notes} onChange={e => setFormData({ ...formData, notes: e.target.value })} className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all" rows={3}></textarea>
+                                                    <AutoResizingTextarea 
+                                                        value={formData.notes} 
+                                                        onChange={e => setFormData({ ...formData, notes: e.target.value })} 
+                                                        className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all" 
+                                                        placeholder="Special instructions or additional details..."
+                                                    />
                                                 </div>
                                                 <button type="submit" className="w-full py-5 bg-sst-primary text-white font-bold rounded-2xl hover:bg-sst-secondary transition-all shadow-xl text-lg">
                                                     Continue to Payment

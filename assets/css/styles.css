@@ -1732,9 +1732,9 @@ a:focus-visible {
 .resource-logo {
   height: auto;
   width: auto;
-  max-height: 40px;
-  max-width: 130px;
-  /* Slightly wider for longer wordmarks like Samsung */
+  max-height: 52px;
+  max-width: 160px;
+  /* Larger logos as requested */
   object-fit: contain;
   /* Ensure images maintain aspect ratio */
   transition: transform var(--transition-normal), filter var(--transition-normal);
@@ -1745,7 +1745,7 @@ a:focus-visible {
 }
 
 .resource-logo--wide {
-  max-height: 24px;
+  max-height: 32px;
 }
 
 .resource-logo-fallback {

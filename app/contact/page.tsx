@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import AutoResizingTextarea from '@/components/AutoResizingTextarea'
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -161,15 +162,14 @@ export default function ContactPage() {
 
                                 <div>
                                     <label htmlFor="message" className="block text-sst-primary font-bold mb-2">Message *</label>
-                                    <textarea
+                                    <AutoResizingTextarea
                                         id="message"
                                         required
-                                        rows={4}
                                         value={formData.message}
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
                                         placeholder="How can we help you today?"
-                                    ></textarea>
+                                    />
                                 </div>
 
                                 {/* Honeypot — hidden from humans, filled by bots */}

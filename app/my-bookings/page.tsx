@@ -15,8 +15,12 @@ interface Booking {
     customer_address: string | null
     price: number
     payment_status: string
+    service_status: string
     notes: string | null
     created_at: string
+    user_id: string | null
+    device_id: string | null
+    chat_session_id: string | null
 }
 
 type Tab = 'upcoming' | 'past' | 'canceled'
@@ -29,9 +33,10 @@ function locationLabel(loc: string, address: string | null): string {
 }
 
 function StatusBadge({ status, tab }: { status: string; tab: Tab }) {
+    if (status === 'cancelled') return <span className="px-3 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-full uppercase tracking-wide">Canceled</span>
+    if (status === 'completed') return <span className="px-3 py-1 bg-kb-navy/10 text-kb-navy text-xs font-bold rounded-full uppercase tracking-wide">Completed</span>
     if (tab === 'upcoming') return <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wide">Upcoming</span>
-    if (tab === 'past') return <span className="px-3 py-1 bg-kb-navy/10 text-kb-navy text-xs font-bold rounded-full uppercase tracking-wide">Completed</span>
-    return <span className="px-3 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-full uppercase tracking-wide">Canceled</span>
+    return <span className="px-3 py-1 bg-kb-navy/10 text-kb-navy text-xs font-bold rounded-full uppercase tracking-wide">Completed</span>
 }
 
 function MyBookingsContent() {
@@ -51,12 +56,12 @@ function MyBookingsContent() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
 
-            // Fetch by user_id OR customer_email to cover bookings made before auth linkage
+            // Fetch bookings with device info
             const { data, error } = await supabase
                 .from('bookings')
-                .select('*')
+                .select('*, user_devices(device_name, brand, model)')
                 .or(`user_id.eq.${user.id},customer_email.eq.${user.email}`)
-                .order('booking_date', { ascending: true })
+                .order('booking_date', { ascending: false })
 
             if (error) throw error
             setAllBookings(data || [])
@@ -67,18 +72,65 @@ function MyBookingsContent() {
         }
     }
 
+    const handleCancelBooking = async (id: string) => {
+        if (!confirm('Are you sure you want to cancel this booking?')) return
+        try {
+            const { error } = await supabase
+                .from('bookings')
+                .update({ service_status: 'cancelled' })
+                .eq('id', id)
+            if (error) throw error
+            fetchBookings()
+        } catch (err: any) {
+            alert('Error cancelling booking: ' + err.message)
+        }
+    }
+
+    const handleCompleteBooking = async (booking: any) => {
+        if (!confirm('Mark this session as completed? This will log it to your device history.')) return
+        try {
+            // 1. Update booking status
+            const { error: bookingError } = await supabase
+                .from('bookings')
+                .update({ service_status: 'completed' })
+                .eq('id', booking.id)
+            
+            if (bookingError) throw bookingError
+
+            // 2. Log to service history if device_id exists
+            if (booking.device_id) {
+                const { error: historyError } = await supabase
+                    .from('device_service_history')
+                    .insert([{
+                        device_id: booking.device_id,
+                        user_id: booking.user_id,
+                        service_date: booking.booking_date,
+                        issue_description: `Booked Service: ${booking.service_name}`,
+                        resolution: `Session completed on ${booking.booking_date}. Note: ${booking.notes || 'None'}`,
+                        cost: booking.price,
+                        technician_notes: 'Automatically logged from booking system.'
+                    }])
+                if (historyError) console.error("Error logging history:", historyError)
+            }
+
+            fetchBookings()
+        } catch (err: any) {
+            alert('Error completing booking: ' + err.message)
+        }
+    }
+
     const today = new Date().toISOString().split('T')[0]
 
     const filtered = allBookings.filter(b => {
-        if (tab === 'canceled') return b.payment_status === 'canceled'
-        if (tab === 'past') return b.booking_date < today && b.payment_status !== 'canceled'
-        return b.booking_date >= today && b.payment_status !== 'canceled'
+        if (tab === 'canceled') return b.service_status === 'cancelled'
+        if (tab === 'past') return b.service_status === 'completed' || (b.booking_date < today && b.service_status !== 'cancelled')
+        return b.booking_date >= today && b.service_status === 'scheduled'
     })
 
     const tabCounts = {
-        upcoming: allBookings.filter(b => b.booking_date >= today && b.payment_status !== 'canceled').length,
-        past: allBookings.filter(b => b.booking_date < today && b.payment_status !== 'canceled').length,
-        canceled: allBookings.filter(b => b.payment_status === 'canceled').length,
+        upcoming: allBookings.filter(b => b.booking_date >= today && b.service_status === 'scheduled').length,
+        past: allBookings.filter(b => b.service_status === 'completed' || (b.booking_date < today && b.service_status !== 'cancelled' && b.service_status !== 'scheduled')).length,
+        canceled: allBookings.filter(b => b.service_status === 'cancelled').length,
     }
 
     const emptyMessages: Record<Tab, { icon: React.ReactNode; title: string; body: string }> = {
@@ -175,8 +227,15 @@ function MyBookingsContent() {
                                         {/* Info */}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between gap-2 flex-wrap">
-                                                <p className="font-bold text-kb-navy text-lg leading-tight">{booking.service_name}</p>
-                                                <StatusBadge status={booking.payment_status} tab={tab} />
+                                                <div>
+                                                    <p className="font-bold text-kb-navy text-lg leading-tight">{booking.service_name}</p>
+                                                    {(booking as any).user_devices && (
+                                                        <p className="text-xs text-sst-primary font-bold mt-1">
+                                                            Device: {(booking as any).user_devices.device_name || (booking as any).user_devices.model}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <StatusBadge status={booking.service_status} tab={tab} />
                                             </div>
                                             <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-sm text-kb-muted">
                                                 <span className="flex items-center gap-1.5">
@@ -190,6 +249,36 @@ function MyBookingsContent() {
                                             </div>
                                             {booking.notes && (
                                                 <p className="mt-2 text-xs text-kb-muted italic truncate">Note: {booking.notes}</p>
+                                            )}
+                                            {booking.chat_session_id && (
+                                                <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-kb-navy/40 uppercase tracking-wider">
+                                                    <span className="w-1.5 h-1.5 bg-sst-primary rounded-full animate-pulse" />
+                                                    Linked to Chat Session
+                                                </div>
+                                            )}
+
+                                            {/* Actions */}
+                                            {tab === 'upcoming' && (
+                                                <div className="flex gap-3 mt-4">
+                                                    <Link 
+                                                        href={`/booking?reschedule=${booking.id}`}
+                                                        className="px-4 py-2 bg-white border-2 border-sst-primary text-sst-primary text-xs font-bold rounded-lg hover:bg-sst-primary hover:text-white transition-all shadow-sm"
+                                                    >
+                                                        Reschedule
+                                                    </Link>
+                                                    <button 
+                                                        onClick={() => handleCancelBooking(booking.id)}
+                                                        className="px-4 py-2 bg-white border-2 border-red-200 text-red-500 text-xs font-bold rounded-lg hover:bg-red-50 transition-all"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleCompleteBooking(booking)}
+                                                        className="px-4 py-2 bg-green-500 text-white text-xs font-bold rounded-lg hover:bg-green-600 transition-all shadow-sm ml-auto"
+                                                    >
+                                                        Mark Completed
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -207,4 +296,5 @@ function MyBookings() {
     return <MyBookingsContent />
 }
 
-export default withAuth(MyBookings)
+export default withAuth(MyBookings, { allowedRoles: ['client'] })
+

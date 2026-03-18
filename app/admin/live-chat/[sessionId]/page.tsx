@@ -61,11 +61,11 @@ export default function SessionPage() {
             // Check if user is an agent in profiles table
             const { data: profile, error } = await supabase
                 .from('profiles')
-                .select('profile_type')
+                .select('role')
                 .eq('id', session.user.id)
                 .single()
 
-            if (error || profile?.profile_type?.toLowerCase() !== 'agent') {
+            if (error || (profile?.role !== 'agent' && profile?.role !== 'admin')) {
                 alert('Unauthorized Access: You are not registered as an agent.')
                 window.location.href = '/'
                 return false
@@ -132,10 +132,7 @@ export default function SessionPage() {
                     setSessionInfo(updatedSession)
 
                     if (updatedSession.status === 'resolved' || updatedSession.status === 'closed') {
-                        setMessages(prev => {
-                            if (prev.some(m => m.role === 'system' && m.content.includes('closed'))) return prev;
-                            return [...prev, { role: 'system', content: 'This chat session has been closed. Thank you for using our support!' }]
-                        })
+                        setSessionInfo(updatedSession)
                     }
                 }
             )
@@ -236,6 +233,13 @@ export default function SessionPage() {
                 .eq('id', sessionId)
 
             if (updateError) throw updateError
+
+            // 1.b. Insert a system message into the database
+            await supabase.from('chat_messages').insert({
+                session_id: sessionId,
+                sender_type: 'system',
+                message_content: 'The agent has resolved this session. Thank you for using our support!'
+            })
 
             // 2. Save Transcript to Notion via our secure API
             const response = await fetch('/api/chat/save-transcript', {
