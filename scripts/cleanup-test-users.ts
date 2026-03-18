@@ -21,10 +21,11 @@ async function cleanup() {
   
   for (const email of emailsToDelete) {
     try {
-      const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+      const { data, error: listError } = await supabaseAdmin.auth.admin.listUsers()
       if (listError) throw listError
 
-      const user = users.find(u => u.email === email)
+      const users = data.users
+      const user = users.find((u: any) => u.email === email)
       if (user) {
         console.log(`Found user ${email} (ID: ${user.id}). Deleting...`)
         const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
