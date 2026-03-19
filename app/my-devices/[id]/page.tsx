@@ -62,6 +62,8 @@ function DeviceDetailPageContent() {
     const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isRepairModalOpen, setIsRepairModalOpen] = useState(false)
+    const [isScanRefusedModalOpen, setIsScanRefusedModalOpen] = useState(false)
+    const [scanRefusedReason, setScanRefusedReason] = useState('')
     
     // Edit Device Form
     const [editName, setEditName] = useState('')
@@ -141,6 +143,53 @@ function DeviceDetailPageContent() {
     }
 
     const handleRunScan = () => {
+        if (typeof window === 'undefined') return;
+        
+        const ua = window.navigator.userAgent.toLowerCase();
+        const type = (device?.device_type || '').toLowerCase();
+        const brand = (device?.brand || '').toLowerCase();
+        
+        let isMatch = true;
+        let rejectReason = '';
+
+        const isMobileBrowser = /mobile|android|iphone|ipad|ipod/i.test(ua);
+        const isMac = /mac os x|macintosh/i.test(ua);
+        const isWindows = /windows nt/i.test(ua);
+        const isIOS = /iphone|ipad|ipod/i.test(ua);
+        
+        const nonScannableTypes = ['printer', 'scanner', 'watch', 'smartwatch', 'wearable', 'security', 'camera', 'internet', 'router', 'modem', 'wifi', 'tv'];
+        const isDesktopType = ['computer', 'laptop', 'desktop', 'mac', 'pc'].some(t => type.includes(t));
+        const isMobileType = ['phone', 'smartphone', 'tablet', 'ipad'].some(t => type.includes(t));
+
+        if (nonScannableTypes.some(t => type.includes(t))) {
+            isMatch = false;
+            rejectReason = `Health scans are not supported directly through the browser for ${device?.device_type}s.`;
+        } else if (isMobileBrowser && isDesktopType) {
+            isMatch = false;
+            rejectReason = "You are trying to scan a computer, but you are currently using a mobile device.";
+        } else if (!isMobileBrowser && isMobileType) {
+            isMatch = false;
+            rejectReason = "You are trying to scan a mobile device, but you are currently using a computer.";
+        } else {
+            const isAppleDevice = brand.includes('apple') || brand.includes('mac') || brand.includes('iphone') || brand.includes('ipad');
+            if (isAppleDevice && !isMac && !isIOS) {
+                isMatch = false;
+                rejectReason = "You are trying to scan an Apple device, but you are not using an Apple operating system.";
+            } else {
+                const windowsBrands = ['dell', 'hp', 'lenovo', 'asus', 'acer', 'microsoft', 'surface'];
+                if (windowsBrands.some(b => brand.includes(b)) && !isWindows) {
+                    isMatch = false;
+                    rejectReason = `You are trying to scan a ${device?.brand || 'Windows'} device, but you are not using Windows.`;
+                }
+            }
+        }
+
+        if (!isMatch) {
+            setScanRefusedReason(rejectReason);
+            setIsScanRefusedModalOpen(true);
+            return;
+        }
+
         setDiagStep(0);
         setDiagAnswers([]);
         setIsDiagnosticOpen(true);
@@ -693,6 +742,38 @@ function DeviceDetailPageContent() {
                                     Log History Entry
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Scan Refused Modal */}
+            {isScanRefusedModalOpen && (
+                <div className="fixed inset-0 bg-kb-navy/80 backdrop-blur-sm z-[1100] flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+                        <div className="bg-amber-500 p-6 text-white flex justify-between items-center text-center justify-center relative">
+                            <h3 className="text-xl font-bold w-full text-center">Scan Refused</h3>
+                            <button onClick={() => setIsScanRefusedModalOpen(false)} className="absolute right-6 top-6 p-1 bg-white/20 rounded-full hover:bg-white/40 transition-colors">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                        <div className="p-8 text-center">
+                            <div className="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <AlertCircle size={32} />
+                            </div>
+                            <h4 className="text-xl font-bold text-kb-navy mb-4">Device Mismatch Detected</h4>
+                            <p className="text-kb-dark mb-4 leading-relaxed font-medium">
+                                {scanRefusedReason}
+                            </p>
+                            <p className="text-sm text-kb-muted mb-8 italic">
+                                Please open this page directly on <strong>{device?.device_name || 'the device'}</strong> to perform an accurate health scan.
+                            </p>
+                            <button 
+                                onClick={() => setIsScanRefusedModalOpen(false)}
+                                className="w-full bg-kb-bg text-kb-navy hover:bg-kb-pale py-4 px-6 rounded-2xl font-bold transition-colors shadow-sm"
+                            >
+                                Got it, thanks
+                            </button>
                         </div>
                     </div>
                 </div>

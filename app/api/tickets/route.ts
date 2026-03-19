@@ -169,6 +169,14 @@ export async function POST(request: NextRequest) {
       console.error('Email error:', emailError)
     }
 
+    // 4. Notify agents via in-app notification
+    await import('@/lib/notifications').then(m => m.notifyAgents(
+      'New Support Ticket',
+      `A new support ticket was created: ${subject}`,
+      'system',
+      { ticket_id: data?.id }
+    )).catch(console.error)
+
     return NextResponse.json({ ticket: data }, { status: 201 })
   } catch (err) {
     console.error('Error processing ticket creation:', err)

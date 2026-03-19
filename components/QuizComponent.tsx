@@ -82,6 +82,7 @@ export default function QuizComponent({ quiz }: QuizComponentProps) {
                             supabase.from('quiz_results').insert([
                                 {
                                     user_id: currentSession.user.id,
+                                    email: currentSession.user.email,
                                     quiz_id: quiz.id,
                                     answers: pendingData.answers,
                                     recommendation: pendingData.results
@@ -152,6 +153,7 @@ export default function QuizComponent({ quiz }: QuizComponentProps) {
             const { error } = await supabase.from('quiz_results').insert([
                 {
                     user_id: currentSession.user.id,
+                    email: currentSession.user.email,
                     quiz_id: quiz.id,
                     answers: answers,
                     recommendation: recommendationData

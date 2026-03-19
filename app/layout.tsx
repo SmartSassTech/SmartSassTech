@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import Chatbot from '@/components/Chatbot'
+import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
@@ -39,6 +40,8 @@ export default function RootLayout({
 
         <Footer />
         <Chatbot />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

@@ -99,6 +99,14 @@ export async function POST(req: NextRequest) {
             console.error('Resend email error:', emailError)
         }
 
+        // 3. Notify agents via in-app notification
+        await import('@/lib/notifications').then(m => m.notifyAgents(
+            'New Live Chat Request',
+            `${name} has requested a live chat session.`,
+            'system',
+            { session_id: sessionId }
+        )).catch(console.error)
+
         return NextResponse.json({ success: true, sessionId, chatLink })
     } catch (error: any) {
         console.error('Live chat API error:', error)

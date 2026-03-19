@@ -125,6 +125,14 @@ export async function POST(request: NextRequest) {
             console.error('Email error:', emailError)
         }
 
+        // 4. Notify agents via in-app notification
+        await import('@/lib/notifications').then(m => m.notifyAgents(
+            'New Contact Form Submission',
+            `A new contact form was submitted by ${name}.`,
+            'system',
+            { contact_submission_id: submission?.id }
+        )).catch(console.error)
+
         return NextResponse.json(
             { success: true, message: 'Contact submission received' },
             { status: 200 }

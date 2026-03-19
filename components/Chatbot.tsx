@@ -203,6 +203,13 @@ export default function Chatbot() {
             await supabase.from('chat_sessions')
                 .update({ updated_at: new Date().toISOString() })
                 .eq('id', sessionId)
+                
+            // Notify agents
+            fetch('/api/chat/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId, action: 'user_message' })
+            }).catch(console.error)
         } catch (error) {
             console.error('Failed to send live message', error)
         } finally {
@@ -228,6 +235,13 @@ export default function Chatbot() {
                 sender_type: 'system',
                 message_content: 'The client has ended the chat.'
             })
+            
+            // Notify agents
+            fetch('/api/chat/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId, action: 'chat_ended' })
+            }).catch(console.error)
         } catch (error) {
             console.error('Failed to close chat', error)
         }

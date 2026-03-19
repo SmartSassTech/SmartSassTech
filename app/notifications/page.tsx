@@ -37,6 +37,17 @@ function NotificationsContent() {
 
         if (!error && data) {
             setNotifications(data as Notification[])
+            
+            // Automatically mark as read when viewing the page
+            const hasUnread = data.some(n => !n.is_read);
+            if (hasUnread) {
+                supabase
+                    .from('notifications')
+                    .update({ is_read: true })
+                    .eq('user_id', user.id)
+                    .eq('is_read', false)
+                    .then(); // silent background update
+            }
         }
         setLoading(false)
     }

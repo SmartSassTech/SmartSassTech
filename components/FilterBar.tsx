@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, ChangeEvent, useEffect } from 'react'
-import { TASK_CATEGORIES, DEVICE_TYPES, PLATFORM_CATEGORIES, ARTICLE_TYPES } from '@/lib/constants'
 import { ArticleMetadata } from '@/lib/articles'
 import ArticleCard from './ArticleCard'
 
@@ -28,6 +27,12 @@ export default function FilterBar({
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Dynamically extract available filter options from articles
+  const availableTasks = Array.from(new Set(articles.map(a => a.category).filter(Boolean))).sort()
+  const availableDevices = Array.from(new Set(articles.flatMap(a => [...(a.deviceType || []), ...(a.hardware || [])]).filter(Boolean))).sort()
+  const availablePlatforms = Array.from(new Set(articles.flatMap(a => a.platformCategory || []).filter(Boolean))).sort()
+  const availableTypes = Array.from(new Set(articles.map(a => a.articleType).filter(Boolean))).sort()
+
   // initialize searchQuery and initial selections from server-provided props
   useEffect(() => {
     if (initialQuery && initialQuery !== searchQuery) {
@@ -35,31 +40,31 @@ export default function FilterBar({
     }
 
     if (initialCategory) {
-      if (TASK_CATEGORIES.includes(initialCategory)) {
+      if (availableTasks.includes(initialCategory)) {
         setSelectedTasks(prev => (prev.includes(initialCategory) ? prev : [...prev, initialCategory]))
       }
     }
 
     if (initialHardware) {
-      if (DEVICE_TYPES.includes(initialHardware)) {
+      if (availableDevices.includes(initialHardware)) {
         setSelectedDevices(prev => (prev.includes(initialHardware) ? prev : [...prev, initialHardware]))
       }
     }
 
     if (initialPlatform) {
-      if (PLATFORM_CATEGORIES.includes(initialPlatform)) {
+      if (availablePlatforms.includes(initialPlatform)) {
         setSelectedPlatforms(prev => (prev.includes(initialPlatform) ? prev : [...prev, initialPlatform]))
       }
     }
 
     if (initialType) {
-      if (ARTICLE_TYPES.includes(initialType)) {
+      if (availableTypes.includes(initialType)) {
         setSelectedTypes(prev => (prev.includes(initialType) ? prev : [...prev, initialType]))
       }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery, initialCategory, initialHardware, initialPlatform, initialType])
+  }, [initialQuery, initialCategory, initialHardware, initialPlatform, initialType, availableTasks.join(','), availableDevices.join(','), availablePlatforms.join(','), availableTypes.join(',')])
 
   const toggleTask = (task: string) => {
     setSelectedTasks(prev =>
@@ -107,10 +112,13 @@ export default function FilterBar({
       selectedTypes.length === 0 ||
       (article.articleType && selectedTypes.includes(article.articleType))
 
+    const titleStr = article.title || ''
+    const descStr = article.description || ''
+    
     const matchesSearch =
       searchQuery === '' ||
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description.toLowerCase().includes(searchQuery.toLowerCase())
+      titleStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      descStr.toLowerCase().includes(searchQuery.toLowerCase())
 
     return matchesTask && matchesDevice && matchesPlatform && matchesType && matchesSearch
   })
@@ -152,84 +160,92 @@ export default function FilterBar({
             )}
 
             {/* Task Categories */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Goals</h3>
-              <div className="space-y-2">
-                {TASK_CATEGORIES.map(task => (
-                  <label key={task} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedTasks.includes(task)}
-                      onChange={() => toggleTask(task)}
-                      className="mr-2 w-4 h-4 accent-kb-navy rounded"
-                    />
-                    <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
-                      {task}
-                    </span>
-                  </label>
-                ))}
+            {availableTasks.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Goals</h3>
+                <div className="space-y-2">
+                  {availableTasks.map(task => (
+                    <label key={task} className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedTasks.includes(task)}
+                        onChange={() => toggleTask(task)}
+                        className="mr-2 w-4 h-4 accent-kb-navy rounded"
+                      />
+                      <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
+                        {task}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Device Types */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Devices</h3>
-              <div className="space-y-2">
-                {DEVICE_TYPES.map(dev => (
-                  <label key={dev} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedDevices.includes(dev)}
-                      onChange={() => toggleDevice(dev)}
-                      className="mr-2 w-4 h-4 accent-kb-navy rounded"
-                    />
-                    <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
-                      {dev}
-                    </span>
-                  </label>
-                ))}
+            {availableDevices.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Devices</h3>
+                <div className="space-y-2">
+                  {availableDevices.map(dev => (
+                    <label key={dev} className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedDevices.includes(dev)}
+                        onChange={() => toggleDevice(dev)}
+                        className="mr-2 w-4 h-4 accent-kb-navy rounded"
+                      />
+                      <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
+                        {dev}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Platform Categories */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Platforms</h3>
-              <div className="space-y-2">
-                {PLATFORM_CATEGORIES.map(plat => (
-                  <label key={plat} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedPlatforms.includes(plat)}
-                      onChange={() => togglePlatform(plat)}
-                      className="mr-2 w-4 h-4 accent-kb-navy rounded"
-                    />
-                    <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
-                      {plat}
-                    </span>
-                  </label>
-                ))}
+            {availablePlatforms.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Platforms</h3>
+                <div className="space-y-2">
+                  {availablePlatforms.map(plat => (
+                    <label key={plat} className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedPlatforms.includes(plat)}
+                        onChange={() => togglePlatform(plat)}
+                        className="mr-2 w-4 h-4 accent-kb-navy rounded"
+                      />
+                      <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
+                        {plat}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Article Types */}
-            <div className="mb-6">
-              <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Article Type</h3>
-              <div className="space-y-2">
-                {ARTICLE_TYPES.map(type => (
-                  <label key={type} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedTypes.includes(type)}
-                      onChange={() => toggleType(type)}
-                      className="mr-2 w-4 h-4 accent-kb-navy rounded"
-                    />
-                    <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
-                      {type}
-                    </span>
-                  </label>
-                ))}
+            {availableTypes.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-kb-slate mb-3 uppercase">Article Type</h3>
+                <div className="space-y-2">
+                  {availableTypes.map(type => (
+                    <label key={type} className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedTypes.includes(type)}
+                        onChange={() => toggleType(type)}
+                        className="mr-2 w-4 h-4 accent-kb-navy rounded"
+                      />
+                      <span className="text-sm text-kb-dark hover:text-kb-navy transition-colors">
+                        {type}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
         </div>

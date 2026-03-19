@@ -162,5 +162,27 @@ export async function POST(
       .eq('id', ticketId)
   }
 
+  // Notify the client if an agent adds a public comment
+  if (userIsAgent && !isInternalNote) {
+    await supabaseAdmin
+      .from('notifications')
+      .insert({
+        user_id: ticket.user_id,
+        type: 'system',
+        title: 'New Response on Ticket',
+        message: 'An agent has replied to your ticket.',
+        metadata: { ticket_id: ticketId }
+      });
+  } else if (!userIsAgent) {
+    // Notify agents if a client adds a comment
+    await import('@/lib/notifications').then(m => {
+      // In this context, `ticket` is from `support_tickets` selection at line 101, which only fetches `user_id, status, first_responded_at`.
+      // We need assigned_agent_id to know who to notify. It wasn't fetched, so we'll notify all agents for simplicity,
+      // or we can just fetch it as well. Wait, we can fetch it above by adding assigned_agent_id to the select. Let's just notify all agents for now or we can use the ticket's assigned_agent_id if we fetch it.
+      // Wait actually let's just use notifyAgents since all agents need to know.
+      m.notifyAgents('New Response from Client', `Client has replied to ticket #${ticketId}.`, 'system', { ticket_id: ticketId })
+    }).catch(console.error)
+  }
+
   return NextResponse.json({ comment }, { status: 201 })
 }

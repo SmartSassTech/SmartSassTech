@@ -49,8 +49,12 @@ export default function Navigation() {
   }, [])
 
   useEffect(() => {
+    // We need a non-reactive way to know the current user ID for the real-time callback
+    let currentUserId: string | null = null;
+    
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      currentUserId = session?.user?.id || null;
       if (session?.user) {
         await loadProfile(session.user.id, session.user.email ?? '')
         await fetchUnreadCount(session.user.id)
@@ -59,6 +63,7 @@ export default function Navigation() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      currentUserId = session?.user?.id || null;
       if (session?.user) {
         loadProfile(session.user.id, session.user.email ?? '')
         fetchUnreadCount(session.user.id)
@@ -79,7 +84,7 @@ export default function Navigation() {
           table: 'notifications'
         },
         (payload) => {
-          if (user && payload.new.user_id === (supabase.auth.getUser() as any).data?.user?.id) {
+          if (currentUserId && payload.new.user_id === currentUserId) {
             setUnreadCount(prev => prev + 1)
           }
         }
@@ -164,7 +169,7 @@ export default function Navigation() {
 
             <div className="header-actions">
               {user && (
-                <Link href="/notifications" className="relative p-2 text-kb-muted hover:text-sst-primary transition-colors mr-2">
+                <Link href="/notifications" className="relative p-2 text-kb-cream hover:text-white transition-colors mr-2">
                   <Bell size={22} />
                   {unreadCount > 0 && (
                     <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">

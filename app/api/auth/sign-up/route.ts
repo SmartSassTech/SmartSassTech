@@ -5,7 +5,7 @@ import { getWelcomeEmailHtml } from '@/lib/emails/WelcomeEmail'
 
 export async function POST(request: Request) {
   try {
-    const { email, password, firstName, lastName, phone, referralCode } = await request.json()
+    const { email, password, firstName, lastName, phone } = await request.json()
 
     if (!email || !password || !firstName || !lastName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -22,19 +22,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 400 })
     }
 
-    // 2. Handle Referral Code
-    let referredBy: string | null = null
-    if (referralCode) {
-      const { data: referrer, error: referrerError } = await supabaseAdmin
-        .from('profiles')
-        .select('id')
-        .eq('referral_code', referralCode.trim())
-        .single()
-      
-      if (referrer) {
-        referredBy = referrer.id
-      }
-    }
+    // 2. Referrals are now handled automatically via email matching in the database trigger.
+    // No need to manually look up a referral code here.
 
     // 3. Create user in Supabase Auth via Admin API
     // We set email_confirm: false so Supabase doesn't send its own generic email
@@ -44,8 +33,7 @@ export async function POST(request: Request) {
       user_metadata: {
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        phone: phone?.trim() || null,
-        referred_by: referredBy
+        phone: phone?.trim() || null
       },
       email_confirm: false
     })

@@ -15,7 +15,11 @@ import {
     Loader2,
     ArrowUpCircle,
     ArrowDownCircle,
-    UserCheck
+    UserCheck,
+    Plus,
+    Pencil,
+    X,
+    Phone
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import withAuth from '@/components/withAuth'
@@ -26,6 +30,7 @@ interface Profile {
     last_name: string | null
     email: string
     role: string
+    phone: string | null
     created_at: string
 }
 
@@ -39,6 +44,21 @@ function UserManagementPage() {
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleteConfirmText, setDeleteConfirmText] = useState('')
     const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null)
+
+    // Modal states
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [modalLoading, setModalLoading] = useState(false)
+    const [selectedUser, setSelectedUser] = useState<Profile | null>(null)
+    
+    // Form states
+    const [formData, setFormData] = useState({
+        email: '',
+        firstName: '',
+        lastName: '',
+        phone: '',
+        role: 'client'
+    })
 
     useEffect(() => {
         checkRole()
@@ -72,6 +92,90 @@ function UserManagementPage() {
             console.error('Error fetching users:', error.message)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleOpenAddModal = () => {
+        setFormData({
+            email: '',
+            firstName: '',
+            lastName: '',
+            phone: '',
+            role: 'client'
+        })
+        setIsAddModalOpen(true)
+    }
+
+    const handleOpenEditModal = (user: Profile) => {
+        setSelectedUser(user)
+        setFormData({
+            email: user.email,
+            firstName: user.first_name || '',
+            lastName: user.last_name || '',
+            phone: user.phone || '',
+            role: user.role
+        })
+        setIsEditModalOpen(true)
+    }
+
+    const handleCreateUser = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setModalLoading(true)
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) throw new Error('No active session.')
+
+            const response = await fetch('/api/auth/create-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await response.json()
+            if (!response.ok) throw new Error(result.error || 'Failed to create user.')
+
+            setIsAddModalOpen(false)
+            fetchUsers()
+            alert('User created successfully. A welcome email has been sent.')
+        } catch (error: any) {
+            alert(error.message)
+        } finally {
+            setModalLoading(false)
+        }
+    }
+
+    const handleEditUser = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!selectedUser) return
+        setModalLoading(true)
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) throw new Error('No active session.')
+
+            const response = await fetch('/api/auth/update-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({
+                    userId: selectedUser.id,
+                    ...formData
+                })
+            })
+
+            const result = await response.json()
+            if (!response.ok) throw new Error(result.error || 'Failed to update user.')
+
+            setIsEditModalOpen(false)
+            fetchUsers()
+        } catch (error: any) {
+            alert(error.message)
+        } finally {
+            setModalLoading(false)
         }
     }
 
@@ -134,7 +238,7 @@ function UserManagementPage() {
     }
 
     const filteredUsers = users.filter(user => {
-        const searchStr = `${user.first_name} ${user.last_name} ${user.email}`.toLowerCase()
+        const searchStr = `${user.first_name || ''} ${user.last_name || ''} ${user.email} ${user.phone || ''}`.toLowerCase()
         return searchStr.includes(searchQuery.toLowerCase())
     })
 
@@ -163,15 +267,25 @@ function UserManagementPage() {
                         <p className="text-kb-muted mt-2">Manage client accounts and system access.</p>
                     </div>
 
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-kb-muted group-focus-within:text-sst-primary transition-colors" size={20} />
-                        <input 
-                            type="text"
-                            placeholder="Search by name or email..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-12 pr-6 py-4 bg-white border border-gray-100 rounded-3xl w-full md:w-80 shadow-sm focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
-                        />
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                        <div className="relative group flex-1 sm:w-80">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-kb-muted group-focus-within:text-sst-primary transition-colors" size={20} />
+                            <input 
+                                type="text"
+                                placeholder="Search by name, email, or phone..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-12 pr-6 py-4 bg-white border border-gray-100 rounded-3xl w-full shadow-sm focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                            />
+                        </div>
+
+                        <button 
+                            onClick={handleOpenAddModal}
+                            className="flex items-center justify-center gap-2 bg-sst-primary text-white px-8 py-4 rounded-3xl font-black shadow-lg shadow-sst-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <Plus size={24} strokeWidth={3} />
+                            <span>Add User</span>
+                        </button>
                     </div>
                 </div>
 
@@ -205,9 +319,17 @@ function UserManagementPage() {
                                                         <div className="font-bold text-kb-navy flex items-center gap-2">
                                                             {user.first_name || 'No'} {user.last_name || 'Name'}
                                                         </div>
-                                                        <div className="text-sm text-kb-muted flex items-center gap-2">
-                                                            <Mail size={12} />
-                                                            {user.email}
+                                                        <div className="text-sm text-kb-muted flex items-center gap-4">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Mail size={12} />
+                                                                {user.email}
+                                                            </div>
+                                                            {user.phone && (
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <Phone size={12} />
+                                                                    {user.phone}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -232,7 +354,18 @@ function UserManagementPage() {
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    {/* Role Toggle Button - Only visible to admins or certain roles if needed */}
+                                                    {/* Edit Button */}
+                                                    {(currentUserRole === 'admin' || (currentUserRole === 'agent' && user.role === 'client')) && (
+                                                        <button 
+                                                            onClick={() => handleOpenEditModal(user)}
+                                                            title="Edit User Info"
+                                                            className="p-3 text-kb-muted hover:text-sst-primary hover:bg-sst-primary/5 rounded-2xl transition-all active:scale-90"
+                                                        >
+                                                            <Pencil size={20} />
+                                                        </button>
+                                                    )}
+
+                                                    {/* Role Toggle Button */}
                                                     {(currentUserRole === 'admin' || currentUserRole === 'agent') && user.role !== 'admin' && (
                                                         <button 
                                                             onClick={() => handleUpdateRole(user.id, user.role)}
@@ -254,13 +387,16 @@ function UserManagementPage() {
                                                         </button>
                                                     )}
                                                     
-                                                    <button 
-                                                        onClick={() => setDeletingUserId(user.id)}
-                                                        disabled={user.role === 'admin'} // Cannot delete admins
-                                                        className="p-3 text-red-100 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all active:scale-90 disabled:opacity-0"
-                                                    >
-                                                        <Trash2 size={20} />
-                                                    </button>
+                                                    {/* Delete Button */}
+                                                    {(currentUserRole === 'admin' || (currentUserRole === 'agent' && user.role === 'client')) && (
+                                                        <button 
+                                                            onClick={() => setDeletingUserId(user.id)}
+                                                            disabled={user.role === 'admin'}
+                                                            className="p-3 text-red-100 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all active:scale-90 disabled:opacity-0"
+                                                        >
+                                                            <Trash2 size={20} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -288,6 +424,144 @@ function UserManagementPage() {
                     )}
                 </div>
             </div>
+
+            {/* Add/Edit User Modal */}
+            <AnimatePresence>
+                {(isAddModalOpen || isEditModalOpen) && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => {
+                                setIsAddModalOpen(false)
+                                setIsEditModalOpen(false)
+                            }}
+                            className="absolute inset-0 bg-kb-navy/60 backdrop-blur-sm"
+                        />
+                        <motion.div 
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            className="relative bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-xl w-full border border-gray-100"
+                        >
+                            <button 
+                                onClick={() => {
+                                    setIsAddModalOpen(false)
+                                    setIsEditModalOpen(false)
+                                }}
+                                className="absolute right-6 top-6 p-2 text-kb-muted hover:text-kb-navy transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+
+                            <div className="mb-8">
+                                <h3 className="text-3xl font-black text-kb-navy flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-sst-primary/10 rounded-2xl flex items-center justify-center text-sst-primary">
+                                        {isAddModalOpen ? <Plus size={28} /> : <Pencil size={24} />}
+                                    </div>
+                                    {isAddModalOpen ? 'Add New User' : 'Edit User Profile'}
+                                </h3>
+                                <p className="text-kb-muted mt-2">
+                                    {isAddModalOpen 
+                                        ? 'Create a new account for your client.' 
+                                        : `Updating information for ${formData.email}`}
+                                </p>
+                            </div>
+
+                            <form onSubmit={isAddModalOpen ? handleCreateUser : handleEditUser} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">First Name</label>
+                                        <input 
+                                            required
+                                            type="text"
+                                            value={formData.firstName}
+                                            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                            placeholder="John"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Last Name</label>
+                                        <input 
+                                            required
+                                            type="text"
+                                            value={formData.lastName}
+                                            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                            placeholder="Doe"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Email Address</label>
+                                    <input 
+                                        required
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                        placeholder="john@example.com"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Phone Number</label>
+                                    <input 
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                        placeholder="+1 (555) 000-0000"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Role</label>
+                                    <select 
+                                        value={formData.role}
+                                        onChange={(e) => setFormData({...formData, role: e.target.value})}
+                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                    >
+                                        <option value="client">Client</option>
+                                        <option value="agent">Agent</option>
+                                        {currentUserRole === 'admin' && <option value="admin">Administrator</option>}
+                                    </select>
+                                </div>
+
+                                <div className="flex gap-4 pt-4">
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            setIsAddModalOpen(false)
+                                            setIsEditModalOpen(false)
+                                        }}
+                                        className="flex-1 py-4 bg-gray-100 text-kb-navy font-bold rounded-2xl hover:bg-gray-200 transition-all shadow-sm"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        disabled={modalLoading}
+                                        className="flex-1 py-4 bg-sst-primary text-white font-black rounded-2xl hover:bg-sst-primary/90 transition-all shadow-lg shadow-sst-primary/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {modalLoading ? (
+                                            <Loader2 size={24} className="animate-spin" />
+                                        ) : (
+                                            <>
+                                                {isAddModalOpen ? <Plus size={20} strokeWidth={3} /> : <UserCheck size={20} />}
+                                                {isAddModalOpen ? 'Create Account' : 'Save Changes'}
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Deletion Modal */}
             <AnimatePresence>

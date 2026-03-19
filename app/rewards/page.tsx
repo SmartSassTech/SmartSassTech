@@ -22,14 +22,15 @@ interface Transaction {
 
 function MyRewards() {
     const [points, setPoints] = useState<number>(0)
-    const [referralCode, setReferralCode] = useState<string>('')
     const [discounts, setDiscounts] = useState<Discount[]>([])
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true)
     const [redeeming, setRedeeming] = useState(false)
     const [userId, setUserId] = useState<string | null>(null)
     const [copiedCode, setCopiedCode] = useState<string | null>(null)
-    const [copiedReferral, setCopiedReferral] = useState(false)
+    const [friendEmail, setFriendEmail] = useState('')
+    const [submittingReferral, setSubmittingReferral] = useState(false)
+    const [referralSuccess, setReferralSuccess] = useState(false)
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -47,7 +48,6 @@ function MyRewards() {
 
             if (profileData) {
                 setPoints(profileData.reward_points)
-                setReferralCode(profileData.referral_code || '')
             }
 
             // Fetch unused discounts
@@ -139,10 +139,35 @@ function MyRewards() {
         setTimeout(() => setCopiedCode(null), 2000)
     }
 
-    const copyReferralCode = () => {
-        navigator.clipboard.writeText(referralCode)
-        setCopiedReferral(true)
-        setTimeout(() => setCopiedReferral(false), 2000)
+    const handleReferralSubmit = async () => {
+        if (!friendEmail || !friendEmail.includes('@')) {
+            alert('Please enter a valid email address.')
+            return
+        }
+
+        setSubmittingReferral(true)
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            const res = await fetch('/api/referrals', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token}`
+                },
+                body: JSON.stringify({ email: friendEmail })
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Failed to submit referral')
+            
+            setReferralSuccess(true)
+            setFriendEmail('')
+            setTimeout(() => setReferralSuccess(false), 3000)
+        } catch (error: any) {
+            console.error('Referral error:', error)
+            alert(error.message)
+        } finally {
+            setSubmittingReferral(false)
+        }
     }
 
     if (loading) {
@@ -216,16 +241,31 @@ function MyRewards() {
                         <Gift className="mb-4 text-amber-300" size={40} />
                         <h3 className="text-white mb-2">Refer a Friend</h3>
                         <p className="text-white/80 text-sm mb-6">Give friends $5 off and earn 50 points when they complete their first service!</p>
-                        <div className="bg-white/10 w-full p-4 rounded-xl border border-white/20 mb-4 flex items-center justify-between gap-2 overflow-hidden">
-                            <code className="text-lg font-mono font-bold truncate">{referralCode}</code>
-                            <button 
-                                onClick={copyReferralCode}
-                                className="p-2 bg-white text-sst-primary rounded-lg hover:bg-amber-100 transition-all shrink-0"
-                            >
-                                {copiedReferral ? <Check size={18} /> : <Copy size={18} />}
-                            </button>
-                        </div>
-                        <p className="text-[0.7rem] text-white/60 uppercase tracking-widest font-bold">Your Referral Code</p>
+                        {referralSuccess ? (
+                            <div className="bg-green-500/20 text-green-100 w-full p-4 rounded-xl border border-green-500/30 mb-4 flex items-center justify-center gap-2">
+                                <Check size={20} />
+                                <span className="font-bold">Referral Saved!</span>
+                            </div>
+                        ) : (
+                            <div className="w-full flex flex-col gap-3 mb-4">
+                                <input 
+                                    type="email" 
+                                    placeholder="Friend's email address"
+                                    value={friendEmail}
+                                    onChange={(e) => setFriendEmail(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl border-none outline-none text-kb-dark"
+                                />
+                                <button 
+                                    onClick={handleReferralSubmit}
+                                    disabled={submittingReferral || !friendEmail}
+                                    className={`w-full py-3 rounded-xl font-bold transition-all shadow-sm flex justify-center items-center gap-2 
+                                        ${friendEmail && !submittingReferral ? 'bg-amber-300 text-sst-primary hover:bg-amber-400' : 'bg-white/20 text-white/50 cursor-not-allowed'}`}
+                                >
+                                    {submittingReferral ? <Loader2 className="animate-spin" size={20} /> : 'Send Referral'}
+                                </button>
+                            </div>
+                        )}
+                        <p className="text-[0.7rem] text-white/60 uppercase tracking-widest font-bold">Earn points automatically</p>
                     </div>
                 </div>
 

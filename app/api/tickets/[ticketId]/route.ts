@@ -130,5 +130,33 @@ export async function PATCH(
     return NextResponse.json({ error: 'Failed to update ticket' }, { status: 500 })
   }
 
+  // Notify the client if an agent updated the ticket
+  if (userIsAgent) {
+    const statusChanged = body.status && body.status !== existingTicket.status;
+    const title = statusChanged ? 'Ticket Status Updated' : 'Ticket Updated';
+    const message = statusChanged 
+      ? `Your ticket status was changed to ${body.status}.`
+      : 'An agent has updated your ticket details.';
+
+    await supabaseAdmin
+      .from('notifications')
+      .insert({
+        user_id: existingTicket.user_id,
+        type: 'system',
+        title,
+        message,
+        metadata: { ticket_id: ticketId }
+      });
+  } else {
+    // Notify agents if a client updated the ticket
+    await import('@/lib/notifications').then(m => {
+      if (data.assigned_agent_id) {
+        m.notifyAgent(data.assigned_agent_id, 'Ticket Updated by Client', `Ticket #${ticketId} was updated by the client.`, 'system', { ticket_id: ticketId })
+      } else {
+        m.notifyAgents('Ticket Updated by Client', `Unassigned Ticket #${ticketId} was updated by the client.`, 'system', { ticket_id: ticketId })
+      }
+    }).catch(console.error)
+  }
+
   return NextResponse.json({ ticket: data })
 }
