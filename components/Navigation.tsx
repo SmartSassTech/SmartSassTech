@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Search, Bell } from 'lucide-react'
+import { Search, Bell, Menu, X } from 'lucide-react'
 
 interface UserProfile {
   firstName: string
@@ -25,6 +25,7 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [user, setUser] = useState<UserProfile | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [unreadCount, setUnreadCount] = useState(0)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -51,7 +52,7 @@ export default function Navigation() {
   useEffect(() => {
     // We need a non-reactive way to know the current user ID for the real-time callback
     let currentUserId: string | null = null;
-    
+
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       currentUserId = session?.user?.id || null;
@@ -103,7 +104,7 @@ export default function Navigation() {
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .eq('is_read', false)
-    
+
     setUnreadCount(count || 0)
   }
 
@@ -139,28 +140,10 @@ export default function Navigation() {
       <header className="header">
         <div className="container">
           <div className="header-top">
-            <form onSubmit={handleSearchSubmit} className="search-container relative w-full max-w-xs">
-              <input
-                type="search"
-                className="search-input w-full pr-10"
-                placeholder="Search guides, devices, services..."
-                aria-label="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-kb-muted hover:text-sst-primary transition-colors focus:outline-none"
-                aria-label="Submit search"
-              >
-                <Search size={18} />
-              </button>
-            </form>
-
             <div className="logo-container">
               <Link href="/" aria-label="SmartSass Tech Home">
                 <img
-                  src="/assets/images/SST Logo Black & Taupe No Background.svg"
+                  src="/assets/images/SST_logo_light.svg"
                   alt="SmartSass Tech"
                   className="logo"
                 />
@@ -169,7 +152,7 @@ export default function Navigation() {
 
             <div className="header-actions">
               {user && (
-                <Link href="/notifications" className="relative p-2 text-kb-cream hover:text-white transition-colors mr-2">
+                <Link href="/notifications" className="relative p-2 text-kb-cream hover:text-white transition-colors mr-2" aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : 'Notifications'}>
                   <Bell size={22} />
                   {unreadCount > 0 && (
                     <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
@@ -185,6 +168,7 @@ export default function Navigation() {
                     onClick={() => setMenuOpen(prev => !prev)}
                     aria-expanded={menuOpen}
                     aria-haspopup="true"
+                    aria-label="User menu"
                   >
                     <span className="greeting-icon">👋</span>
                     <span className="greeting-text">
@@ -210,7 +194,7 @@ export default function Navigation() {
                       <Link href="/account" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
                         <span className="menu-icon">👤</span> Account Settings
                       </Link>
-                      
+
                       {(user.role === 'agent' || user.role === 'admin') && (
                         <>
                           <Link href="/admin" className="user-dropdown-item font-bold text-sst-primary border-t border-gray-100 mt-1 pt-2" role="menuitem" onClick={() => setMenuOpen(false)}>
@@ -252,18 +236,53 @@ export default function Navigation() {
               ) : (
                 <>
                   <Link href="/login" className="btn btn-secondary">Log In</Link>
-                  <Link href="/booking" className="btn btn-primary">Book Now</Link>
                 </>
               )}
-              {user && (
-                <Link href="/booking" className="btn btn-primary">Book Now</Link>
-              )}
+              <Link href="/booking" className="btn btn-primary">Book Now</Link>
+
+              {/* Hamburger toggle — visible only on mobile via CSS */}
+              <button
+                className="mobile-menu-toggle"
+                onClick={() => setMobileNavOpen(prev => !prev)}
+                aria-expanded={mobileNavOpen}
+                aria-label={mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              >
+                {mobileNavOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
             </div>
+
+            <form onSubmit={handleSearchSubmit} className="search-container relative w-full max-w-xs">
+              <input
+                type="search"
+                className="search-input w-full pr-10"
+                placeholder="Search guides, devices, services..."
+                aria-label="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-kb-muted hover:text-sst-primary transition-colors focus:outline-none"
+                aria-label="Submit search"
+              >
+                <Search size={18} />
+              </button>
+            </form>
           </div>
         </div>
       </header>
 
-      <nav aria-label="Main navigation" className={`sticky-nav ${isScrolled ? 'scrolled' : ''}`}>
+      {/* Mobile nav dropdown panel — opens when hamburger is tapped */}
+      <div className={`mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>
+        <Link href="/" className={pathname === '/' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Home</Link>
+        <Link href="/articles" className={pathname.startsWith('/articles') || pathname.startsWith('/expertise') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Resources</Link>
+        <Link href="/scam-prevention" className={pathname === '/scam-prevention' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Scam Prevention</Link>
+        <Link href="/about" className={pathname === '/about' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>About</Link>
+        {!user && <Link href="/contact" className={pathname === '/contact' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Contact</Link>}
+        {user && <Link href="/support" className={pathname.startsWith('/support') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Support</Link>}
+      </div>
+
+      <nav aria-label="Main navigation" className={`sticky-nav desktop-nav ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container">
           <ul className="nav-tabs">
             <li className={`nav-tab ${pathname === '/' ? 'active' : ''}`}>

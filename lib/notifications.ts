@@ -1,6 +1,6 @@
 import { supabaseAdmin } from './supabase-admin'
 
-export async function notifyAgents(title: string, message: string, type: 'system' | 'device_alert' | 'points' | 'maintenance' = 'system', metadata: Record<string, any> = {}) {
+export async function notifyAgents(title: string, message: string, type: 'general' | 'system' | 'device_alert' | 'points' | 'maintenance' = 'general', metadata: Record<string, any> = {}) {
   try {
     // 1. Get all agents and admins
     const { data: agents } = await supabaseAdmin
@@ -16,7 +16,8 @@ export async function notifyAgents(title: string, message: string, type: 'system
       title,
       message,
       type,
-      metadata
+      metadata,
+      sent_at: new Date().toISOString()
     }))
 
     // 3. Insert into Supabase
@@ -26,7 +27,7 @@ export async function notifyAgents(title: string, message: string, type: 'system
   }
 }
 
-export async function notifyAgent(agentId: string, title: string, message: string, type: 'system' | 'device_alert' | 'points' | 'maintenance' = 'system', metadata: Record<string, any> = {}) {
+export async function notifyAgent(agentId: string, title: string, message: string, type: 'general' | 'system' | 'device_alert' | 'points' | 'maintenance' = 'general', metadata: Record<string, any> = {}) {
   if (!agentId) return;
   try {
     await supabaseAdmin.from('notifications').insert({
@@ -34,7 +35,8 @@ export async function notifyAgent(agentId: string, title: string, message: strin
       title,
       message,
       type,
-      metadata
+      metadata,
+      sent_at: new Date().toISOString()
     })
   } catch (error) {
     console.error('Error in notifyAgent:', error)

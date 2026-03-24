@@ -372,6 +372,7 @@ export default function Chatbot() {
                                     onClick={() => mode !== 'ai' && setMode('ai')}
                                     className={`bg-white/20 p-2 rounded-lg ${mode !== 'ai' ? 'hover:bg-white/30 cursor-pointer transition-colors' : ''}`}
                                     title={mode !== 'ai' ? "Back to AI" : ""}
+                                    aria-label={mode !== 'ai' ? 'Switch back to AI assistant' : 'AI assistant active'}
                                 >
                                     {mode === 'ai' ? <Bot size={20} /> : <Users size={20} />}
                                 </button>
@@ -393,6 +394,7 @@ export default function Chatbot() {
                                         onClick={handleEndChat}
                                         className="bg-white/10 hover:bg-red-500/80 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors border border-white/20 mr-1"
                                         title="End Chat"
+                                        aria-label="End chat session"
                                     >
                                         End Chat
                                     </button>
@@ -401,6 +403,7 @@ export default function Chatbot() {
                                     onClick={() => setIsFullScreen(!isFullScreen)}
                                     className="hover:bg-white/10 p-1.5 rounded-lg transition-colors"
                                     title={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+                                    aria-label={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}
                                 >
                                     {isFullScreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                                 </button>
@@ -411,6 +414,7 @@ export default function Chatbot() {
                                     }}
                                     className="hover:bg-white/10 p-1.5 rounded-lg transition-colors"
                                     title="Close"
+                                    aria-label="Close chat"
                                 >
                                     <X size={20} />
                                 </button>
@@ -533,6 +537,7 @@ export default function Chatbot() {
                                                             disabled={isRating}
                                                             onClick={() => handleRate(star)}
                                                             className="text-gray-300 hover:text-amber-400 hover:scale-110 transition-all focus:outline-none"
+                                                            aria-label={`Rate ${star} out of 5 stars`}
                                                         >
                                                             <Star size={24} fill={rating >= star ? 'currentColor' : 'none'} className={rating >= star ? 'text-amber-400' : ''} />
                                                         </button>
@@ -564,6 +569,7 @@ export default function Chatbot() {
                                                     disabled={isChatEnded}
                                                     rows={1}
                                                     className={`w-full pl-4 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-kb-navy/20 transition-all outline-none resize-none overflow-y-auto max-h-32 text-black leading-relaxed ${mode === 'human-live' ? 'pr-24' : 'pr-12'}`}
+                                                    aria-label="Type your message"
                                                 />
                                                 <div className="absolute right-1.5 bottom-1.5 flex items-center gap-1">
                                                     {mode === 'human-live' && !isChatEnded && (
@@ -583,6 +589,7 @@ export default function Chatbot() {
                                                         onClick={handleSend}
                                                         disabled={!input.trim() || isLoading || isChatEnded}
                                                         className="p-2 bg-kb-navy text-white rounded-lg hover:bg-kb-navy/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                        aria-label="Send message"
                                                     >
                                                         <Send size={18} />
                                                     </button>
@@ -607,13 +614,14 @@ export default function Chatbot() {
                     if (isOpen) triggerSaveBotTranscript()
                     setIsOpen(!isOpen)
                 }}
-                className="bg-kb-teal text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                className="bg-kb-teal text-white p-4 sm:p-4 p-3 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
                 style={{ boxShadow: '0 4px 20px rgba(42, 157, 143, 0.4)' }}
+                aria-label={isOpen ? 'Close tech help chat' : 'Open tech help chat'}
             >
                 {isOpen ? <X size={24} /> : (
                     <>
                         <MessageCircle size={24} />
-                        <span className="font-medium pr-2">Tech Help</span>
+                        <span className="font-medium pr-2 hidden sm:inline">Tech Help</span>
                     </>
                 )}
             </motion.button>

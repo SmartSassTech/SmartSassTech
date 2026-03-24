@@ -32,7 +32,7 @@ export default function RootLayout({
       </head>
       <body>
         {/* Skip to main content for accessibility */}
-        <a href="#main-content" className="sr-only">Skip to main content</a>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
 
         <Navigation />
 

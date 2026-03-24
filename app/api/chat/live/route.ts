@@ -41,7 +41,8 @@ export async function POST(req: NextRequest) {
                 user_phone: phone || null,
                 user_device: device || null,
                 initial_issue: issue || 'No issue described',
-                user_id: user_id || null
+                user_id: user_id || null,
+                chat_type: 'human'
             })
             .select('id')
             .single()

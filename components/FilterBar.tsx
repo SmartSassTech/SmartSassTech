@@ -26,6 +26,7 @@ export default function FilterBar({
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   // Dynamically extract available filter options from articles
   const availableTasks = Array.from(new Set(articles.map(a => a.category).filter(Boolean))).sort()
@@ -129,12 +130,19 @@ export default function FilterBar({
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       {/* Sidebar Filters */}
       <div className="lg:col-span-1">
-        <div className="bg-white rounded-lg shadow-md sticky top-20 flex flex-col h-[calc(100vh-80px)]">
-          <div className="p-6 border-b border-kb-pale">
+        <div className="bg-white rounded-lg shadow-md sticky top-20 flex flex-col lg:h-[calc(100vh-80px)]">
+          <div className="p-6 border-b border-kb-pale flex items-center justify-between">
             <h2 className="mb-0">Filters</h2>
+            <button
+              className="lg:hidden text-sm font-semibold text-kb-navy px-3 py-1 border border-kb-pale rounded-lg"
+              onClick={() => setFiltersOpen(prev => !prev)}
+              aria-expanded={filtersOpen}
+            >
+              {filtersOpen ? 'Hide Filters' : 'Show Filters'}
+            </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-kb-pale scrollbar-track-transparent">
+          <div className={`flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-kb-pale scrollbar-track-transparent ${filtersOpen ? '' : 'hidden lg:block'}`}>
             {/* Search */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-kb-slate mb-2">

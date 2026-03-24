@@ -43,7 +43,7 @@ function NotificationsContent() {
             if (hasUnread) {
                 supabase
                     .from('notifications')
-                    .update({ is_read: true })
+                    .update({ is_read: true, read_at: new Date().toISOString() })
                     .eq('user_id', user.id)
                     .eq('is_read', false)
                     .then(); // silent background update
@@ -55,7 +55,7 @@ function NotificationsContent() {
     const markAsRead = async (id: string) => {
         const { error } = await supabase
             .from('notifications')
-            .update({ is_read: true })
+            .update({ is_read: true, read_at: new Date().toISOString() })
             .eq('id', id)
 
         if (!error) {
@@ -70,7 +70,7 @@ function NotificationsContent() {
 
         const { error } = await supabase
             .from('notifications')
-            .update({ is_read: true })
+            .update({ is_read: true, read_at: new Date().toISOString() })
             .eq('user_id', user.id)
             .eq('is_read', false)
 

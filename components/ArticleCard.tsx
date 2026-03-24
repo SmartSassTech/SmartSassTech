@@ -36,7 +36,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
   ].slice(0, 3)
 
   return (
-    <Link href={`/articles/${article.slug}`} className="article-card-link">
+    <Link href={`/articles/${article.slug}`} className="article-card-link" aria-label={`Read article: ${article.title}`}>
       <div className="article-card">
         {/* Type Badge Row */}
         {typeStyle && article.articleType && (

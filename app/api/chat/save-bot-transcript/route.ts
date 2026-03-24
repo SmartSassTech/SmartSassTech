@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { saveBotChatTranscript } from '@/lib/notion'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function POST(req: NextRequest) {
     try {
@@ -11,8 +12,21 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Messages are required' }, { status: 400 })
         }
 
+        // Create a chat_session record in Supabase for AI bot chats
+        const { data: sessionData } = await supabaseAdmin
+            .from('chat_sessions')
+            .insert({
+                user_name: 'Anonymous (AI Chat)',
+                user_email: null,
+                initial_issue: messages.find((m: any) => m.role === 'user')?.content?.substring(0, 200) || 'AI Chat',
+                status: 'resolved',
+                chat_type: 'ai_bot'
+            })
+            .select('id')
+            .single()
+
         const session: any = {
-            id: 'ai-session-' + Date.now(),
+            id: sessionData?.id || 'ai-session-' + Date.now(),
             created_at: new Date().toISOString(),
             messages: messages,
             user_name: 'Anonymous (AI Chat)',

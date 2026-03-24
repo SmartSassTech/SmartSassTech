@@ -88,16 +88,22 @@ export async function POST(req: NextRequest) {
         // Save to Notion
         const notionResponse = await saveChatTranscript(session)
 
-        // Save notion page ID back to session
+        // Save notion page ID and transcript URL back to session
+        const domain = process.env.NEXT_PUBLIC_APP_URL || 'https://www.smartsasstech.com'
+        const transcriptUrl = `${domain}/admin/live-chat/${sessionId}?admin=true`
+        
+        const sessionUpdate: Record<string, any> = { transcript_url: transcriptUrl }
         if (notionResponse?.id) {
-            const { error: updateError } = await supabaseAdmin
-                .from('chat_sessions')
-                .update({ notion_page_id: notionResponse.id })
-                .eq('id', sessionId)
-            
-            if (updateError) {
-                console.error('Error updating notion_page_id in Supabase:', updateError)
-            }
+            sessionUpdate.notion_page_id = notionResponse.id
+        }
+
+        const { error: updateError } = await supabaseAdmin
+            .from('chat_sessions')
+            .update(sessionUpdate)
+            .eq('id', sessionId)
+        
+        if (updateError) {
+            console.error('Error updating chat_sessions with transcript URL:', updateError)
         }
 
         // Auto-create a support ticket from the chat session

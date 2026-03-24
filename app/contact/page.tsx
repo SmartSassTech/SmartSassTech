@@ -126,6 +126,7 @@ export default function ContactPage() {
                                         type="text"
                                         id="name"
                                         required
+                                        aria-required="true"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
@@ -139,6 +140,7 @@ export default function ContactPage() {
                                         type="email"
                                         id="email"
                                         required
+                                        aria-required="true"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
@@ -165,6 +167,7 @@ export default function ContactPage() {
                                     <AutoResizingTextarea
                                         id="message"
                                         required
+                                        aria-required="true"
                                         value={formData.message}
                                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"

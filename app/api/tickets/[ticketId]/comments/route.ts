@@ -171,7 +171,8 @@ export async function POST(
         type: 'system',
         title: 'New Response on Ticket',
         message: 'An agent has replied to your ticket.',
-        metadata: { ticket_id: ticketId }
+        metadata: { ticket_id: ticketId },
+        sent_at: new Date().toISOString()
       });
   } else if (!userIsAgent) {
     // Notify agents if a client adds a comment

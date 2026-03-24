@@ -31,6 +31,10 @@ export default function DeviceSlider() {
         const track = scrollRef.current
         if (!track) return
 
+        // Respect prefers-reduced-motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (prefersReducedMotion) return
+
         const scroll = () => {
             if (!isHovered && track) {
                 track.scrollLeft += 0.5 // Adjust this value to change speed (lower = slower)
@@ -70,6 +74,8 @@ export default function DeviceSlider() {
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setIsHovered(false)}
+            role="region"
+            aria-label="Device categories"
         >
             <button
                 className="slim-arrow left-arrow"
