@@ -143,7 +143,7 @@ export default function Navigation() {
             <div className="logo-container">
               <Link href="/" aria-label="SmartSass Tech Home">
                 <img
-                  src="/assets/images/SST_logo_light.svg"
+                  src="/assets/images/logo_blue_bg.png"
                   alt="SmartSass Tech"
                   className="logo"
                 />

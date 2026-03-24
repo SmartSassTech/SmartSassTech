@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="footer-top-info">
           <div className="footer-logo-container">
             <img
-              src="/assets/images/SST Logo Black & Taupe No Background.svg"
+              src="/assets/images/logo_blue_bg.png"
               alt="SmartSass Tech"
               className="footer-logo"
             />
@@ -24,6 +24,7 @@ export default function Footer() {
         <hr className="footer-divider" />
 
         {/* Footer Bottom: Link Columns */}
+        <nav aria-label="Footer navigation">
         <div className="footer-content">
           {/* Account Links */}
           <div className="footer-section">
@@ -63,6 +64,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
+        </nav>
 
         <div className="footer-bottom">
           <p className="text-white">&copy; {new Date().getFullYear()} SmartSass Tech. All rights reserved.</p>

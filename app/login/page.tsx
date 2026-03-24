@@ -152,7 +152,7 @@ export default function LoginPage() {
                     <div className="flex justify-center mb-6">
                         <Link href="/">
                             <img
-                                src="/assets/images/SST_logo_dark.svg"
+                                src="/assets/images/logo_tan_bg.png"
                                 alt="SmartSass Tech"
                                 className="h-24 w-auto"
                             />
