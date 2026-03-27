@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="footer-top-info">
           <div className="footer-logo-container">
             <img
-              src="/assets/images/logo_blue_bg.png"
+              src="/assets/images/logo-transparent.svg"
               alt="SmartSass Tech"
               className="footer-logo"
             />
@@ -59,7 +59,7 @@ export default function Footer() {
             <ul className="footer-links">
               <li><Link href="/">Home</Link></li>
               <li><Link href="/articles">Resources</Link></li>
-              <li><Link href="/contact">Contact</Link></li>
+              <li><Link href="/support">Help Center</Link></li>
               <li><Link href="/booking">Booking Calendar</Link></li>
             </ul>
           </div>

@@ -21,9 +21,13 @@ interface SearchEntry {
   url: string
   type: SearchResultType | 'Page'
   badge?: string
-  /** Pre-computed: all searchable text joined & lowercased */
+  /** If true, the link should open in a new tab */
+  external?: boolean
+  /** Pre-computed: individual searchable words (lowered, deduped) */
+  searchWords: string[]
+  /** Pre-computed: all searchable text joined & lowercased (for phrase matching) */
   searchText: string
-  /** Pre-computed: title lowercased (for title-boost scoring) */
+  /** Pre-computed: title lowercased */
   titleLower: string
 }
 
@@ -49,6 +53,18 @@ const INDEX = g.__searchIndex || (g.__searchIndex = {
 const INDEX_TTL = 10 * 60 * 1000 // 10 minutes
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Tokenize text into individual lowercase words */
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[\s\-_/&.,;:!?()"']+/)
+    .filter(w => w.length > 1) // drop single-char noise
+}
+
+// ---------------------------------------------------------------------------
 // Index builder
 // ---------------------------------------------------------------------------
 
@@ -60,8 +76,11 @@ function makeEntry(
   type: SearchResultType | 'Page',
   badge: string | undefined,
   extraKeywords: string[] = [],
+  external = false,
 ): SearchEntry {
   const parts = [title, description, badge ?? '', ...extraKeywords]
+  const fullText = parts.join(' ').toLowerCase()
+  const words = [...new Set(tokenize(parts.join(' ')))]
   return {
     id,
     title,
@@ -69,7 +88,9 @@ function makeEntry(
     url,
     type,
     badge,
-    searchText: parts.join(' ').toLowerCase(),
+    external,
+    searchWords: words,
+    searchText: fullText,
     titleLower: title.toLowerCase(),
   }
 }
@@ -110,10 +131,12 @@ async function buildIndex(): Promise<SearchEntry[]> {
   }
 
   for (const [slug, data] of Object.entries(EXPERTISE_DATA)) {
+    // Gather rich keywords from all sub-content
     const extra = [
       data.tip,
       ...data.helpItems.map(h => h.title),
       ...data.helpItems.map(h => h.description),
+      ...data.officialResources.map(r => r.title),
     ]
     entries.push(
       makeEntry(
@@ -126,6 +149,25 @@ async function buildIndex(): Promise<SearchEntry[]> {
         extra,
       ),
     )
+
+    // 2b. External resources from each expertise category
+    //     Only index the resource's own title + parent category name.
+    //     Do NOT include helpItem titles — that causes cross-contamination
+    //     (e.g. "Samsung Mobile Support" matching "iphone" via "iPhone & Android Setup")
+    for (const res of data.officialResources) {
+      entries.push(
+        makeEntry(
+          `ext-${slug}-${res.title.toLowerCase().replace(/\s+/g, '-')}`,
+          res.title,
+          `Official support portal for ${data.title}. Visit ${res.title} for product help, downloads, troubleshooting, and warranty info.`,
+          res.url,
+          'External Resource',
+          data.title,
+          [data.title],
+          true, // external
+        ),
+      )
+    }
   }
 
   // 3. Static pages (scam prevention, about, contact, etc.)
@@ -196,11 +238,19 @@ export async function warmUpSearchIndex(): Promise<void> {
 
 /**
  * Query the search index. Returns grouped results sorted by relevance.
+ *
+ * Scoring algorithm:
+ *  - ALL query keywords must match somewhere in the entry (AND logic)
+ *  - Title word match:  +5 per keyword
+ *  - Body word match:   +1 per keyword
+ *  - Full phrase bonus:  +8 if exact query phrase found in searchText
+ *  - Prefix matching:    "ipho" matches "iphone"
+ *
  * If the index is stale or empty, triggers a background rebuild.
  */
 export async function querySearchIndex(rawQuery: string): Promise<GroupedSearchResults> {
   const empty: GroupedSearchResults = {
-    articles: [], troubleshooting: [], deviceSupport: [], services: [], total: 0
+    articles: [], troubleshooting: [], deviceSupport: [], services: [], externalResources: [], total: 0
   }
 
   const q = rawQuery.toLowerCase().trim()
@@ -211,20 +261,54 @@ export async function querySearchIndex(rawQuery: string): Promise<GroupedSearchR
     await warmUpSearchIndex()
   }
 
-  const keywords = q.split(/\s+/).filter(k => k.length > 0)
+  const keywords = q.split(/\s+/).filter(k => k.length > 1)
   if (keywords.length === 0) return empty
 
-  // Score each entry
-  const scored: { entry: SearchEntry; score: number }[] = []
+  // Score each entry — track matchedCount for category-aware filtering
+  const scored: { entry: SearchEntry; score: number; matchedCount: number }[] = []
 
   for (const entry of INDEX.entries) {
     let score = 0
+    let matchedCount = 0
+
     for (const kw of keywords) {
-      if (entry.titleLower.includes(kw)) score += 3
-      else if (entry.searchText.includes(kw)) score += 1
+      // Check title first (word-prefix matching)
+      const titleMatch = entry.titleLower.includes(kw)
+      // Check body words (prefix matching against tokenized words)
+      const bodyMatch = !titleMatch && (
+        entry.searchWords.some(w => w.startsWith(kw) || w.includes(kw)) ||
+        entry.searchText.includes(kw)
+      )
+
+      if (titleMatch) {
+        score += 5
+        matchedCount++
+      } else if (bodyMatch) {
+        score += 1
+        matchedCount++
+      }
     }
+
+    // Skip if no keywords matched at all
+    if (matchedCount === 0) continue
+
+    // For multi-word queries, require at least half the keywords to match
+    // This prevents single-word noise while still allowing partial matches
+    const minRequired = keywords.length > 1 ? Math.ceil(keywords.length / 2) : 1
+    if (matchedCount < minRequired) continue
+
+    // Big bonus when ALL keywords match (rewards full relevance)
+    if (matchedCount === keywords.length) {
+      score += 10
+    }
+
+    // Bonus: exact phrase match in the full text
+    if (keywords.length > 1 && entry.searchText.includes(q)) {
+      score += 8
+    }
+
     if (score > 0) {
-      scored.push({ entry, score })
+      scored.push({ entry, score, matchedCount })
     }
   }
 
@@ -233,10 +317,13 @@ export async function querySearchIndex(rawQuery: string): Promise<GroupedSearchR
 
   // Group into categories
   const result: GroupedSearchResults = {
-    articles: [], troubleshooting: [], deviceSupport: [], services: [], total: 0
+    articles: [], troubleshooting: [], deviceSupport: [], services: [], externalResources: [], total: 0
   }
 
-  for (const { entry } of scored) {
+  // Per-category caps to keep results focused
+  const caps = { articles: 5, troubleshooting: 3, deviceSupport: 5, services: 3, externalResources: 8 }
+
+  for (const { entry, matchedCount } of scored) {
     const item = {
       id: entry.id,
       title: entry.title,
@@ -244,20 +331,40 @@ export async function querySearchIndex(rawQuery: string): Promise<GroupedSearchR
       url: entry.url,
       type: entry.type === 'Page' ? 'Article' as const : entry.type as SearchResultType,
       badge: entry.badge,
+      external: entry.external,
+    }
+
+    // For Device Support in multi-word queries, require ALL keywords to match
+    if (entry.type === 'Device Support' && keywords.length > 1 && matchedCount < keywords.length) continue
+
+    // For External Resources in multi-word queries, require at least one
+    // keyword to appear in the TITLE or BADGE (parent category name).
+    // Title check: "Apple iPhone Support" matches "iphone setup" ✓
+    // Badge check: "Epson Support" with badge "Printers & Scanners" matches "printer setup" ✓
+    // Excluded: "Samsung Mobile Support" with badge "Tablets & Phones" doesn't match "iphone setup" ✓
+    if (entry.type === 'External Resource' && keywords.length > 1) {
+      const badgeLower = (entry.badge ?? '').toLowerCase()
+      const titleOrBadgeHasKeyword = keywords.some(kw =>
+        entry.titleLower.includes(kw) || badgeLower.includes(kw)
+      )
+      if (!titleOrBadgeHasKeyword) continue
     }
 
     switch (entry.type) {
       case 'Troubleshooting':
-        result.troubleshooting.push(item)
+        if (result.troubleshooting.length < caps.troubleshooting) result.troubleshooting.push(item)
         break
       case 'Device Support':
-        result.deviceSupport.push(item)
+        if (result.deviceSupport.length < caps.deviceSupport) result.deviceSupport.push(item)
         break
       case 'Service':
-        result.services.push(item)
+        if (result.services.length < caps.services) result.services.push(item)
+        break
+      case 'External Resource':
+        if (result.externalResources.length < caps.externalResources) result.externalResources.push(item)
         break
       default: // 'Article' and 'Page'
-        result.articles.push(item)
+        if (result.articles.length < caps.articles) result.articles.push(item)
         break
     }
   }
@@ -266,7 +373,8 @@ export async function querySearchIndex(rawQuery: string): Promise<GroupedSearchR
     result.articles.length +
     result.troubleshooting.length +
     result.deviceSupport.length +
-    result.services.length
+    result.services.length +
+    result.externalResources.length
 
   return result
 }

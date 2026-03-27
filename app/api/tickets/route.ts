@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const ticketPriority = priority || 'medium'
+    const ticketPriority = priority || null
     const ticketSource = source || 'customer_portal'
 
     const ticketData: Record<string, any> = {
@@ -129,8 +129,12 @@ export async function POST(request: NextRequest) {
       source: ticketSource,
       user_id: user.id,
       status: 'open',
-      first_response_due: calculateSLADue(ticketPriority, 'first_response'),
-      resolution_due: calculateSLADue(ticketPriority, 'resolution'),
+    }
+
+    // Only set SLA deadlines if a priority is provided
+    if (ticketPriority) {
+      ticketData.first_response_due = calculateSLADue(ticketPriority, 'first_response')
+      ticketData.resolution_due = calculateSLADue(ticketPriority, 'resolution')
     }
 
     if (device_id) ticketData.device_id = device_id

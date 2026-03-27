@@ -1,0 +1,15 @@
+<svg width="200" height="150" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Laptop Main Body -->
+  <rect x="25" y="30" width="150" height="90" rx="8" stroke="white" stroke-width="4"/>
+  <!-- Laptop Screen Inner -->
+  <rect x="35" y="40" width="130" height="70" rx="4" stroke="white" stroke-width="2"/>
+  <!-- Keypad Base -->
+  <path d="M20 120H180L190 140H10L20 120Z" stroke="white" stroke-width="4" fill="none"/>
+  <!-- Trackpad -->
+  <rect x="75" y="125" width="50" height="10" rx="2" stroke="white" stroke-width="2"/>
+  
+  <!-- Text Content -->
+  <text x="100" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="20" fill="white">SMARTSASS</text>
+  <line x1="45" y1="90" x2="115" y2="90" stroke="white" stroke-width="2"/>
+  <text x="125" y="100" font-family="Arial, sans-serif" font-size="16" fill="white">TECH</text>
+</svg>

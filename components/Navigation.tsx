@@ -143,7 +143,7 @@ export default function Navigation() {
             <div className="logo-container">
               <Link href="/" aria-label="SmartSass Tech Home">
                 <img
-                  src="/assets/images/logo_blue_bg.png"
+                  src="/assets/images/logo-transparent.svg"
                   alt="SmartSass Tech"
                   className="logo"
                 />
@@ -225,7 +225,7 @@ export default function Navigation() {
                       )}
 
                       <Link href="/support" className="user-dropdown-item border-t border-gray-100 mt-1 pt-2" role="menuitem" onClick={() => setMenuOpen(false)}>
-                        <span className="menu-icon">🎫</span> {user.role === 'client' ? 'My Tickets' : 'Support Center'}
+                        <span className="menu-icon">🎫</span> Help Center
                       </Link>
                       <button className="user-dropdown-item user-dropdown-logout border-t border-gray-100 mt-1 pt-2" role="menuitem" onClick={handleLogout}>
                         <span className="menu-icon">🚪</span> Log Out
@@ -278,8 +278,7 @@ export default function Navigation() {
         <Link href="/articles" className={pathname.startsWith('/articles') || pathname.startsWith('/expertise') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Resources</Link>
         <Link href="/scam-prevention" className={pathname === '/scam-prevention' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Scam Prevention</Link>
         <Link href="/about" className={pathname === '/about' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>About</Link>
-        {!user && <Link href="/contact" className={pathname === '/contact' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Contact</Link>}
-        {user && <Link href="/support" className={pathname.startsWith('/support') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Support</Link>}
+        <Link href="/support" className={pathname.startsWith('/support') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Help Center</Link>
       </div>
 
       <nav aria-label="Main navigation" className={`sticky-nav desktop-nav ${isScrolled ? 'scrolled' : ''}`}>
@@ -297,16 +296,9 @@ export default function Navigation() {
             <li className={`nav-tab ${pathname === '/about' ? 'active' : ''}`}>
               <Link href="/about">About</Link>
             </li>
-            {!user && (
-              <li className={`nav-tab ${pathname === '/contact' ? 'active' : ''}`}>
-                <Link href="/contact">Contact</Link>
-              </li>
-            )}
-            {user && (
-              <li className={`nav-tab ${pathname.startsWith('/support') ? 'active' : ''}`}>
-                <Link href="/support">Support</Link>
-              </li>
-            )}
+            <li className={`nav-tab ${pathname.startsWith('/support') ? 'active' : ''}`}>
+              <Link href="/support">Help Center</Link>
+            </li>
           </ul>
         </div>
       </nav>

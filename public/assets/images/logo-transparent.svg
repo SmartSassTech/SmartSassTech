@@ -1,0 +1,65 @@
+<svg width="200" height="200" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define Gradients for Depth -->
+  <defs>
+    <linearGradient id="screenGrad" x1="50" y1="27" x2="50" y2="63" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+    <linearGradient id="baseGrad" x1="50" y1="65" x2="50" y2="85" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Laptop Screen Outer Frame -->
+  <rect x="20" y="25" width="60" height="40" rx="3" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" />
+  
+  <!-- Content Area (The actual screen) -->
+  <rect x="24" y="29" width="52" height="32" rx="1" fill="url(#screenGrad)" />
+
+  <!-- Logo Text inside Screen (with padding) -->
+  <text x="50" y="44" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#0f172a" text-anchor="middle" font-weight="900">SMARTSASS</text>
+  <line x1="32" y1="47" x2="68" y2="47" stroke="#334155" stroke-width="0.3" />
+  <text x="50" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="5" fill="#334155" text-anchor="middle" font-weight="500" letter-spacing="1.5">TECH</text>
+
+  <!-- Laptop Base (The Keyboard Half) -->
+  <path d="M20 65 L80 65 L88 82 C88 84 86 85 84 85 L16 85 C14 85 12 84 12 82 Z" fill="url(#baseGrad)" stroke="#94a3b8" stroke-width="1" />
+  
+  <!-- Keyboard Keys (Simplified Grid) -->
+  <g transform="translate(22, 69)" fill="#64748b" opacity="0.4">
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="4" height="2" rx="0.5" />
+    <rect x="5" y="0" width="4" height="2" rx="0.5" />
+    <rect x="10" y="0" width="4" height="2" rx="0.5" />
+    <rect x="15" y="0" width="4" height="2" rx="0.5" />
+    <rect x="20" y="0" width="10" height="2" rx="0.5" /> <!-- Long key -->
+    <rect x="31" y="0" width="4" height="2" rx="0.5" />
+    <rect x="36" y="0" width="4" height="2" rx="0.5" />
+    <rect x="41" y="0" width="4" height="2" rx="0.5" />
+    <rect x="46" y="0" width="4" height="2" rx="0.5" />
+    <rect x="51" y="0" width="5" height="2" rx="0.5" />
+    
+    <!-- Row 2 -->
+    <rect x="1" y="4" width="4" height="2" rx="0.5" />
+    <rect x="6" y="4" width="4" height="2" rx="0.5" />
+    <rect x="11" y="4" width="4" height="2" rx="0.5" />
+    <rect x="16" y="4" width="4" height="2" rx="0.5" />
+    <rect x="21" y="4" width="4" height="2" rx="0.5" />
+    <rect x="26" y="4" width="4" height="2" rx="0.5" />
+    <rect x="31" y="4" width="4" height="2" rx="0.5" />
+    <rect x="36" y="4" width="4" height="2" rx="0.5" />
+    <rect x="41" y="4" width="4" height="2" rx="0.5" />
+    <rect x="46" y="4" width="4" height="2" rx="0.5" />
+    <rect x="51" y="4" width="4" height="2" rx="0.5" />
+    
+    <!-- Row 3 (Spacebar row) -->
+    <rect x="2" y="8" width="6" height="2" rx="0.5" />
+    <rect x="9" y="8" width="5" height="2" rx="0.5" />
+    <rect x="15" y="8" width="22" height="2" rx="0.5" /> <!-- Spacebar -->
+    <rect x="38" y="8" width="5" height="2" rx="0.5" />
+    <rect x="44" y="8" width="10" height="2" rx="0.5" />
+  </g>
+
+  <!-- Trackpad -->
+  <rect x="41" y="81" width="18" height="3" rx="1.5" fill="#94a3b8" opacity="0.5" />
+</svg>

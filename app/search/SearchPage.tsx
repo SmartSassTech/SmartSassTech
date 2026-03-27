@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, BookOpen, Wrench, Cpu, Briefcase, ArrowRight, Loader2, X } from 'lucide-react'
+import { Search, BookOpen, Wrench, Cpu, Briefcase, ArrowRight, Loader2, X, ExternalLink } from 'lucide-react'
 import type { GroupedSearchResults, SearchResult } from '@/lib/search'
 
 // ---------- Badge configs ----------
@@ -28,15 +28,25 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; icon: React.Re
     color: '#059669',
     icon: <Briefcase size={14} />,
   },
+  'External Resource': {
+    label: 'Official Resource',
+    color: '#6366F1',
+    icon: <ExternalLink size={14} />,
+  },
 }
 
 // ---------- Subcomponents ----------
 function ResultCard({ result, isNavigating, onNavigate }: { result: SearchResult; isNavigating: boolean; onNavigate: () => void }) {
   const cfg = TYPE_CONFIG[result.type] ?? TYPE_CONFIG['Article']
+  const isExternal = result.external || result.url.startsWith('http')
+
+  const linkProps = isExternal
+    ? { href: result.url, target: '_blank' as const, rel: 'noopener noreferrer' }
+    : { href: result.url }
 
   return (
     <Link
-      href={result.url}
+      {...linkProps}
       onClick={onNavigate}
       className={`group relative z-10 cursor-pointer flex items-start gap-4 p-5 rounded-2xl bg-white border shadow-sm hover:shadow-lg hover:border-[var(--color-primary)] transition-all duration-200 ${
         isNavigating ? 'border-[var(--color-primary)] opacity-80' : 'border-gray-100'
@@ -63,8 +73,12 @@ function ResultCard({ result, isNavigating, onNavigate }: { result: SearchResult
         </div>
         <h3 className="font-semibold text-gray-900 group-hover:text-[var(--color-primary)] transition-colors leading-snug mb-1">
           {result.title}
+          {isExternal && <ExternalLink size={12} className="inline ml-1.5 text-gray-400" />}
         </h3>
         <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{result.description}</p>
+        {isExternal && (
+          <p className="text-indigo-400 text-xs mt-1 truncate">{result.url}</p>
+        )}
       </div>
       {isNavigating ? (
         <Loader2
@@ -269,6 +283,13 @@ export default function SearchPage() {
               title="Services & Plans"
               results={results.services}
               icon={<Briefcase size={18} />}
+              navigatingTo={navigatingTo}
+              onNavigate={setNavigatingTo}
+            />
+            <ResultSection
+              title="Official Resources"
+              results={results.externalResources}
+              icon={<ExternalLink size={18} />}
               navigatingTo={navigatingTo}
               onNavigate={setNavigatingTo}
             />

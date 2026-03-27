@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
     const query = searchParams.get('q') || ''
 
     if (!query.trim()) {
-        return NextResponse.json({ articles: [], troubleshooting: [], deviceSupport: [], services: [], total: 0 })
+        return NextResponse.json({ articles: [], troubleshooting: [], deviceSupport: [], services: [], externalResources: [], total: 0 })
     }
 
     try {
