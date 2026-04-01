@@ -49,11 +49,13 @@
 }
 
 .article-content a {
-  @apply text-kb-navy hover:text-kb-slate underline transition-colors;
+  @apply text-kb-navy hover:text-kb-dark underline transition-colors;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .article-content code {
-  @apply bg-kb-pale px-2 py-1 rounded text-sm font-mono;
+  @apply bg-kb-pale px-2 py-1 rounded text-sm font-mono text-kb-dark;
 }
 
 .article-content pre {
