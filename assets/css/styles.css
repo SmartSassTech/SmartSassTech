@@ -286,7 +286,7 @@ a:focus-visible {
    ========================================== */
 .header {
   background-color: var(--color-primary);
-  padding: var(--spacing-md) 0;
+  padding: var(--spacing-sm) 0 0 0; /* Reduced to shave off blank space */
   z-index: 1000;
 }
 
@@ -341,8 +341,7 @@ a:focus-visible {
 }
 
 .logo {
-  height: 120px;
-  /* Reduced for better proportion with other header elements */
+  height: 280px;
   width: auto;
   transition: transform var(--transition-normal);
 }
@@ -400,24 +399,26 @@ a:focus-visible {
 
 .nav-tabs {
   display: flex;
-  justify-content: center;
+  justify-content: space-between; /* Take up entire width */
   gap: var(--spacing-md);
   list-style: none;
+  width: 100%;
 }
 
 .nav-tab {
-  flex: 0 1 auto;
+  flex: 1; /* Allow tabs to grow and fill space */
 }
 
 .nav-tab a {
   display: block;
-  padding: 12px 24px;
+  padding: 16px 24px;
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 1.3rem; /* Increased text size */
+  font-weight: 600;
   border-radius: var(--radius-sm);
   transition: all var(--transition-normal);
+  white-space: nowrap;
 }
 
 .nav-tab a:hover {
@@ -778,23 +779,21 @@ a:focus-visible {
 .footer {
   background-color: var(--color-primary);
   color: var(--color-text-light);
-  padding: var(--spacing-xxl) 0 var(--spacing-lg);
+  padding: var(--spacing-lg) 0 var(--spacing-md);
   position: relative;
   z-index: 10;
   /* Ensure it's above other content if needed */
 }
 
 .footer-top-info {
-  display: flex !important;
-  flex-direction: row !important;
-  /* Force horizontal on desktop */
-  align-items: center !important;
-  justify-content: center !important;
-  gap: var(--spacing-xl) !important;
-  margin-bottom: var(--spacing-lg) !important;
-  width: 100% !important;
-  flex-wrap: nowrap;
-  /* Prevent stacking unless on mobile */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  width: 100%;
+  text-align: center;
 }
 
 .footer-logo-container {
@@ -802,14 +801,15 @@ a:focus-visible {
 }
 
 .footer-logo {
-  height: 120px;
-  /* Adjusted size */
+  height: 220px; /* Increased size */
+  max-width: 100%;
+  width: auto;
   margin-bottom: 0;
 }
 
 .footer-business-details {
   flex: 0 0 auto !important;
-  text-align: left !important;
+  text-align: center !important;
 }
 
 .footer-business-details h3 {
@@ -819,12 +819,16 @@ a:focus-visible {
   /* Larger text */
 }
 
-.footer-business-details p,
-.footer-business-details a {
-  margin-bottom: 4px;
+.footer-business-details p {
+  margin-bottom: 2px;
   display: block;
   font-size: var(--font-size-large);
-  /* Larger text */
+  color: var(--color-text-light);
+}
+
+.footer-business-details a {
+  display: inline;
+  font-size: var(--font-size-large);
   color: var(--color-text-light);
 }
 
@@ -838,16 +842,15 @@ a:focus-visible {
 .footer-divider {
   border: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  margin: var(--spacing-lg) 0;
+  margin: var(--spacing-md) 0;
 }
 
 .footer-content {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-xl);
-  margin: 0 auto var(--spacing-xl) auto;
+  margin: 0 auto var(--spacing-lg) auto;
   max-width: 900px;
-  /* Push columns closer together */
 }
 
 .footer-section {
@@ -884,7 +887,7 @@ a:focus-visible {
 
 .footer-bottom {
   text-align: center;
-  padding-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--color-text-light);
 }
@@ -1292,7 +1295,7 @@ a:focus-visible {
   }
 
   .logo {
-    height: 80px;
+    height: 180px;
   }
 
   /* Hide desktop nav tabs on mobile — use hamburger instead */

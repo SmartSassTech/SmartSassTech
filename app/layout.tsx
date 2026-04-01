@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   title: 'SmartSass Tech | Tech Help | Rochester, NY',
   description: 'Patient, jargon-free technology support for older adults and beginners in Rochester, NY. We help with computers, smartphones, tablets, and more.',
   icons: {
-    icon: '/icon.png?v=2',
-    apple: '/icon.png?v=2',
+    icon: '/assets/images/logo.svg',
+    apple: '/assets/images/logo.svg',
   },
 }
 

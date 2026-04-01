@@ -97,7 +97,7 @@ export function getWelcomeEmailHtml(firstName: string, verificationLink: string)
       <body>
         <div class="container">
           <div class="header">
-            <img src="https://smartsasstech.com/assets/images/logo-transparent.svg" alt="SmartSass Tech" style="height: 60px; display: block; margin: 0 auto;" />
+            <img src="https://smartsasstech.com/assets/images/logo.svg" alt="SmartSass Tech" style="height: 60px; display: block; margin: 0 auto;" />
           </div>
           <div class="content">
             <h2 class="welcome-msg">Hello ${firstName},</h2>

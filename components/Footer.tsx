@@ -5,19 +5,22 @@ export default function Footer() {
     <footer className="footer">
       <div className="container">
         {/* Footer Top: Brand & Business Info */}
-        <div className="footer-top-info">
-          <div className="footer-logo-container">
+        <div className="footer-top-info flex flex-col items-center justify-center text-center">
+          <div className="footer-logo-container mb-2 w-full flex justify-center">
             <img
-              src="/assets/images/logo-transparent.svg"
+              src="/assets/images/darkLogo-horiz.svg"
               alt="SmartSass Tech"
               className="footer-logo"
             />
           </div>
-          <div className="footer-business-details">
-            <h3 className="text-white mb-2">SMARTSASS TECH</h3>
-            <p>Serving the Rochester, NY area</p>
-            <p><strong>(585) 210-9758</strong></p>
-            <p><a href="mailto:smartsasstech@gmail.com" className="footer-email">smartsasstech@gmail.com</a></p>
+          <div className="footer-business-details w-full flex flex-col justify-center items-center gap-2">
+            <p className="text-center text-white mb-0 text-xl font-medium">
+              Serving the Rochester, NY area
+            </p>
+            <p className="text-center mb-0">
+              <strong>(585) 210-9758</strong> &bull; 
+              <a href="mailto:smartsasstech@gmail.com" className="footer-email ml-2">smartsasstech@gmail.com</a>
+            </p>
           </div>
         </div>
 
