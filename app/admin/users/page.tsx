@@ -139,7 +139,7 @@ function UserManagementPage() {
 
             setIsAddModalOpen(false)
             fetchUsers()
-            alert('User created successfully. A welcome email has been sent.')
+            alert('User created successfully.')
         } catch (error: any) {
             alert(error.message)
         } finally {
@@ -428,7 +428,7 @@ function UserManagementPage() {
             {/* Add/Edit User Modal */}
             <AnimatePresence>
                 {(isAddModalOpen || isEditModalOpen) && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -566,7 +566,7 @@ function UserManagementPage() {
             {/* Deletion Modal */}
             <AnimatePresence>
                 {deletingUserId && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4">
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}

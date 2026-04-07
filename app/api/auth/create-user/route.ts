@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { resend } from '@/lib/resend'
-import { getWelcomeEmailHtml } from '@/lib/emails/WelcomeEmail'
 
 export async function POST(request: Request) {
   try {
@@ -40,7 +38,8 @@ export async function POST(request: Request) {
     }
 
     // 3. Create user in Supabase Auth via Admin API
-    // We generate a random password since the agent is creating the account
+    // Agent-created accounts are silent — no emails sent to the new user.
+    // email_confirm: true marks the email as already verified so they can log in immediately.
     const temporaryPassword = Math.random().toString(36).slice(-12) + 'A1!'
     
     const { data: userData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
@@ -54,7 +53,7 @@ export async function POST(request: Request) {
       app_metadata: {
         role: role
       },
-      email_confirm: false
+      email_confirm: true
     })
 
     if (signUpError) {
@@ -65,35 +64,6 @@ export async function POST(request: Request) {
     const user = userData.user
     if (!user) {
       return NextResponse.json({ error: 'Failed to create user account.' }, { status: 500 })
-    }
-
-    // 4. Generate confirmation hash (optional but good for getting them to set password)
-    const origin = new URL(request.url).origin
-    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'signup',
-      email,
-      password: temporaryPassword,
-    })
-
-    if (linkError) {
-      console.error('[Create User API] Link generation error:', linkError)
-      // We still created the user, but couldn't generate a link. 
-      // This is not a total failure.
-    } else {
-      const tokenHash = linkData.properties.hashed_token
-      const verificationLink = `${origin}/auth/confirm?token_hash=${tokenHash}&type=signup&next=/account`
-
-      // 5. Send branded email via Resend
-      const emailHtml = getWelcomeEmailHtml(firstName.trim(), verificationLink)
-
-      await resend.emails.send({
-        from: 'SmartSass Tech <welcome@smartsasstech.com>',
-        to: email,
-        subject: 'Welcome to SmartSass Tech - Your account has been created',
-        html: emailHtml,
-      }).catch(err => {
-        console.error('[Create User API] Resend error:', err)
-      })
     }
 
     return NextResponse.json({ 
