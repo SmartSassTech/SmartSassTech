@@ -204,9 +204,30 @@ function TicketForm({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =
     const [category, setCategory] = useState('General')
     const [submitting, setSubmitting] = useState(false)
     const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null)
+    const [errors, setErrors] = useState<{ subject?: string; description?: string }>({})
+    const [touched, setTouched] = useState<{ subject?: boolean; description?: boolean }>({})
+
+    const validate = () => {
+        const newErrors: { subject?: string; description?: string } = {}
+        if (!subject.trim()) {
+            newErrors.subject = 'Please enter a brief description of your issue'
+        } else if (subject.trim().length < 5) {
+            newErrors.subject = 'Please provide a bit more detail (at least 5 characters)'
+        }
+        if (!description.trim()) {
+            newErrors.description = 'Please tell us more about what happened'
+        } else if (description.trim().length < 10) {
+            newErrors.description = 'A few more details would help us assist you better (at least 10 characters)'
+        }
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setTouched({ subject: true, description: true })
+        if (!validate()) return
+
         setSubmitting(true)
         setSubmitStatus(null)
         try {
@@ -218,13 +239,15 @@ function TicketForm({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.access_token}`,
                 },
-                body: JSON.stringify({ subject, description, category }),
+                body: JSON.stringify({ subject: subject.trim(), description: description.trim(), category }),
             })
             if (res.ok) {
                 setSubmitStatus('success')
                 setSubject('')
                 setDescription('')
                 setCategory('General')
+                setErrors({})
+                setTouched({})
                 onSuccess()
             } else {
                 setSubmitStatus('error')
@@ -274,7 +297,7 @@ function TicketForm({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =
                     )}
                 </AnimatePresence>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} noValidate className="space-y-6">
                     {/* Category — icon cards */}
                     <div>
                         <label className="block text-sst-primary font-bold mb-3 text-base">What is this about?</label>
@@ -302,23 +325,39 @@ function TicketForm({ onSuccess, onBack }: { onSuccess: () => void; onBack: () =
                     <div>
                         <label htmlFor="ticket-subject" className="block text-sst-primary font-bold mb-2 text-base">What&apos;s going on? *</label>
                         <input
-                            id="ticket-subject" type="text" required
+                            id="ticket-subject" type="text"
                             value={subject}
-                            onChange={e => setSubject(e.target.value)}
-                            className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all text-base"
+                            onChange={e => { setSubject(e.target.value); if (touched.subject) validate() }}
+                            onBlur={() => { setTouched(t => ({ ...t, subject: true })); validate() }}
+                            className={`w-full px-5 py-4 bg-kb-bg rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all text-base ${
+                                touched.subject && errors.subject ? 'border-2 border-red-400 bg-red-50/30' : 'border-none'
+                            }`}
                             placeholder="e.g., My phone won't connect to WiFi"
                         />
+                        {touched.subject && errors.subject && (
+                            <p className="mt-1.5 text-sm text-red-600 font-medium flex items-center gap-1.5">
+                                <AlertCircle size={14} /> {errors.subject}
+                            </p>
+                        )}
                     </div>
 
                     <div>
                         <label htmlFor="ticket-description" className="block text-sst-primary font-bold mb-2 text-base">Tell us more *</label>
                         <textarea
-                            id="ticket-description" required rows={4}
+                            id="ticket-description" rows={4}
                             value={description}
-                            onChange={e => setDescription(e.target.value)}
-                            className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all text-base resize-none"
+                            onChange={e => { setDescription(e.target.value); if (touched.description) validate() }}
+                            onBlur={() => { setTouched(t => ({ ...t, description: true })); validate() }}
+                            className={`w-full px-5 py-4 bg-kb-bg rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all text-base resize-none ${
+                                touched.description && errors.description ? 'border-2 border-red-400 bg-red-50/30' : 'border-none'
+                            }`}
                             placeholder="What were you trying to do? What happened?"
                         />
+                        {touched.description && errors.description && (
+                            <p className="mt-1.5 text-sm text-red-600 font-medium flex items-center gap-1.5">
+                                <AlertCircle size={14} /> {errors.description}
+                            </p>
+                        )}
                     </div>
 
                     <button

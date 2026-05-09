@@ -142,10 +142,12 @@ export default function Navigation() {
           <div className="header-top">
             <div className="logo-container">
               <Link href="/" aria-label="SmartSass Tech Home">
-                <img
+              <img
                   src="/assets/images/darkLogo.svg"
                   alt="SmartSass Tech"
                   className="logo"
+                  width="280"
+                  height="280"
                 />
               </Link>
             </div>

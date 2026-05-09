@@ -5,6 +5,15 @@ import Footer from '@/components/Footer'
 // Trigger rebuild for logo change
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Inter } from 'next/font/google'
+
+// Use next/font instead of CSS @import to eliminate font-swap CLS
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'SmartSass Tech | Tech Help | Rochester, NY',
@@ -26,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         {/* We can add any specific head tags here if needed, but Next handles metadata */}
       </head>

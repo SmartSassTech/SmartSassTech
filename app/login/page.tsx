@@ -4,7 +4,22 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, ShieldAlert } from 'lucide-react'
+
+function getPasswordStrength(password: string): { score: number; label: string; color: string } {
+    let score = 0
+    if (password.length >= 8) score++
+    if (password.length >= 12) score++
+    if (/[A-Z]/.test(password)) score++
+    if (/[0-9]/.test(password)) score++
+    if (/[^A-Za-z0-9]/.test(password)) score++
+
+    if (score <= 1) return { score, label: 'Weak', color: 'bg-red-500' }
+    if (score <= 2) return { score, label: 'Fair', color: 'bg-orange-500' }
+    if (score <= 3) return { score, label: 'Good', color: 'bg-yellow-500' }
+    if (score <= 4) return { score, label: 'Strong', color: 'bg-green-500' }
+    return { score, label: 'Very Strong', color: 'bg-emerald-500' }
+}
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true)
@@ -19,6 +34,9 @@ export default function LoginPage() {
     const [rememberMe, setRememberMe] = useState(false)
     const [acknowledgePhone, setAcknowledgePhone] = useState(false)
     const [phoneExists, setPhoneExists] = useState(false)
+    const [failedAttempts, setFailedAttempts] = useState(0)
+    const [lockoutUntil, setLockoutUntil] = useState<number | null>(null)
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({})
     const router = useRouter()
 
     useEffect(() => {
@@ -39,10 +57,33 @@ export default function LoginPage() {
         }
     }, [])
 
+    const validateForm = (): boolean => {
+        const errs: Record<string, string> = {}
+        if (!isLogin) {
+            if (!firstName.trim()) errs.firstName = 'Please enter your first name'
+            if (!lastName.trim()) errs.lastName = 'Please enter your last name'
+        }
+        if (!email.trim()) {
+            errs.email = 'Please enter your email address'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            errs.email = 'Please enter a valid email address (e.g., name@example.com)'
+        }
+        if (!password) {
+            errs.password = 'Please enter your password'
+        } else if (!isLogin && password.length < 8) {
+            errs.password = 'Password must be at least 8 characters long'
+        }
+        setFormErrors(errs)
+        return Object.keys(errs).length === 0
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
         setMessage(null)
+
+        if (!validateForm()) return
+
+        setIsLoading(true)
 
         // Capture redirect parameter if it exists
         const searchParams = new URLSearchParams(window.location.search)
@@ -50,6 +91,14 @@ export default function LoginPage() {
 
         try {
             if (isLogin) {
+                // Rate limiting check
+                if (lockoutUntil && Date.now() < lockoutUntil) {
+                    const secondsLeft = Math.ceil((lockoutUntil - Date.now()) / 1000)
+                    setMessage({ text: `Too many attempts. Please wait ${secondsLeft} seconds before trying again.`, type: 'error' })
+                    setIsLoading(false)
+                    return
+                }
+
                 console.log('[Login] Attempting sign in for:', email)
 
                 // Add a timeout for the authentication attempt
@@ -63,8 +112,20 @@ export default function LoginPage() {
 
                     if (error) {
                         console.error('[Login] Sign in error:', error)
-                        setMessage({ text: error.message, type: 'error' })
+                        const newAttempts = failedAttempts + 1
+                        setFailedAttempts(newAttempts)
+
+                        if (newAttempts >= 5) {
+                            const lockout = Date.now() + 60000 // 60 second lockout
+                            setLockoutUntil(lockout)
+                            setMessage({ text: 'Too many failed attempts. Your account has been temporarily locked for 60 seconds for security.', type: 'error' })
+                            setTimeout(() => { setLockoutUntil(null); setFailedAttempts(0) }, 60000)
+                        } else {
+                            setMessage({ text: 'The email or password you entered doesn\'t match our records. Please double-check both and try again.', type: 'error' })
+                        }
                     } else {
+                        setFailedAttempts(0)
+                        setLockoutUntil(null)
                         console.log('[Login] Sign in successful for:', data.user?.email)
                         setMessage({ text: 'Welcome back! Redirecting...', type: 'success' })
 
@@ -172,31 +233,31 @@ export default function LoginPage() {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} noValidate className="space-y-5">
                     {!isLogin && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-sst-primary ml-1">First Name</label>
                                     <input
-                                        required
                                         type="text"
                                         value={firstName}
-                                        onChange={(e) => setFirstName(e.target.value)}
-                                        className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
+                                        onChange={(e) => { setFirstName(e.target.value); if (formErrors.firstName) setFormErrors(p => { const n = {...p}; delete n.firstName; return n }) }}
+                                        className={`w-full px-5 py-4 bg-kb-bg rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all ${formErrors.firstName ? 'border-2 border-red-400' : 'border-none'}`}
                                         placeholder="Renee"
                                     />
+                                    {formErrors.firstName && <p className="text-xs text-red-600 font-medium ml-1">{formErrors.firstName}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-sst-primary ml-1">Last Name</label>
                                     <input
-                                        required
                                         type="text"
                                         value={lastName}
-                                        onChange={(e) => setLastName(e.target.value)}
-                                        className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
+                                        onChange={(e) => { setLastName(e.target.value); if (formErrors.lastName) setFormErrors(p => { const n = {...p}; delete n.lastName; return n }) }}
+                                        className={`w-full px-5 py-4 bg-kb-bg rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all ${formErrors.lastName ? 'border-2 border-red-400' : 'border-none'}`}
                                         placeholder="Smith"
                                     />
+                                    {formErrors.lastName && <p className="text-xs text-red-600 font-medium ml-1">{formErrors.lastName}</p>}
                                 </div>
                             </div>
                             <div className="space-y-2">
@@ -238,23 +299,22 @@ export default function LoginPage() {
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-sst-primary ml-1">Email Address</label>
                         <input
-                            required
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all"
+                            onChange={(e) => { setEmail(e.target.value); if (formErrors.email) setFormErrors(p => { const n = {...p}; delete n.email; return n }) }}
+                            className={`w-full px-5 py-4 bg-kb-bg rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all ${formErrors.email ? 'border-2 border-red-400' : 'border-none'}`}
                             placeholder="your@email.com"
                         />
+                        {formErrors.email && <p className="text-xs text-red-600 font-medium ml-1">{formErrors.email}</p>}
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-sst-primary ml-1">Password</label>
                         <div className="relative">
                             <input
-                                required
                                 type={showPassword ? "text" : "password"}
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-5 py-4 bg-kb-bg border-none rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all pr-12"
+                                onChange={(e) => { setPassword(e.target.value); if (formErrors.password) setFormErrors(p => { const n = {...p}; delete n.password; return n }) }}
+                                className={`w-full px-5 py-4 bg-kb-bg rounded-2xl focus:ring-2 focus:ring-sst-primary transition-all pr-12 ${formErrors.password ? 'border-2 border-red-400' : 'border-none'}`}
                                 placeholder="••••••••"
                             />
                             <button
@@ -265,7 +325,40 @@ export default function LoginPage() {
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
                         </div>
+                        {formErrors.password && <p className="text-xs text-red-600 font-medium ml-1">{formErrors.password}</p>}
                     </div>
+
+                    {/* Password Strength Indicator (Registration only) */}
+                    {!isLogin && password.length > 0 && (
+                        <div className="space-y-2 -mt-2">
+                            <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div
+                                        key={i}
+                                        className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                                            i <= getPasswordStrength(password).score
+                                                ? getPasswordStrength(password).color
+                                                : 'bg-gray-200'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+                            <p className={`text-xs font-medium ${
+                                getPasswordStrength(password).score <= 1 ? 'text-red-600' :
+                                getPasswordStrength(password).score <= 2 ? 'text-orange-600' :
+                                getPasswordStrength(password).score <= 3 ? 'text-yellow-600' :
+                                'text-green-600'
+                            }`}>
+                                Password strength: {getPasswordStrength(password).label}
+                            </p>
+                            <ul className="text-[11px] text-gray-500 space-y-0.5 ml-1">
+                                <li className={password.length >= 8 ? 'text-green-600' : ''}>• At least 8 characters</li>
+                                <li className={/[A-Z]/.test(password) ? 'text-green-600' : ''}>• One uppercase letter</li>
+                                <li className={/[0-9]/.test(password) ? 'text-green-600' : ''}>• One number</li>
+                                <li className={/[^A-Za-z0-9]/.test(password) ? 'text-green-600' : ''}>• One special character (!@#$...)</li>
+                            </ul>
+                        </div>
+                    )}
 
                     {isLogin && (
                         <div className="flex items-center space-x-2 ml-1">
@@ -277,7 +370,7 @@ export default function LoginPage() {
                                 className="w-4 h-4 text-sst-primary rounded focus:ring-sst-primary bg-kb-bg border-sst-primary"
                             />
                             <label htmlFor="rememberMe" className="text-sm font-medium text-sst-primary cursor-pointer select-none">
-                                Remember my email
+                                Remember me on this device
                             </label>
                         </div>
                     )}

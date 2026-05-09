@@ -71,7 +71,7 @@ function AgentDashboard() {
             title: 'Live Chat',
             description: 'Connect with clients in real-time and view active chat sessions.',
             icon: <MessageSquare size={32} className="text-green-500" />,
-            link: '/admin/support', // Assuming support page has the live chat logic
+            link: '/admin/live-chat', // Point to dedicated live chat dashboard
             stats: stats.activeChats,
             statsLabel: 'Active Chats'
         }

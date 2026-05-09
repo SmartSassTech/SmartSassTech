@@ -41,18 +41,16 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Quizzes */}
+          {/* Resources & Tools */}
           <div className="footer-section">
-            <h3 className="text-white mb-4">Quizzes</h3>
+            <h3 className="text-white mb-4">Resources &amp; Tools</h3>
             <ul className="footer-links">
+              <li><Link href="/articles">Articles &amp; Guides</Link></li>
+              <li><Link href="/scam-prevention">Scam Prevention</Link></li>
               <li><Link href="/quizzes/computer">Computer Quiz</Link></li>
-              <li><Link href="/quizzes/smartwatch">Wearable Quiz</Link></li>
               <li><Link href="/quizzes/phone">Phone Quiz</Link></li>
               <li><Link href="/quizzes/streaming">Streaming Quiz</Link></li>
-              <li><Link href="/quizzes/security-camera">Security Cam Quiz</Link></li>
-              <li><Link href="/quizzes/printer">Printer Quiz</Link></li>
-              <li><Link href="/quizzes/internet-provider">Internet Quiz</Link></li>
-              <li><Link href="/quizzes/keyboard-mouse">Keyboard Quiz</Link></li>
+              <li><Link href="/expertise">See All Quizzes →</Link></li>
             </ul>
           </div>
 
@@ -61,7 +59,7 @@ export default function Footer() {
             <h3 className="text-white mb-4">Quick Links</h3>
             <ul className="footer-links">
               <li><Link href="/">Home</Link></li>
-              <li><Link href="/articles">Resources</Link></li>
+              <li><Link href="/expertise">Our Expertise</Link></li>
               <li><Link href="/support">Help Center</Link></li>
               <li><Link href="/booking">Booking Calendar</Link></li>
             </ul>

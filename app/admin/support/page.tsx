@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import withAuth from '@/components/withAuth'
 import {
     LifeBuoy,
     AlertCircle,
@@ -118,7 +119,7 @@ function SLABadge({ dueDate, respondedAt }: { dueDate: string | null; respondedA
     )
 }
 
-export default function AdminSupportDashboard() {
+function AdminSupportDashboard() {
     const [tickets, setTickets] = useState<Ticket[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentAgent, setCurrentAgent] = useState<any>(null)
@@ -573,3 +574,5 @@ export default function AdminSupportDashboard() {
         </div>
     )
 }
+
+export default withAuth(AdminSupportDashboard, { allowedRoles: ['agent', 'admin'] })

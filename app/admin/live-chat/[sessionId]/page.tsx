@@ -4,9 +4,10 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import ChatInterface, { Message } from '@/components/ChatInterface'
 import { supabase } from '@/lib/supabase'
+import withAuth from '@/components/withAuth'
 import { AlertCircle, Clock, ShieldCheck, User, Laptop, MessageCircle, Loader2, Monitor, Maximize2, Minimize2, X, Send } from 'lucide-react'
 
-export default function SessionPage() {
+function SessionPage() {
     const params = useParams()
     const sessionId = params.sessionId as string
 
@@ -448,3 +449,5 @@ export default function SessionPage() {
         </div>
     )
 }
+
+export default withAuth(SessionPage, { allowedRoles: ['agent', 'admin'] })

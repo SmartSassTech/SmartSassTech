@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import withAuth from '@/components/withAuth'
 import {
     ArrowLeft,
     Clock,
@@ -122,7 +123,7 @@ function SLARow({ label, dueDate, respondedAt }: { label: string; dueDate: strin
     )
 }
 
-export default function AdminTicketDetail() {
+function AdminTicketDetail() {
     const { ticketId } = useParams() as { ticketId: string }
     const [ticket, setTicket] = useState<Ticket | null>(null)
     const [comments, setComments] = useState<Comment[]>([])
@@ -549,3 +550,5 @@ export default function AdminTicketDetail() {
         </div>
     )
 }
+
+export default withAuth(AdminTicketDetail, { allowedRoles: ['agent', 'admin'] })

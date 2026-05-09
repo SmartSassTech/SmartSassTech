@@ -19,7 +19,11 @@ import {
     Plus,
     Pencil,
     X,
-    Phone
+    Phone,
+    Eye,
+    EyeOff,
+    Lock,
+    Send
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import withAuth from '@/components/withAuth'
@@ -59,6 +63,12 @@ function UserManagementPage() {
         phone: '',
         role: 'client'
     })
+
+    // Password states for Add User
+    const [passwordMode, setPasswordMode] = useState<'set' | 'email'>('email')
+    const [newPassword, setNewPassword] = useState('')
+    const [showNewPassword, setShowNewPassword] = useState(false)
+    const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
     useEffect(() => {
         checkRole()
@@ -103,6 +113,9 @@ function UserManagementPage() {
             phone: '',
             role: 'client'
         })
+        setPasswordMode('email')
+        setNewPassword('')
+        setShowNewPassword(false)
         setIsAddModalOpen(true)
     }
 
@@ -120,10 +133,23 @@ function UserManagementPage() {
 
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Validate password if agent is setting one
+        if (passwordMode === 'set' && newPassword.length < 8) {
+            alert('Password must be at least 8 characters long.')
+            return
+        }
+
         setModalLoading(true)
         try {
             const { data: { session } } = await supabase.auth.getSession()
             if (!session) throw new Error('No active session.')
+
+            const payload = {
+                ...formData,
+                password: passwordMode === 'set' ? newPassword : undefined,
+                sendSetupEmail: passwordMode === 'email'
+            }
 
             const response = await fetch('/api/auth/create-user', {
                 method: 'POST',
@@ -131,7 +157,7 @@ function UserManagementPage() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.access_token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             })
 
             const result = await response.json()
@@ -139,7 +165,8 @@ function UserManagementPage() {
 
             setIsAddModalOpen(false)
             fetchUsers()
-            alert('User created successfully.')
+            setSuccessMessage(result.message || 'User created successfully.')
+            setTimeout(() => setSuccessMessage(null), 8000)
         } catch (error: any) {
             alert(error.message)
         } finally {
@@ -256,6 +283,24 @@ function UserManagementPage() {
 
     return (
         <div className="min-h-screen bg-kb-bg pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+            {/* Success Banner */}
+            <AnimatePresence>
+                {successMessage && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-20 left-1/2 -translate-x-1/2 z-[1200] bg-green-50 border border-green-200 text-green-800 px-8 py-4 rounded-2xl shadow-xl flex items-center gap-3 max-w-lg"
+                    >
+                        <UserCheck size={20} className="text-green-600 shrink-0" />
+                        <p className="text-sm font-medium">{successMessage}</p>
+                        <button onClick={() => setSuccessMessage(null)} className="ml-2 text-green-400 hover:text-green-600">
+                            <X size={16} />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
@@ -443,121 +488,203 @@ function UserManagementPage() {
                             initial={{ scale: 0.95, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                            className="relative bg-white rounded-[2.5rem] shadow-2xl p-10 max-w-xl w-full border border-gray-100"
+                            className="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl border border-gray-100 flex flex-col max-h-[90vh]"
                         >
                             <button 
                                 onClick={() => {
                                     setIsAddModalOpen(false)
                                     setIsEditModalOpen(false)
                                 }}
-                                className="absolute right-6 top-6 p-2 text-kb-muted hover:text-kb-navy transition-colors"
+                                className="absolute right-5 top-5 p-2 text-kb-muted hover:text-kb-navy transition-colors z-10"
                             >
-                                <X size={24} />
+                                <X size={22} />
                             </button>
 
-                            <div className="mb-8">
-                                <h3 className="text-3xl font-black text-kb-navy flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-sst-primary/10 rounded-2xl flex items-center justify-center text-sst-primary">
-                                        {isAddModalOpen ? <Plus size={28} /> : <Pencil size={24} />}
+                            {/* Modal Header — fixed, not scrollable */}
+                            <div className="px-8 pt-7 pb-5 border-b border-gray-50 shrink-0">
+                                <h3 className="text-2xl font-black text-kb-navy flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-sst-primary/10 rounded-xl flex items-center justify-center text-sst-primary">
+                                        {isAddModalOpen ? <Plus size={22} /> : <Pencil size={20} />}
                                     </div>
                                     {isAddModalOpen ? 'Add New User' : 'Edit User Profile'}
                                 </h3>
-                                <p className="text-kb-muted mt-2">
+                                <p className="text-kb-muted mt-1 text-sm">
                                     {isAddModalOpen 
                                         ? 'Create a new account for your client.' 
                                         : `Updating information for ${formData.email}`}
                                 </p>
                             </div>
 
-                            <form onSubmit={isAddModalOpen ? handleCreateUser : handleEditUser} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">First Name</label>
-                                        <input 
-                                            required
-                                            type="text"
-                                            value={formData.firstName}
-                                            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
-                                            placeholder="John"
-                                        />
+                            {/* Scrollable form body */}
+                            <div className="overflow-y-auto flex-1 px-8 py-6">
+                            <form onSubmit={isAddModalOpen ? handleCreateUser : handleEditUser} className="space-y-4">
+                                    {/* Row 1: First + Last Name */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-1">First Name</label>
+                                            <input 
+                                                required
+                                                type="text"
+                                                value={formData.firstName}
+                                                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                                placeholder="John"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-1">Last Name</label>
+                                            <input 
+                                                required
+                                                type="text"
+                                                value={formData.lastName}
+                                                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                                placeholder="Doe"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Last Name</label>
-                                        <input 
-                                            required
-                                            type="text"
-                                            value={formData.lastName}
-                                            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
-                                            placeholder="Doe"
-                                        />
+
+                                    {/* Row 2: Email + Phone */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-1">Email Address</label>
+                                            <input 
+                                                required
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                                placeholder="john@example.com"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-1">Phone Number</label>
+                                            <input 
+                                                type="tel"
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                                placeholder="+1 (555) 000-0000"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Email Address</label>
-                                    <input 
-                                        required
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
-                                        placeholder="john@example.com"
-                                    />
-                                </div>
+                                    {/* Row 3: Role */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-1">Role</label>
+                                        <select 
+                                            value={formData.role}
+                                            onChange={(e) => setFormData({...formData, role: e.target.value})}
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
+                                        >
+                                            <option value="client">Client</option>
+                                            <option value="agent">Agent</option>
+                                            {currentUserRole === 'admin' && <option value="admin">Administrator</option>}
+                                        </select>
+                                    </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Phone Number</label>
-                                    <input 
-                                        type="tel"
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
-                                        placeholder="+1 (555) 000-0000"
-                                    />
-                                </div>
+                                    {/* Password Section — only on Add modal */}
+                                    {isAddModalOpen && (
+                                        <div className="space-y-3">
+                                            <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-1">Password</label>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPasswordMode('email')}
+                                                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
+                                                        passwordMode === 'email'
+                                                            ? 'bg-sst-primary/10 text-sst-primary border-sst-primary/30'
+                                                            : 'bg-gray-50 text-kb-muted border-gray-100 hover:border-gray-200'
+                                                    }`}
+                                                >
+                                                    <Send size={14} />
+                                                    Email client to set up
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPasswordMode('set')}
+                                                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
+                                                        passwordMode === 'set'
+                                                            ? 'bg-sst-primary/10 text-sst-primary border-sst-primary/30'
+                                                            : 'bg-gray-50 text-kb-muted border-gray-100 hover:border-gray-200'
+                                                    }`}
+                                                >
+                                                    <Lock size={14} />
+                                                    Set password now
+                                                </button>
+                                            </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold text-kb-muted uppercase tracking-wider ml-2">Role</label>
-                                    <select 
-                                        value={formData.role}
-                                        onChange={(e) => setFormData({...formData, role: e.target.value})}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all"
-                                    >
-                                        <option value="client">Client</option>
-                                        <option value="agent">Agent</option>
-                                        {currentUserRole === 'admin' && <option value="admin">Administrator</option>}
-                                    </select>
-                                </div>
+                                            {passwordMode === 'email' && (
+                                                <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-2.5">
+                                                    <Mail size={16} className="text-blue-500 mt-0.5 shrink-0" />
+                                                    <p className="text-xs text-blue-700 leading-relaxed">
+                                                        The client will receive a branded email with a link to set up their password on first login.
+                                                    </p>
+                                                </div>
+                                            )}
 
-                                <div className="flex gap-4 pt-4">
-                                    <button 
-                                        type="button"
-                                        onClick={() => {
-                                            setIsAddModalOpen(false)
-                                            setIsEditModalOpen(false)
-                                        }}
-                                        className="flex-1 py-4 bg-gray-100 text-kb-navy font-bold rounded-2xl hover:bg-gray-200 transition-all shadow-sm"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        type="submit"
-                                        disabled={modalLoading}
-                                        className="flex-1 py-4 bg-sst-primary text-white font-black rounded-2xl hover:bg-sst-primary/90 transition-all shadow-lg shadow-sst-primary/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-                                    >
-                                        {modalLoading ? (
-                                            <Loader2 size={24} className="animate-spin" />
-                                        ) : (
-                                            <>
-                                                {isAddModalOpen ? <Plus size={20} strokeWidth={3} /> : <UserCheck size={20} />}
-                                                {isAddModalOpen ? 'Create Account' : 'Save Changes'}
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
+                                            {passwordMode === 'set' && (
+                                                <div className="space-y-2">
+                                                    <div className="relative">
+                                                        <input
+                                                            type={showNewPassword ? 'text' : 'password'}
+                                                            value={newPassword}
+                                                            onChange={(e) => setNewPassword(e.target.value)}
+                                                            className={`w-full px-4 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-sst-primary/20 outline-none transition-all pr-11 ${
+                                                                newPassword && newPassword.length < 8 ? 'border-red-300' : 'border-gray-100'
+                                                            }`}
+                                                            placeholder="Enter password (min. 8 characters)"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-kb-muted hover:text-sst-primary transition-colors"
+                                                        >
+                                                            {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                        </button>
+                                                    </div>
+                                                    {newPassword && newPassword.length < 8 && (
+                                                        <p className="text-xs text-red-500 font-medium ml-1">Password must be at least 8 characters</p>
+                                                    )}
+                                                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 flex items-start gap-2.5">
+                                                        <AlertCircle size={15} className="text-amber-500 mt-0.5 shrink-0" />
+                                                        <p className="text-xs text-amber-700 leading-relaxed">
+                                                            You will need to share this password with the client directly. They can change it later from their account settings.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                    {/* Action Buttons — sticky at bottom of scroll area */}
+                                    <div className="flex gap-3 pt-5 border-t border-gray-50">
+                                        <button 
+                                            type="button"
+                                            onClick={() => {
+                                                setIsAddModalOpen(false)
+                                                setIsEditModalOpen(false)
+                                            }}
+                                            className="flex-1 py-3 bg-gray-100 text-kb-navy font-bold rounded-xl hover:bg-gray-200 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            type="submit"
+                                            disabled={modalLoading}
+                                            className="flex-1 py-3 bg-sst-primary text-white font-black rounded-xl hover:bg-sst-primary/90 transition-all shadow-lg shadow-sst-primary/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                        >
+                                            {modalLoading ? (
+                                                <Loader2 size={20} className="animate-spin" />
+                                            ) : (
+                                                <>
+                                                    {isAddModalOpen ? <Plus size={18} strokeWidth={3} /> : <UserCheck size={18} />}
+                                                    {isAddModalOpen ? 'Create Account' : 'Save Changes'}
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div> {/* end scrollable body */}
                         </motion.div>
                     </div>
                 )}

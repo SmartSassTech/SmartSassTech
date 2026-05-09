@@ -340,6 +340,8 @@ export default function QuizComponent({ quiz }: QuizComponentProps) {
                                 </div>
                             </div>
 
+                            {/* Reserved height prevents CLS when session check resolves */}
+                            <div className="min-h-[160px]">
                             {/* IF USER IS NOT LOGGED IN, PROMPT TO EMAIL/SAVE */}
                             {!session?.user && !saveSuccess && (
                                 <div className="bg-white p-8 md:p-10 rounded-3xl mt-2 mb-12 border-2 border-kb-pale shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
@@ -400,6 +402,7 @@ export default function QuizComponent({ quiz }: QuizComponentProps) {
                                     <p className="text-lg font-medium">These recommendations have been automatically saved to your profile!</p>
                                 </div>
                             )}
+                            </div>
 
                             <div className="mb-16">
                                 <h3 className="text-3xl font-bold text-kb-navy mb-8">Why this is perfect for you:</h3>
