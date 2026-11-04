@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import { supabaseAdmin } from '@/lib/supabase-admin'
 import { resend } from '@/lib/resend'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
@@ -19,119 +17,63 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const { name, email, phone, message, website } = await request.json()
+        const {
+            name,
+            phone,
+            cityZip,
+            message,
+            serviceType,
+            remotePlatform,
+            knowsRemoteEmail,
+            remoteEmailDetails,
+            website,
+        } = await request.json()
 
         // Honeypot: bots fill hidden fields; real users leave this blank
         if (website) {
-            // Return 200 to not tip off bots, but don't process the submission
             return NextResponse.json({ success: true, message: 'Contact submission received' }, { status: 200 })
         }
 
-        // Validate input
-        if (!name || !email || !message) {
+        // Validate required fields
+        if (!name || !phone) {
             return NextResponse.json(
-                { error: 'Name, email, and message are required' },
+                { error: 'Name and phone number are required' },
                 { status: 400 }
             )
         }
 
-        // Phone validation (if provided)
-        if (phone) {
-            const phoneRegex = /^[0-9\s\-\(\)\+]+$/
-            if (!phoneRegex.test(phone)) {
-                return NextResponse.json(
-                    { error: 'Invalid phone number format' },
-                    { status: 400 }
-                )
-            }
-        }
-
-        // 1. Check if email exists in profiles to link account
-        let userId: string | null = null
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('email', email)
-            .maybeSingle()
-
-        console.log('Account linking check:', { email, profile, profileError })
-
-        if (profile) {
-            userId = profile.id
-        }
-
-        // 2. Insert into Supabase
-        const { data: submission, error: supabaseError } = await supabase
-            .from('contact_submissions')
-            .insert([
-                { name, email, phone, message, user_id: userId }
-            ])
-            .select('id')
-            .single()
-
-        if (supabaseError) {
-            console.error('Supabase error:', supabaseError)
+        // Phone format validation
+        const phoneRegex = /^[0-9\s\-\(\)\+]+$/
+        if (!phoneRegex.test(phone)) {
             return NextResponse.json(
-                { error: 'Failed to save submission' },
-                { status: 500 }
+                { error: 'Invalid phone number format' },
+                { status: 400 }
             )
         }
 
-        // 2b. Auto-create a support ticket from the contact submission
-        try {
-            const SLA_FIRST_RESPONSE_HOURS = 4
-            const SLA_RESOLUTION_HOURS = 24
-            const now = Date.now()
-
-            await supabaseAdmin
-                .from('support_tickets')
-                .insert({
-                    subject: `Contact Form: ${name}`,
-                    description: message,
-                    status: 'open',
-                    priority: 'medium',
-                    category: 'General',
-                    source: 'contact_form',
-                    user_id: userId,
-                    contact_submission_id: submission?.id || null,
-                    first_response_due: new Date(now + SLA_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
-                    resolution_due: new Date(now + SLA_RESOLUTION_HOURS * 60 * 60 * 1000).toISOString(),
-                })
-        } catch (ticketErr) {
-            console.error('Error auto-creating support ticket from contact form:', ticketErr)
-            // Don't fail the contact submission if ticket creation fails
-        }
-
-        // 3. Send email via Resend
-        try {
-            const accountNote = userId ? '<p style="color: green; font-weight: bold;">(Connected to Existing Account)</p>' : ''
-
-            await resend.emails.send({
-                from: 'SmartSassTech <notifications@resend.dev>',
-                to: 'smartsasstech@gmail.com',
-                subject: `New Contact Form Submission from ${name} ${userId ? '[Existing Account]' : ''}`,
-                html: `
-          <h1>New Contact Form Submission</h1>
-          ${accountNote}
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message}</p>
-        `
-            })
-        } catch (emailError) {
-            // Log the email error but don't fail — submission is already saved in Supabase
-            console.error('Email error:', emailError)
-        }
-
-        // 4. Notify agents via in-app notification
-        await import('@/lib/notifications').then(m => m.notifyAgents(
-            'New Contact Form Submission',
-            `A new contact form was submitted by ${name}.`,
-            'system',
-            { contact_submission_id: submission?.id }
-        )).catch(console.error)
+        // Send email to smartsasstech@gmail.com via Resend
+        await resend.emails.send({
+            from: 'SmartSassTech <notifications@resend.dev>',
+            to: 'smartsasstech@gmail.com',
+            subject: `New Contact from ${name} (${serviceType === 'remote' ? 'Remote' : 'In-Home'})`,
+            html: `
+        <h2 style="color: #2e3b69;">New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>City/Zip:</strong> ${cityZip || 'N/A'}</p>
+        <p><strong>Service Preference:</strong> ${serviceType || 'N/A'}</p>
+        ${serviceType === 'remote' ? `
+          <div style="background-color: #f0f4f8; padding: 12px; border-radius: 8px; margin: 12px 0;">
+            <h3 style="margin-top: 0; color: #2e3b69;">Remote Support Info</h3>
+            <p><strong>Platform:</strong> ${remotePlatform || 'Not specified'}</p>
+            <p><strong>Knows Account Email:</strong> ${knowsRemoteEmail || 'Not specified'}</p>
+            <p><strong>Video Account Email:</strong> ${remoteEmailDetails || 'Needs help getting info'}</p>
+          </div>
+        ` : ''}
+        <p><strong>Message / Notes:</strong></p>
+        <p style="white-space: pre-wrap; background-color: #fafafa; padding: 12px; border-radius: 6px;">${message || '(No message provided)'}</p>
+      `,
+        })
 
         return NextResponse.json(
             { success: true, message: 'Contact submission received' },

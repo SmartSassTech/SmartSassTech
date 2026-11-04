@@ -1,34 +1,21 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
-import { Search, Bell, Menu, X } from 'lucide-react'
-
-interface UserProfile {
-  firstName: string
-  email: string
-  role?: string
-}
-
-function getGreeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 17) return 'Good afternoon'
-  return 'Good evening'
-}
+import { usePathname } from 'next/navigation'
+import { Menu, X, Phone } from 'lucide-react'
+import PhoneModal from '@/components/PhoneModal'
 
 export default function Navigation() {
   const pathname = usePathname()
-  const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
-  const [user, setUser] = useState<UserProfile | null>(null)
-  const [menuOpen, setMenuOpen] = useState(false)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [unreadCount, setUnreadCount] = useState(0)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [phoneModalOpen, setPhoneModalOpen] = useState(false)
+
+  // Do not render public header on admin portal
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,272 +25,142 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  useEffect(() => {
-    // We need a non-reactive way to know the current user ID for the real-time callback
-    let currentUserId: string | null = null;
-
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      currentUserId = session?.user?.id || null;
-      if (session?.user) {
-        await loadProfile(session.user.id, session.user.email ?? '')
-        await fetchUnreadCount(session.user.id)
-      }
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      currentUserId = session?.user?.id || null;
-      if (session?.user) {
-        loadProfile(session.user.id, session.user.email ?? '')
-        fetchUnreadCount(session.user.id)
-      } else {
-        setUser(null)
-        setUnreadCount(0)
-      }
-    })
-
-    // Subscribe to new notifications
-    const channel = supabase
-      .channel('schema-db-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications'
-        },
-        (payload) => {
-          if (currentUserId && payload.new.user_id === currentUserId) {
-            setUnreadCount(prev => prev + 1)
-          }
-        }
-      )
-      .subscribe()
-
-    return () => {
-      subscription.unsubscribe()
-      supabase.removeChannel(channel)
-    }
-  }, [])
-
-  async function fetchUnreadCount(userId: string) {
-    const { count } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('is_read', false)
-
-    setUnreadCount(count || 0)
-  }
-
-  async function loadProfile(userId: string, email: string) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('first_name, email, role')
-      .eq('id', userId)
-      .single()
-
-    const nameFromProfile = (data as any)?.first_name
-    const role = (data as any)?.role || 'client'
-    const firstName = (nameFromProfile || email.split('@')[0]).split(' ')[0]
-    setUser({ firstName, email, role })
-  }
-
-  async function handleLogout() {
-    setMenuOpen(false)
-    await supabase.auth.signOut()
-    setUser(null)
-    router.push('/')
-  }
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+  const handlePhoneClick = (e: React.MouseEvent) => {
+    // Check if device is desktop (screen width >= 768px)
+    if (window.innerWidth >= 768) {
+      e.preventDefault()
+      setPhoneModalOpen(true)
     }
   }
 
   return (
     <>
-      <header className="header">
-        <div className="container">
-          <div className="header-top">
-            <div className="logo-container">
+      <header className={`header sticky top-0 bg-white border-b border-gray-200 z-50 transition-all duration-300 ${isScrolled ? 'shadow-md py-2' : 'py-4'}`}>
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center header-top">
+            {/* Logo on the Left */}
+            <div className="logo-container flex-shrink-0">
               <Link href="/" aria-label="SmartSass Tech Home">
-              <img
-                  src="/assets/images/darkLogo.svg"
+                <img
+                  src="/assets/images/logo-horiz.svg"
                   alt="SmartSass Tech"
-                  className="logo"
-                  width="280"
-                  height="280"
+                  className="logo h-12 w-auto md:h-14 lg:h-16"
                 />
               </Link>
             </div>
 
-            <div className="header-actions">
-              {user && (
-                <Link href="/notifications" className="relative p-2 text-kb-cream hover:text-white transition-colors mr-2" aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : 'Notifications'}>
-                  <Bell size={22} />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </Link>
-              )}
-              {user ? (
-                <div className="user-menu-wrapper" ref={menuRef}>
-                  <button
-                    className="user-greeting-btn"
-                    onClick={() => setMenuOpen(prev => !prev)}
-                    aria-expanded={menuOpen}
-                    aria-haspopup="true"
-                    aria-label="User menu"
-                  >
-                    <span className="greeting-icon">👋</span>
-                    <span className="greeting-text">
-                      {getGreeting()}, <strong>{user.firstName}</strong>
-                    </span>
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className={`chevron ${menuOpen ? 'open' : ''}`}
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
+            {/* Navigation Links in the Middle (Hidden on mobile/tablet) */}
+            <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-6 xl:gap-8 justify-center flex-1 mx-4">
+              <Link
+                href="/"
+                className={`relative font-semibold text-lg py-1 px-1 transition-colors duration-200 ${
+                  pathname === '/' ? 'text-sst-primary font-bold' : 'text-sst-dark hover:text-sst-primary'
+                } after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-sst-primary after:transition-all after:duration-200 ${
+                  pathname === '/' ? 'after:opacity-100 after:scale-x-100' : 'after:opacity-0 after:scale-x-0 hover:after:opacity-100 hover:after:scale-x-100'
+                }`}
+              >
+                Home
+              </Link>
+              <Link
+                href="/#services"
+                className="relative font-semibold text-lg py-1 px-1 transition-colors duration-200 text-sst-dark hover:text-sst-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-sst-primary after:transition-all after:duration-200 after:opacity-0 after:scale-x-0 hover:after:opacity-100 hover:after:scale-x-100"
+              >
+                Services
+              </Link>
+              <Link
+                href="/#in-home-vs-remote"
+                className="relative font-semibold text-lg py-1 px-1 transition-colors duration-200 text-sst-dark hover:text-sst-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-sst-primary after:transition-all after:duration-200 after:opacity-0 after:scale-x-0 hover:after:opacity-100 hover:after:scale-x-100"
+              >
+                In-Home vs. Remote
+              </Link>
+              <Link
+                href="/about"
+                className={`relative font-semibold text-lg py-1 px-1 transition-colors duration-200 ${
+                  pathname === '/about' ? 'text-sst-primary font-bold' : 'text-sst-dark hover:text-sst-primary'
+                } after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-sst-primary after:transition-all after:duration-200 ${
+                  pathname === '/about' ? 'after:opacity-100 after:scale-x-100' : 'after:opacity-0 after:scale-x-0 hover:after:opacity-100 hover:after:scale-x-100'
+                }`}
+              >
+                About Renee
+              </Link>
+              <Link
+                href="/contact"
+                className={`relative font-semibold text-lg py-1 px-1 transition-colors duration-200 ${
+                  pathname === '/contact' ? 'text-sst-primary font-bold' : 'text-sst-dark hover:text-sst-primary'
+                } after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-sst-primary after:transition-all after:duration-200 ${
+                  pathname === '/contact' ? 'after:opacity-100 after:scale-x-100' : 'after:opacity-0 after:scale-x-0 hover:after:opacity-100 hover:after:scale-x-100'
+                }`}
+              >
+                Contact
+              </Link>
+            </nav>
 
-                  {menuOpen && (
-                    <div className="user-dropdown" role="menu">
-                      <Link href="/account" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                        <span className="menu-icon">👤</span> Account Settings
-                      </Link>
+            {/* Actions on the Right */}
+            <div className="flex items-center gap-4 header-actions flex-shrink-0">
+              {/* Click to call button */}
+              <a 
+                href="tel:5856454549" 
+                onClick={handlePhoneClick}
+                className="hidden lg:flex items-center gap-2 text-sst-dark hover:text-sst-primary font-semibold text-lg mr-2 transition-colors cursor-pointer"
+                aria-label="Call (585) 645-4549"
+              >
+                <Phone size={20} className="text-sst-primary shrink-0" aria-hidden="true" />
+                <span className="hidden xl:inline">(585) 645-4549</span>
+                <span className="xl:hidden text-base">Call</span>
+              </a>
 
-                      {(user.role === 'agent' || user.role === 'admin') && (
-                        <>
-                          <Link href="/admin" className="user-dropdown-item font-bold text-sst-primary border-t border-gray-100 mt-1 pt-2" role="menuitem" onClick={() => setMenuOpen(false)}>
-                            <span className="menu-icon">🚀</span> Agent Dashboard
-                          </Link>
-                          <Link href="/admin/users" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                            <span className="menu-icon">👥</span> User Management
-                          </Link>
-                        </>
-                      )}
+              <Link
+                href="/booking"
+                className="inline-flex items-center justify-center min-h-[48px] px-6 rounded-full bg-sst-primary text-white font-semibold hover:bg-sst-primary-dark hover:text-white transition-all duration-200 shadow-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
+              >
+                Book Now
+              </Link>
 
-                      {/* Client-only links - hidden for agents/admins to reduce clutter */}
-                      {user.role === 'client' && (
-                        <>
-                          <Link href="/my-devices" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                            <span className="menu-icon">📱</span> My Devices
-                          </Link>
-                          <Link href="/my-bookings" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                            <span className="menu-icon">📅</span> My Bookings
-                          </Link>
-                          <Link href="/subscriptions" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                            <span className="menu-icon">✨</span> My Subscriptions
-                          </Link>
-                          <Link href="/rewards" className="user-dropdown-item" role="menuitem" onClick={() => setMenuOpen(false)}>
-                            <span className="menu-icon">🏆</span> My Rewards
-                          </Link>
-                        </>
-                      )}
-
-                      <Link href="/support" className="user-dropdown-item border-t border-gray-100 mt-1 pt-2" role="menuitem" onClick={() => setMenuOpen(false)}>
-                        <span className="menu-icon">🎫</span> Help Center
-                      </Link>
-                      <button className="user-dropdown-item user-dropdown-logout border-t border-gray-100 mt-1 pt-2" role="menuitem" onClick={handleLogout}>
-                        <span className="menu-icon">🚪</span> Log Out
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <Link href="/login" className="btn btn-secondary">Log In</Link>
-                </>
-              )}
-              <Link href="/booking" className="btn btn-primary">Book Now</Link>
-
-              {/* Hamburger toggle — visible only on mobile via CSS */}
+              {/* Hamburger toggle */}
               <button
-                className="mobile-menu-toggle"
+                className="mobile-menu-toggle lg:hidden p-2 min-w-[44px] min-h-[44px] text-sst-dark hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center"
                 onClick={() => setMobileNavOpen(prev => !prev)}
                 aria-expanded={mobileNavOpen}
                 aria-label={mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu'}
               >
-                {mobileNavOpen ? <X size={24} /> : <Menu size={24} />}
+                {mobileNavOpen ? <X size={28} /> : <Menu size={28} />}
               </button>
             </div>
-
-            <form onSubmit={handleSearchSubmit} className="search-container relative w-full max-w-xs">
-              <input
-                type="search"
-                className="search-input w-full pr-10"
-                placeholder="Search guides, devices, services..."
-                aria-label="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-kb-muted hover:text-sst-primary transition-colors focus:outline-none"
-                aria-label="Submit search"
-              >
-                <Search size={18} />
-              </button>
-            </form>
           </div>
         </div>
       </header>
 
-      {/* Mobile nav dropdown panel — opens when hamburger is tapped */}
-      <div className={`mobile-nav-panel ${mobileNavOpen ? 'open' : ''}`}>
-        <Link href="/" className={pathname === '/' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Home</Link>
-        <Link href="/articles" className={pathname.startsWith('/articles') || pathname.startsWith('/expertise') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Resources</Link>
-        <Link href="/scam-prevention" className={pathname === '/scam-prevention' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Scam Prevention</Link>
-        <Link href="/about" className={pathname === '/about' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>About</Link>
-        <Link href="/support" className={pathname.startsWith('/support') ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>Help Center</Link>
+      {/* Mobile nav dropdown panel */}
+      {mobileNavOpen && (
+        <div 
+          className="lg:hidden bg-white shadow-xl absolute w-full z-40 border-b border-gray-200"
+          role="menu"
+          aria-label="Mobile navigation"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setMobileNavOpen(false)
+          }}
+        >
+          <div className="flex flex-col p-4 space-y-2">
+            <Link role="menuitem" href="/" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>Home</Link>
+            <Link role="menuitem" href="/#services" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>Services</Link>
+            <Link role="menuitem" href="/#in-home-vs-remote" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>In-Home vs. Remote</Link>
+            <Link role="menuitem" href="/about" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>About Renee</Link>
+            <Link role="menuitem" href="/contact" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>Contact</Link>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Sticky Call Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-4">
+        <a href="tel:5856454549" className="flex-1 flex items-center justify-center gap-2 bg-sst-primary text-white rounded-full min-h-[56px] font-bold text-lg shadow-md active:bg-sst-primary-dark transition-all duration-200">
+          <Phone size={24} />
+          Call: (585) 645-4549
+        </a>
       </div>
 
-      <nav aria-label="Main navigation" className={`sticky-nav desktop-nav ${isScrolled ? 'scrolled' : ''}`}>
-        <div className="container">
-          <ul className="nav-tabs">
-            <li className={`nav-tab ${pathname === '/' ? 'active' : ''}`}>
-              <Link href="/">Home</Link>
-            </li>
-            <li className={`nav-tab ${pathname.startsWith('/articles') || pathname.startsWith('/expertise') ? 'active' : ''}`}>
-              <Link href="/articles">Resources</Link>
-            </li>
-            <li className={`nav-tab ${pathname === '/scam-prevention' ? 'active' : ''}`}>
-              <Link href="/scam-prevention">Scam Prevention</Link>
-            </li>
-            <li className={`nav-tab ${pathname === '/about' ? 'active' : ''}`}>
-              <Link href="/about">About</Link>
-            </li>
-            <li className={`nav-tab ${pathname.startsWith('/support') ? 'active' : ''}`}>
-              <Link href="/support">Help Center</Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      {/* Phone Modal for Desktop Users */}
+      <PhoneModal isOpen={phoneModalOpen} onClose={() => setPhoneModalOpen(false)} />
     </>
   )
 }
+
