@@ -81,7 +81,7 @@ export default function Navigation() {
                   pathname === '/about' ? 'after:opacity-100 after:scale-x-100' : 'after:opacity-0 after:scale-x-0 hover:after:opacity-100 hover:after:scale-x-100'
                 }`}
               >
-                About Renee
+                About Us
               </Link>
               <Link
                 href="/contact"
@@ -144,7 +144,7 @@ export default function Navigation() {
             <Link role="menuitem" href="/" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>Home</Link>
             <Link role="menuitem" href="/#services" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>Services</Link>
             <Link role="menuitem" href="/#in-home-vs-remote" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>In-Home vs. Remote</Link>
-            <Link role="menuitem" href="/about" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>About Renee</Link>
+            <Link role="menuitem" href="/about" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>About Us</Link>
             <Link role="menuitem" href="/contact" className="px-4 py-3 text-lg font-medium text-sst-dark rounded-lg hover:bg-sst-bg-light hover:text-sst-primary transition-colors" onClick={() => setMobileNavOpen(false)}>Contact</Link>
           </div>
         </div>

@@ -71,7 +71,7 @@ export default function Footer() {
             <ul className="grid grid-cols-2 gap-2 text-base">
               <li><Link href="/" className="text-sst-beige hover:text-white transition-colors duration-200 block py-3">Home</Link></li>
               <li><Link href="/#services" className="text-sst-beige hover:text-white transition-colors duration-200 block py-3">Services</Link></li>
-              <li><Link href="/about" className="text-sst-beige hover:text-white transition-colors duration-200 block py-3">About Renee</Link></li>
+              <li><Link href="/about" className="text-sst-beige hover:text-white transition-colors duration-200 block py-3">About Us</Link></li>
               <li><Link href="/contact" className="text-sst-beige hover:text-white transition-colors duration-200 block py-3">Contact Us</Link></li>
               <li><Link href="/scam-prevention" className="text-sst-beige hover:text-white transition-colors duration-200 block py-3">Scam Safety</Link></li>
               <li><Link href="/booking" className="text-white font-bold hover:text-sst-beige hover:underline transition-colors duration-200 block py-3">Book Session &rarr;</Link></li>
